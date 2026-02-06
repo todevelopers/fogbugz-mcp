@@ -290,6 +290,28 @@ export class FogBugzApi {
   }
 
   /**
+   * Get detailed info about a specific case
+   */
+  async getCase(caseId: number, cols?: string): Promise<FogBugzCase> {
+    const defaultCols = 'sTitle,sStatus,sPriority,sProject,sArea,sFixFor,sPersonAssignedTo,events';
+    const cases = await this.searchCases({
+      q: String(caseId),
+      cols: cols || defaultCols,
+    });
+    if (cases.length === 0) {
+      throw new Error(`Case #${caseId} not found`);
+    }
+    return cases[0];
+  }
+
+  /**
+   * Make a raw/generic API request (for experimental queries)
+   */
+  async rawRequest(cmd: string, params: Record<string, any> = {}): Promise<any> {
+    return this.request(cmd, params);
+  }
+
+  /**
    * Get a direct link to a case
    */
   getCaseLink(caseId: number): string {

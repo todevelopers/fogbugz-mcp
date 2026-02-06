@@ -292,6 +292,62 @@ export async function getCaseLink(api: FogBugzApi, args: any): Promise<string> {
 }
 
 /**
+ * Gets detailed information about a specific case
+ */
+export async function getCase(api: FogBugzApi, args: any): Promise<string> {
+  const { caseId, cols } = args;
+
+  try {
+    const bugCase = await api.getCase(caseId, cols);
+    const caseLink = api.getCaseLink(caseId);
+
+    return JSON.stringify({
+      caseId: bugCase.ixBug,
+      title: bugCase.sTitle,
+      status: bugCase.sStatus,
+      priority: bugCase.sPriority,
+      project: bugCase.sProject,
+      area: bugCase.sArea,
+      milestone: bugCase.sFixFor,
+      assignee: bugCase.sPersonAssignedTo,
+      events: bugCase.events?.map(e => ({
+        id: e.ixBugEvent,
+        verb: e.sVerb,
+        text: e.sText,
+        date: e.dt,
+        person: e.sPerson,
+      })),
+      caseLink,
+      message: `Case #${caseId}: "${bugCase.sTitle}"`,
+    });
+  } catch (error: any) {
+    return JSON.stringify({
+      error: error.message,
+    });
+  }
+}
+
+/**
+ * Makes a generic FogBugz API request
+ */
+export async function apiRequest(api: FogBugzApi, args: any): Promise<string> {
+  const { cmd, params } = args;
+
+  try {
+    const result = await api.rawRequest(cmd, params || {});
+    return JSON.stringify({
+      cmd,
+      result,
+      message: `API request '${cmd}' completed successfully.`,
+    });
+  } catch (error: any) {
+    return JSON.stringify({
+      error: error.message,
+    });
+  }
+}
+
+/**
  * Creates a new FogBugz project
  */
 export async function createProject(api: FogBugzApi, args: any): Promise<string> {

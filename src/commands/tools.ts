@@ -230,6 +230,48 @@ export const createProjectTool: Tool = {
   },
 };
 
+// Tool: Get detailed information about a specific case
+export const getCaseTool: Tool = {
+  name: 'fogbugz_get_case',
+  description: 'Gets detailed information about a specific FogBugz case, including events/comments history.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      caseId: {
+        type: 'number',
+        description: 'The ID of the case to fetch',
+      },
+      cols: {
+        type: 'string',
+        description: 'Comma-separated list of columns to return (default: sTitle,sStatus,sPriority,sProject,sArea,sFixFor,sPersonAssignedTo,events)',
+        optional: true,
+      },
+    },
+    required: ['caseId'],
+  },
+};
+
+// Tool: Generic FogBugz API request for experimental queries
+export const apiRequestTool: Tool = {
+  name: 'fogbugz_api_request',
+  description: 'Makes a generic FogBugz XML API request. Use this for experimental or advanced queries not covered by other tools. The token is added automatically. Example: cmd=listProjects, cmd=listCategories, cmd=search&q=project:"MyProject"&cols=sTitle,sStatus',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      cmd: {
+        type: 'string',
+        description: 'The FogBugz API command (e.g., listProjects, listCategories, search, listStatuses, listPeople)',
+      },
+      params: {
+        type: 'object',
+        description: 'Additional parameters as key-value pairs (e.g., {"q": "project:Website", "cols": "sTitle,sStatus", "max": "10"})',
+        optional: true,
+      },
+    },
+    required: ['cmd'],
+  },
+};
+
 // All tools
 export const fogbugzTools = [
   createCaseTool,
@@ -238,5 +280,7 @@ export const fogbugzTools = [
   listUserCasesTool,
   searchCasesTool,
   getCaseLinkTool,
+  getCaseTool,
   createProjectTool,
+  apiRequestTool,
 ]; 

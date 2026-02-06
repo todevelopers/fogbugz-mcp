@@ -130,8 +130,14 @@ async function startMcpServer(api: FogBugzApi) {
           case 'fogbugz_get_case_link':
             content = await handlers.getCaseLink(api, args);
             break;
+          case 'fogbugz_get_case':
+            content = await handlers.getCase(api, args);
+            break;
           case 'fogbugz_create_project':
             content = await handlers.createProject(api, args);
+            break;
+          case 'fogbugz_api_request':
+            content = await handlers.apiRequest(api, args);
             break;
           default:
             throw new Error(`Unknown tool: ${name}`);
