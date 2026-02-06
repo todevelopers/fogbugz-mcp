@@ -328,6 +328,173 @@ export async function getCase(api: FogBugzApi, args: any): Promise<string> {
 }
 
 /**
+ * Resolves a FogBugz case
+ */
+export async function resolveCase(api: FogBugzApi, args: any): Promise<string> {
+  const { caseId, comment, ixStatus } = args;
+
+  try {
+    const params: Record<string, any> = { ixBug: caseId };
+    if (comment) params.sEvent = comment;
+    if (ixStatus) params.ixStatus = ixStatus;
+
+    const result = await api.rawRequest('resolve', params);
+    const rawCase = result.case?.[0] || result.case || result;
+    const bugId = Number(rawCase.ixBug || rawCase['@_ixBug'] || caseId);
+
+    return JSON.stringify({
+      caseId: bugId,
+      caseLink: api.getCaseLink(bugId),
+      message: `Resolved case #${bugId}.`,
+    });
+  } catch (error: any) {
+    return JSON.stringify({ error: error.message });
+  }
+}
+
+/**
+ * Reopens a FogBugz case
+ */
+export async function reopenCase(api: FogBugzApi, args: any): Promise<string> {
+  const { caseId, comment } = args;
+
+  try {
+    const params: Record<string, any> = { ixBug: caseId };
+    if (comment) params.sEvent = comment;
+
+    const result = await api.rawRequest('reopen', params);
+    const rawCase = result.case?.[0] || result.case || result;
+    const bugId = Number(rawCase.ixBug || rawCase['@_ixBug'] || caseId);
+
+    return JSON.stringify({
+      caseId: bugId,
+      caseLink: api.getCaseLink(bugId),
+      message: `Reopened case #${bugId}.`,
+    });
+  } catch (error: any) {
+    return JSON.stringify({ error: error.message });
+  }
+}
+
+/**
+ * Closes a FogBugz case
+ */
+export async function closeCase(api: FogBugzApi, args: any): Promise<string> {
+  const { caseId, comment } = args;
+
+  try {
+    const params: Record<string, any> = { ixBug: caseId };
+    if (comment) params.sEvent = comment;
+
+    const result = await api.rawRequest('close', params);
+    const rawCase = result.case?.[0] || result.case || result;
+    const bugId = Number(rawCase.ixBug || rawCase['@_ixBug'] || caseId);
+
+    return JSON.stringify({
+      caseId: bugId,
+      caseLink: api.getCaseLink(bugId),
+      message: `Closed case #${bugId}.`,
+    });
+  } catch (error: any) {
+    return JSON.stringify({ error: error.message });
+  }
+}
+
+/**
+ * Lists all people in FogBugz
+ */
+export async function listPeople(api: FogBugzApi, _args: any): Promise<string> {
+  try {
+    const people = await api.listPeople();
+    const formatted = people.map(p => ({
+      id: p.ixPerson,
+      name: p.sFullName || p.sPerson || '',
+      email: p.sEmail,
+    }));
+
+    return JSON.stringify({
+      count: formatted.length,
+      people: formatted,
+      message: `Found ${formatted.length} people.`,
+    });
+  } catch (error: any) {
+    return JSON.stringify({ error: error.message });
+  }
+}
+
+/**
+ * Lists all case categories
+ */
+export async function listCategories(api: FogBugzApi, _args: any): Promise<string> {
+  try {
+    const result = await api.rawRequest('listCategories');
+    const categories = result.categories?.category || result.category || [];
+    const list = Array.isArray(categories) ? categories : [categories];
+
+    const formatted = list.map((c: any) => ({
+      id: Number(c.ixCategory),
+      name: c.sCategory || '',
+      pluralName: c.sPlural || '',
+    }));
+
+    return JSON.stringify({
+      count: formatted.length,
+      categories: formatted,
+      message: `Found ${formatted.length} categories.`,
+    });
+  } catch (error: any) {
+    return JSON.stringify({ error: error.message });
+  }
+}
+
+/**
+ * Views detailed project information
+ */
+export async function viewProject(api: FogBugzApi, args: any): Promise<string> {
+  const { ixProject } = args;
+
+  try {
+    const result = await api.rawRequest('viewProject', { ixProject });
+    const project = result.project?.[0] || result.project || result;
+
+    return JSON.stringify({
+      projectId: Number(project.ixProject),
+      name: project.sProject || '',
+      owner: project.ixPersonOwner,
+      email: project.sEmail || '',
+      inbox: project.fInbox,
+      deleted: project.fDeleted,
+      message: `Project #${project.ixProject}: "${project.sProject}"`,
+    });
+  } catch (error: any) {
+    return JSON.stringify({ error: error.message });
+  }
+}
+
+/**
+ * Views detailed area information
+ */
+export async function viewArea(api: FogBugzApi, args: any): Promise<string> {
+  const { ixArea } = args;
+
+  try {
+    const result = await api.rawRequest('viewArea', { ixArea });
+    const area = result.area?.[0] || result.area || result;
+
+    return JSON.stringify({
+      areaId: Number(area.ixArea),
+      name: area.sArea || '',
+      projectId: Number(area.ixProject || 0),
+      owner: area.ixPersonOwner,
+      deleted: area.fDeleted,
+      message: `Area #${area.ixArea}: "${area.sArea}"`,
+    });
+  } catch (error: any) {
+    return JSON.stringify({ error: error.message });
+  }
+}
+
+/**
  * Makes a generic FogBugz API request
  */
 export async function apiRequest(api: FogBugzApi, args: any): Promise<string> {
