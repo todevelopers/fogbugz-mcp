@@ -230,13 +230,186 @@ export const createProjectTool: Tool = {
   },
 };
 
+// Tool: Get detailed information about a specific case
+export const getCaseTool: Tool = {
+  name: 'fogbugz_get_case',
+  description: 'Gets detailed information about a specific FogBugz case, including events/comments history.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      caseId: {
+        type: 'number',
+        description: 'The ID of the case to fetch',
+      },
+      cols: {
+        type: 'string',
+        description: 'Comma-separated list of columns to return (default: sTitle,sStatus,sPriority,sProject,sArea,sFixFor,sPersonAssignedTo,events)',
+        optional: true,
+      },
+    },
+    required: ['caseId'],
+  },
+};
+
+// Tool: Generic FogBugz API request for experimental queries
+export const apiRequestTool: Tool = {
+  name: 'fogbugz_api_request',
+  description: 'Makes a generic FogBugz XML API request. Use this for experimental or advanced queries not covered by other tools. The token is added automatically. Example: cmd=listProjects, cmd=listCategories, cmd=search&q=project:"MyProject"&cols=sTitle,sStatus',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      cmd: {
+        type: 'string',
+        description: 'The FogBugz API command (e.g., listProjects, listCategories, search, listStatuses, listPeople)',
+      },
+      params: {
+        type: 'object',
+        description: 'Additional parameters as key-value pairs (e.g., {"q": "project:Website", "cols": "sTitle,sStatus", "max": "10"})',
+        optional: true,
+      },
+    },
+    required: ['cmd'],
+  },
+};
+
+// Tool: Resolve a FogBugz case
+export const resolveCaseTool: Tool = {
+  name: 'fogbugz_resolve_case',
+  description: 'Resolves (marks as fixed/completed) a FogBugz case.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      caseId: {
+        type: 'number',
+        description: 'The ID of the case to resolve',
+      },
+      comment: {
+        type: 'string',
+        description: 'Comment to add when resolving',
+        optional: true,
+      },
+      ixStatus: {
+        type: 'number',
+        description: 'Status ID to resolve with (use fogbugz_api_request with cmd=listStatuses to find valid IDs)',
+        optional: true,
+      },
+    },
+    required: ['caseId'],
+  },
+};
+
+// Tool: Reopen a FogBugz case
+export const reopenCaseTool: Tool = {
+  name: 'fogbugz_reopen_case',
+  description: 'Reopens a previously closed or resolved FogBugz case.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      caseId: {
+        type: 'number',
+        description: 'The ID of the case to reopen',
+      },
+      comment: {
+        type: 'string',
+        description: 'Comment to add when reopening',
+        optional: true,
+      },
+    },
+    required: ['caseId'],
+  },
+};
+
+// Tool: Close a FogBugz case
+export const closeCaseTool: Tool = {
+  name: 'fogbugz_close_case',
+  description: 'Closes a FogBugz case.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      caseId: {
+        type: 'number',
+        description: 'The ID of the case to close',
+      },
+      comment: {
+        type: 'string',
+        description: 'Comment to add when closing',
+        optional: true,
+      },
+    },
+    required: ['caseId'],
+  },
+};
+
+// Tool: List all people/users in FogBugz
+export const listPeopleTool: Tool = {
+  name: 'fogbugz_list_people',
+  description: 'Lists all people (users) in FogBugz with their IDs, names, and emails.',
+  inputSchema: {
+    type: 'object',
+    properties: {},
+    required: [],
+  },
+};
+
+// Tool: List all case categories
+export const listCategoriesTool: Tool = {
+  name: 'fogbugz_list_categories',
+  description: 'Lists all case categories in FogBugz (e.g., Bug, Feature Request, Inquiry).',
+  inputSchema: {
+    type: 'object',
+    properties: {},
+    required: [],
+  },
+};
+
+// Tool: View project details
+export const viewProjectTool: Tool = {
+  name: 'fogbugz_view_project',
+  description: 'Gets detailed information about a specific FogBugz project.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      ixProject: {
+        type: 'number',
+        description: 'The project ID to view',
+      },
+    },
+    required: ['ixProject'],
+  },
+};
+
+// Tool: View area details
+export const viewAreaTool: Tool = {
+  name: 'fogbugz_view_area',
+  description: 'Gets detailed information about a specific FogBugz area.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      ixArea: {
+        type: 'number',
+        description: 'The area ID to view',
+      },
+    },
+    required: ['ixArea'],
+  },
+};
+
 // All tools
 export const fogbugzTools = [
   createCaseTool,
   updateCaseTool,
   assignCaseTool,
+  resolveCaseTool,
+  reopenCaseTool,
+  closeCaseTool,
   listUserCasesTool,
   searchCasesTool,
   getCaseLinkTool,
+  getCaseTool,
+  listPeopleTool,
+  listCategoriesTool,
+  viewProjectTool,
+  viewAreaTool,
   createProjectTool,
+  apiRequestTool,
 ]; 

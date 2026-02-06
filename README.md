@@ -6,13 +6,12 @@ A Model Context Protocol (MCP) server for interacting with FogBugz through Langu
 
 This server allows LLMs to perform various operations on FogBugz including:
 
-- Creating new issues/cases
-- Updating existing cases (changing project, area, milestone, priority)
+- Creating, updating, resolving, reopening, and closing cases
 - Assigning cases to specific users
-- Listing a user's open cases
-- Getting direct links to specific cases
-- Searching for cases by various criteria
+- Searching and listing cases with detailed event history
+- Listing users, categories, projects, and areas
 - Creating new projects
+- Making generic API requests for advanced use cases
 
 The server implements the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) specification, allowing it to be used by any MCP-compatible LLM client.
 
@@ -75,13 +74,29 @@ npm run build
 
 This server provides the following MCP tools for LLMs:
 
+### Case Management
 - `fogbugz_create_case` - Create a new FogBugz case
 - `fogbugz_update_case` - Update an existing case's fields
 - `fogbugz_assign_case` - Assign a case to a specific user
-- `fogbugz_list_my_cases` - List cases assigned to a specific user
+- `fogbugz_resolve_case` - Resolve (mark as fixed/completed) a case
+- `fogbugz_reopen_case` - Reopen a previously closed case
+- `fogbugz_close_case` - Close a case
+
+### Search & View
 - `fogbugz_search_cases` - Search for cases using a query string
+- `fogbugz_list_my_cases` - List cases assigned to a specific user
+- `fogbugz_get_case` - Get detailed case info including events/comments history
 - `fogbugz_get_case_link` - Get a direct link to a specific case
+
+### Reference Data
+- `fogbugz_list_people` - List all users with IDs, names, and emails
+- `fogbugz_list_categories` - List case categories (Bug, Feature Request, etc.)
+- `fogbugz_view_project` - Get detailed project information
+- `fogbugz_view_area` - Get detailed area information
 - `fogbugz_create_project` - Create a new project
+
+### Advanced
+- `fogbugz_api_request` - Make a generic XML API request for experimental or advanced queries not covered by other tools
 
 ## Compatibility
 
