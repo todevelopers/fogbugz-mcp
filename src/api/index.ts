@@ -76,10 +76,12 @@ export class FogBugzApi {
         ? await axios.post(this.apiEndpoint, new URLSearchParams(flatParams), {
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             responseType: 'text',
+            timeout: 30000,
           })
         : await axios.get(this.apiEndpoint, {
             params: flatParams,
             responseType: 'text',
+            timeout: 30000,
           });
 
       const parsed = this.xmlParser.parse(response.data);
