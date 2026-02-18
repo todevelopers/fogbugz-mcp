@@ -39,21 +39,68 @@ export class FogBugzApi {
     });
   }
 
-  /**
-   * Make a GET request to the FogBugz XML API
-   */
-  // Commands that modify data – sent as POST to avoid GET sanitization of HTML
+  // Commands that modify data – use JSON API for proper HTML/fRichText handling
   private static readonly WRITE_COMMANDS = new Set([
     'new', 'edit', 'assign', 'resolve', 'reopen', 'close',
     'newProject', 'editProject', 'newArea', 'editArea',
   ]);
 
+  /**
+   * Make a write request via the FogBugz JSON API (/f/api/0/jsonapi).
+   * The JSON API correctly handles HTML content (fRichText) unlike the XML API,
+   * because HTML is sent as a native JSON string without URL-encoding issues.
+   */
+  private async jsonRequest(cmd: string, params: Record<string, any> = {}): Promise<any> {
+    const jsonEndpoint = `${this.baseUrl}/f/api/0/jsonapi`;
+
+    const payload: Record<string, any> = { cmd, token: this.apiKey };
+    for (const [key, value] of Object.entries(params)) {
+      if (value === undefined || value === null) continue;
+      if (typeof value === 'boolean') {
+        payload[key] = value ? 1 : 0;
+      } else {
+        payload[key] = value;
+      }
+    }
+
+    try {
+      const response = await axios.post(jsonEndpoint, payload, {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: 30000,
+      });
+
+      const resp = response.data;
+
+      // Check for JSON API error response
+      if (resp.errors?.length > 0) {
+        const errMsg = resp.errors[0]?.message || JSON.stringify(resp.errors[0]);
+        throw new Error(`FogBugz API Error: ${errMsg}`);
+      }
+      if (resp.errorCode) {
+        throw new Error(`FogBugz API Error: ${resp.errorMessage || resp.errorCode}`);
+      }
+
+      // Return the inner data payload
+      return resp.data || resp;
+    } catch (error: any) {
+      if (error.response) {
+        throw new Error(`FogBugz API Error: ${error.response.status} - ${JSON.stringify(error.response.data)}`);
+      }
+      throw error;
+    }
+  }
+
   private async request(
     cmd: string,
     params: Record<string, any> = {},
   ): Promise<any> {
+    // Use JSON API for write operations – it correctly handles HTML in fRichText
+    if (FogBugzApi.WRITE_COMMANDS.has(cmd)) {
+      return this.jsonRequest(cmd, params);
+    }
+
     try {
-      // Build flat string params, converting booleans to 1/0
+      // Build flat string params for XML API reads
       const flatParams: Record<string, string> = {
         cmd,
         token: this.apiKey,
@@ -70,19 +117,11 @@ export class FogBugzApi {
         }
       }
 
-      // Use POST for write operations so HTML in sEvent is not URL-sanitized
-      const isWrite = FogBugzApi.WRITE_COMMANDS.has(cmd);
-      const response = isWrite
-        ? await axios.post(this.apiEndpoint, new URLSearchParams(flatParams), {
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            responseType: 'text',
-            timeout: 30000,
-          })
-        : await axios.get(this.apiEndpoint, {
-            params: flatParams,
-            responseType: 'text',
-            timeout: 30000,
-          });
+      const response = await axios.get(this.apiEndpoint, {
+        params: flatParams,
+        responseType: 'text',
+        timeout: 30000,
+      });
 
       const parsed = this.xmlParser.parse(response.data);
       const root = parsed.response;
@@ -242,9 +281,8 @@ export class FogBugzApi {
     params: CreateCaseParams,
     _attachments: FileAttachment[] = []
   ): Promise<FogBugzCase> {
-    // XML API: cmd=new&sTitle=...&sEvent=...&token=XXX
     const root = await this.request('new', params);
-    const rawCase = root.case?.[0] || root.case || root;
+    const rawCase = root.case?.[0] || root.case || root.cases?.[0] || root;
     return this.normalizeCase(rawCase);
   }
 
@@ -256,7 +294,7 @@ export class FogBugzApi {
     _attachments: FileAttachment[] = []
   ): Promise<FogBugzCase> {
     const root = await this.request('edit', params);
-    const rawCase = root.case?.[0] || root.case || root;
+    const rawCase = root.case?.[0] || root.case || root.cases?.[0] || root;
     return this.normalizeCase(rawCase);
   }
 
@@ -272,7 +310,7 @@ export class FogBugzApi {
       sPersonAssignedTo: personName,
     };
     const root = await this.request('assign', params);
-    const rawCase = root.case?.[0] || root.case || root;
+    const rawCase = root.case?.[0] || root.case || root.cases?.[0] || root;
     return this.normalizeCase(rawCase);
   }
 

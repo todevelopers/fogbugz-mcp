@@ -344,7 +344,7 @@ export async function resolveCase(api: FogBugzApi, args: any): Promise<string> {
     if (ixStatus) params.ixStatus = ixStatus;
 
     const result = await api.rawRequest('resolve', params);
-    const rawCase = result.case?.[0] || result.case || result;
+    const rawCase = result.case?.[0] || result.case || result.cases?.[0] || result;
     const bugId = Number(rawCase.ixBug || rawCase['@_ixBug'] || caseId);
 
     return JSON.stringify({
@@ -369,7 +369,7 @@ export async function reopenCase(api: FogBugzApi, args: any): Promise<string> {
     if (richText) params.fRichText = true;
 
     const result = await api.rawRequest('reopen', params);
-    const rawCase = result.case?.[0] || result.case || result;
+    const rawCase = result.case?.[0] || result.case || result.cases?.[0] || result;
     const bugId = Number(rawCase.ixBug || rawCase['@_ixBug'] || caseId);
 
     return JSON.stringify({
@@ -394,7 +394,7 @@ export async function closeCase(api: FogBugzApi, args: any): Promise<string> {
     if (richText) params.fRichText = true;
 
     const result = await api.rawRequest('close', params);
-    const rawCase = result.case?.[0] || result.case || result;
+    const rawCase = result.case?.[0] || result.case || result.cases?.[0] || result;
     const bugId = Number(rawCase.ixBug || rawCase['@_ixBug'] || caseId);
 
     return JSON.stringify({
