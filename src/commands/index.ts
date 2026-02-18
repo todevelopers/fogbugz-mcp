@@ -12,6 +12,7 @@ export async function createCase(api: FogBugzApi, args: any): Promise<string> {
   const {
     title,
     description,
+    richText,
     project,
     area,
     milestone,
@@ -27,6 +28,7 @@ export async function createCase(api: FogBugzApi, args: any): Promise<string> {
 
   // Add optional parameters if provided
   if (description) params.sEvent = description;
+  if (richText) params.fRichText = true;
   if (project) params.sProject = project;
   if (area) params.sArea = area;
   if (milestone) params.sFixFor = milestone;
@@ -76,6 +78,7 @@ export async function updateCase(api: FogBugzApi, args: any): Promise<string> {
     caseId,
     title,
     description,
+    richText,
     project,
     area,
     milestone,
@@ -91,6 +94,7 @@ export async function updateCase(api: FogBugzApi, args: any): Promise<string> {
   // Add optional parameters if provided
   if (title) params.sTitle = title;
   if (description) params.sEvent = description;
+  if (richText) params.fRichText = true;
   if (project) params.sProject = project;
   if (area) params.sArea = area;
   if (milestone) params.sFixFor = milestone;

@@ -29,6 +29,11 @@ export const createCaseTool: Tool = {
         description: 'Detailed description of the issue',
         optional: true,
       },
+      richText: {
+        type: 'boolean',
+        description: 'Set to true if description contains HTML markup (enables FogBugz rich text rendering). Default: false (plain text).',
+        optional: true,
+      },
       project: {
         type: 'string',
         description: 'Project name where the case should be created',
@@ -83,6 +88,11 @@ export const updateCaseTool: Tool = {
       description: {
         type: 'string',
         description: 'Additional comment to add to the case',
+        optional: true,
+      },
+      richText: {
+        type: 'boolean',
+        description: 'Set to true if description contains HTML markup (enables FogBugz rich text rendering). Default: false (plain text).',
         optional: true,
       },
       project: {
