@@ -29,6 +29,11 @@ export const createCaseTool: Tool = {
         description: 'Detailed description of the issue',
         optional: true,
       },
+      richText: {
+        type: 'boolean',
+        description: 'When writing formatted content (lists, bold, code blocks, links), use HTML markup in the description and set richText: true to enable proper rendering in FogBugz. For plain unformatted text, leave as false or omit.',
+        optional: true,
+      },
       project: {
         type: 'string',
         description: 'Project name where the case should be created',
@@ -83,6 +88,11 @@ export const updateCaseTool: Tool = {
       description: {
         type: 'string',
         description: 'Additional comment to add to the case',
+        optional: true,
+      },
+      richText: {
+        type: 'boolean',
+        description: 'When writing formatted content (lists, bold, code blocks, links), use HTML markup in the description and set richText: true to enable proper rendering in FogBugz. For plain unformatted text, leave as false or omit.',
         optional: true,
       },
       project: {
@@ -288,6 +298,11 @@ export const resolveCaseTool: Tool = {
         description: 'Comment to add when resolving',
         optional: true,
       },
+      richText: {
+        type: 'boolean',
+        description: 'When writing formatted content (lists, bold, code blocks, links), use HTML markup in the comment and set richText: true to enable proper rendering in FogBugz. For plain unformatted text, leave as false or omit.',
+        optional: true,
+      },
       ixStatus: {
         type: 'number',
         description: 'Status ID to resolve with (use fogbugz_api_request with cmd=listStatuses to find valid IDs)',
@@ -314,6 +329,11 @@ export const reopenCaseTool: Tool = {
         description: 'Comment to add when reopening',
         optional: true,
       },
+      richText: {
+        type: 'boolean',
+        description: 'When writing formatted content (lists, bold, code blocks, links), use HTML markup in the comment and set richText: true to enable proper rendering in FogBugz. For plain unformatted text, leave as false or omit.',
+        optional: true,
+      },
     },
     required: ['caseId'],
   },
@@ -333,6 +353,11 @@ export const closeCaseTool: Tool = {
       comment: {
         type: 'string',
         description: 'Comment to add when closing',
+        optional: true,
+      },
+      richText: {
+        type: 'boolean',
+        description: 'When writing formatted content (lists, bold, code blocks, links), use HTML markup in the comment and set richText: true to enable proper rendering in FogBugz. For plain unformatted text, leave as false or omit.',
         optional: true,
       },
     },

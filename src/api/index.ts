@@ -42,31 +42,45 @@ export class FogBugzApi {
   /**
    * Make a GET request to the FogBugz XML API
    */
+  // Commands that modify data – sent as POST to avoid GET sanitization of HTML
+  private static readonly WRITE_COMMANDS = new Set([
+    'new', 'edit', 'assign', 'resolve', 'reopen', 'close',
+    'newProject', 'editProject', 'newArea', 'editArea',
+  ]);
+
   private async request(
     cmd: string,
     params: Record<string, any> = {},
   ): Promise<any> {
     try {
-      // Build query parameters
-      const queryParams: Record<string, string> = {
+      // Build flat string params, converting booleans to 1/0
+      const flatParams: Record<string, string> = {
         cmd,
         token: this.apiKey,
       };
 
-      // Flatten params into query string values
       for (const [key, value] of Object.entries(params)) {
         if (value === undefined || value === null) continue;
         if (Array.isArray(value)) {
-          queryParams[key] = value.join(',');
+          flatParams[key] = value.join(',');
+        } else if (typeof value === 'boolean') {
+          flatParams[key] = value ? '1' : '0';
         } else {
-          queryParams[key] = String(value);
+          flatParams[key] = String(value);
         }
       }
 
-      const response = await axios.get(this.apiEndpoint, {
-        params: queryParams,
-        responseType: 'text',
-      });
+      // Use POST for write operations so HTML in sEvent is not URL-sanitized
+      const isWrite = FogBugzApi.WRITE_COMMANDS.has(cmd);
+      const response = isWrite
+        ? await axios.post(this.apiEndpoint, new URLSearchParams(flatParams), {
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            responseType: 'text',
+          })
+        : await axios.get(this.apiEndpoint, {
+            params: flatParams,
+            responseType: 'text',
+          });
 
       const parsed = this.xmlParser.parse(response.data);
       const root = parsed.response;

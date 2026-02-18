@@ -12,6 +12,7 @@ export async function createCase(api: FogBugzApi, args: any): Promise<string> {
   const {
     title,
     description,
+    richText,
     project,
     area,
     milestone,
@@ -27,6 +28,7 @@ export async function createCase(api: FogBugzApi, args: any): Promise<string> {
 
   // Add optional parameters if provided
   if (description) params.sEvent = description;
+  if (richText) params.fRichText = true;
   if (project) params.sProject = project;
   if (area) params.sArea = area;
   if (milestone) params.sFixFor = milestone;
@@ -76,6 +78,7 @@ export async function updateCase(api: FogBugzApi, args: any): Promise<string> {
     caseId,
     title,
     description,
+    richText,
     project,
     area,
     milestone,
@@ -91,6 +94,7 @@ export async function updateCase(api: FogBugzApi, args: any): Promise<string> {
   // Add optional parameters if provided
   if (title) params.sTitle = title;
   if (description) params.sEvent = description;
+  if (richText) params.fRichText = true;
   if (project) params.sProject = project;
   if (area) params.sArea = area;
   if (milestone) params.sFixFor = milestone;
@@ -331,11 +335,12 @@ export async function getCase(api: FogBugzApi, args: any): Promise<string> {
  * Resolves a FogBugz case
  */
 export async function resolveCase(api: FogBugzApi, args: any): Promise<string> {
-  const { caseId, comment, ixStatus } = args;
+  const { caseId, comment, richText, ixStatus } = args;
 
   try {
     const params: Record<string, any> = { ixBug: caseId };
     if (comment) params.sEvent = comment;
+    if (richText) params.fRichText = true;
     if (ixStatus) params.ixStatus = ixStatus;
 
     const result = await api.rawRequest('resolve', params);
@@ -356,11 +361,12 @@ export async function resolveCase(api: FogBugzApi, args: any): Promise<string> {
  * Reopens a FogBugz case
  */
 export async function reopenCase(api: FogBugzApi, args: any): Promise<string> {
-  const { caseId, comment } = args;
+  const { caseId, comment, richText } = args;
 
   try {
     const params: Record<string, any> = { ixBug: caseId };
     if (comment) params.sEvent = comment;
+    if (richText) params.fRichText = true;
 
     const result = await api.rawRequest('reopen', params);
     const rawCase = result.case?.[0] || result.case || result;
@@ -380,11 +386,12 @@ export async function reopenCase(api: FogBugzApi, args: any): Promise<string> {
  * Closes a FogBugz case
  */
 export async function closeCase(api: FogBugzApi, args: any): Promise<string> {
-  const { caseId, comment } = args;
+  const { caseId, comment, richText } = args;
 
   try {
     const params: Record<string, any> = { ixBug: caseId };
     if (comment) params.sEvent = comment;
+    if (richText) params.fRichText = true;
 
     const result = await api.rawRequest('close', params);
     const rawCase = result.case?.[0] || result.case || result;
