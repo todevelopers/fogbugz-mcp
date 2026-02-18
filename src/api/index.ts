@@ -1,4 +1,5 @@
 import axios from 'axios';
+import FormData from 'form-data';
 import { XMLParser } from 'fast-xml-parser';
 import {
   FogBugzConfig,
@@ -39,68 +40,18 @@ export class FogBugzApi {
     });
   }
 
-  // Commands that modify data – use JSON API for proper HTML/fRichText handling
+  // Commands that modify data – sent as multipart/form-data so HTML is not URL-encoded
   private static readonly WRITE_COMMANDS = new Set([
     'new', 'edit', 'assign', 'resolve', 'reopen', 'close',
     'newProject', 'editProject', 'newArea', 'editArea',
   ]);
 
-  /**
-   * Make a write request via the FogBugz JSON API (/f/api/0/jsonapi).
-   * The JSON API correctly handles HTML content (fRichText) unlike the XML API,
-   * because HTML is sent as a native JSON string without URL-encoding issues.
-   */
-  private async jsonRequest(cmd: string, params: Record<string, any> = {}): Promise<any> {
-    const jsonEndpoint = `${this.baseUrl}/f/api/0/jsonapi`;
-
-    const payload: Record<string, any> = { cmd, token: this.apiKey };
-    for (const [key, value] of Object.entries(params)) {
-      if (value === undefined || value === null) continue;
-      if (typeof value === 'boolean') {
-        payload[key] = value ? 1 : 0;
-      } else {
-        payload[key] = value;
-      }
-    }
-
-    try {
-      const response = await axios.post(jsonEndpoint, payload, {
-        headers: { 'Content-Type': 'application/json' },
-        timeout: 30000,
-      });
-
-      const resp = response.data;
-
-      // Check for JSON API error response
-      if (resp.errors?.length > 0) {
-        const errMsg = resp.errors[0]?.message || JSON.stringify(resp.errors[0]);
-        throw new Error(`FogBugz API Error: ${errMsg}`);
-      }
-      if (resp.errorCode) {
-        throw new Error(`FogBugz API Error: ${resp.errorMessage || resp.errorCode}`);
-      }
-
-      // Return the inner data payload
-      return resp.data || resp;
-    } catch (error: any) {
-      if (error.response) {
-        throw new Error(`FogBugz API Error: ${error.response.status} - ${JSON.stringify(error.response.data)}`);
-      }
-      throw error;
-    }
-  }
-
   private async request(
     cmd: string,
     params: Record<string, any> = {},
   ): Promise<any> {
-    // Use JSON API for write operations – it correctly handles HTML in fRichText
-    if (FogBugzApi.WRITE_COMMANDS.has(cmd)) {
-      return this.jsonRequest(cmd, params);
-    }
-
     try {
-      // Build flat string params for XML API reads
+      // Build flat string params, converting booleans to 1/0
       const flatParams: Record<string, string> = {
         cmd,
         token: this.apiKey,
@@ -117,11 +68,28 @@ export class FogBugzApi {
         }
       }
 
-      const response = await axios.get(this.apiEndpoint, {
-        params: flatParams,
-        responseType: 'text',
-        timeout: 30000,
-      });
+      const isWrite = FogBugzApi.WRITE_COMMANDS.has(cmd);
+      let response;
+
+      if (isWrite) {
+        // Use multipart/form-data for writes so HTML in sEvent is sent raw (not URL-encoded).
+        // URL-encoded POST mangles HTML content and causes fRichText=1 to be ignored in FogBugz 8.x.
+        const form = new FormData();
+        for (const [key, value] of Object.entries(flatParams)) {
+          form.append(key, value);
+        }
+        response = await axios.post(this.apiEndpoint, form, {
+          headers: form.getHeaders(),
+          responseType: 'text',
+          timeout: 30000,
+        });
+      } else {
+        response = await axios.get(this.apiEndpoint, {
+          params: flatParams,
+          responseType: 'text',
+          timeout: 30000,
+        });
+      }
 
       const parsed = this.xmlParser.parse(response.data);
       const root = parsed.response;
