@@ -31,7 +31,7 @@ export const createCaseTool: Tool = {
       },
       richText: {
         type: 'boolean',
-        description: 'Set to true if description contains HTML markup (enables FogBugz rich text rendering). Default: false (plain text).',
+        description: 'When writing formatted content (lists, bold, code blocks, links), use HTML markup in the description and set richText: true to enable proper rendering in FogBugz. For plain unformatted text, leave as false or omit.',
         optional: true,
       },
       project: {
@@ -92,7 +92,7 @@ export const updateCaseTool: Tool = {
       },
       richText: {
         type: 'boolean',
-        description: 'Set to true if description contains HTML markup (enables FogBugz rich text rendering). Default: false (plain text).',
+        description: 'When writing formatted content (lists, bold, code blocks, links), use HTML markup in the description and set richText: true to enable proper rendering in FogBugz. For plain unformatted text, leave as false or omit.',
         optional: true,
       },
       project: {
@@ -300,7 +300,7 @@ export const resolveCaseTool: Tool = {
       },
       richText: {
         type: 'boolean',
-        description: 'Set to true if comment contains HTML markup (enables FogBugz rich text rendering). Default: false (plain text).',
+        description: 'When writing formatted content (lists, bold, code blocks, links), use HTML markup in the comment and set richText: true to enable proper rendering in FogBugz. For plain unformatted text, leave as false or omit.',
         optional: true,
       },
       ixStatus: {
@@ -331,7 +331,7 @@ export const reopenCaseTool: Tool = {
       },
       richText: {
         type: 'boolean',
-        description: 'Set to true if comment contains HTML markup (enables FogBugz rich text rendering). Default: false (plain text).',
+        description: 'When writing formatted content (lists, bold, code blocks, links), use HTML markup in the comment and set richText: true to enable proper rendering in FogBugz. For plain unformatted text, leave as false or omit.',
         optional: true,
       },
     },
@@ -357,7 +357,7 @@ export const closeCaseTool: Tool = {
       },
       richText: {
         type: 'boolean',
-        description: 'Set to true if comment contains HTML markup (enables FogBugz rich text rendering). Default: false (plain text).',
+        description: 'When writing formatted content (lists, bold, code blocks, links), use HTML markup in the comment and set richText: true to enable proper rendering in FogBugz. For plain unformatted text, leave as false or omit.',
         optional: true,
       },
     },
