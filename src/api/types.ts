@@ -72,7 +72,6 @@ export interface FogBugzPerson {
 export interface CreateCaseParams {
   sTitle: string;
   sEvent?: string;
-  fRichText?: boolean;
   sProject?: string;
   ixProject?: number;
   sArea?: string;
@@ -90,7 +89,6 @@ export interface EditCaseParams {
   ixBug: number;
   sTitle?: string;
   sEvent?: string;
-  fRichText?: boolean;
   sProject?: string;
   ixProject?: number;
   sArea?: string;

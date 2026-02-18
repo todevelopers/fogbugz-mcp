@@ -1,5 +1,4 @@
 import axios from 'axios';
-import FormData from 'form-data';
 import { XMLParser } from 'fast-xml-parser';
 import {
   FogBugzConfig,
@@ -40,7 +39,7 @@ export class FogBugzApi {
     });
   }
 
-  // Commands that modify data – sent as multipart/form-data so HTML is not URL-encoded
+  // Commands that modify data – sent as POST
   private static readonly WRITE_COMMANDS = new Set([
     'new', 'edit', 'assign', 'resolve', 'reopen', 'close',
     'newProject', 'editProject', 'newArea', 'editArea',
@@ -69,27 +68,17 @@ export class FogBugzApi {
       }
 
       const isWrite = FogBugzApi.WRITE_COMMANDS.has(cmd);
-      let response;
-
-      if (isWrite) {
-        // Use multipart/form-data for writes so HTML in sEvent is sent raw (not URL-encoded).
-        // URL-encoded POST mangles HTML content and causes fRichText=1 to be ignored in FogBugz 8.x.
-        const form = new FormData();
-        for (const [key, value] of Object.entries(flatParams)) {
-          form.append(key, value);
-        }
-        response = await axios.post(this.apiEndpoint, form, {
-          headers: form.getHeaders(),
-          responseType: 'text',
-          timeout: 30000,
-        });
-      } else {
-        response = await axios.get(this.apiEndpoint, {
-          params: flatParams,
-          responseType: 'text',
-          timeout: 30000,
-        });
-      }
+      const response = isWrite
+        ? await axios.post(this.apiEndpoint, new URLSearchParams(flatParams), {
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            responseType: 'text',
+            timeout: 30000,
+          })
+        : await axios.get(this.apiEndpoint, {
+            params: flatParams,
+            responseType: 'text',
+            timeout: 30000,
+          });
 
       const parsed = this.xmlParser.parse(response.data);
       const root = parsed.response;
