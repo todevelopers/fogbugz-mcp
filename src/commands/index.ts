@@ -335,11 +335,12 @@ export async function getCase(api: FogBugzApi, args: any): Promise<string> {
  * Resolves a FogBugz case
  */
 export async function resolveCase(api: FogBugzApi, args: any): Promise<string> {
-  const { caseId, comment, ixStatus } = args;
+  const { caseId, comment, richText, ixStatus } = args;
 
   try {
     const params: Record<string, any> = { ixBug: caseId };
     if (comment) params.sEvent = comment;
+    if (richText) params.fRichText = true;
     if (ixStatus) params.ixStatus = ixStatus;
 
     const result = await api.rawRequest('resolve', params);
@@ -360,11 +361,12 @@ export async function resolveCase(api: FogBugzApi, args: any): Promise<string> {
  * Reopens a FogBugz case
  */
 export async function reopenCase(api: FogBugzApi, args: any): Promise<string> {
-  const { caseId, comment } = args;
+  const { caseId, comment, richText } = args;
 
   try {
     const params: Record<string, any> = { ixBug: caseId };
     if (comment) params.sEvent = comment;
+    if (richText) params.fRichText = true;
 
     const result = await api.rawRequest('reopen', params);
     const rawCase = result.case?.[0] || result.case || result;
@@ -384,11 +386,12 @@ export async function reopenCase(api: FogBugzApi, args: any): Promise<string> {
  * Closes a FogBugz case
  */
 export async function closeCase(api: FogBugzApi, args: any): Promise<string> {
-  const { caseId, comment } = args;
+  const { caseId, comment, richText } = args;
 
   try {
     const params: Record<string, any> = { ixBug: caseId };
     if (comment) params.sEvent = comment;
+    if (richText) params.fRichText = true;
 
     const result = await api.rawRequest('close', params);
     const rawCase = result.case?.[0] || result.case || result;

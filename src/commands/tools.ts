@@ -298,6 +298,11 @@ export const resolveCaseTool: Tool = {
         description: 'Comment to add when resolving',
         optional: true,
       },
+      richText: {
+        type: 'boolean',
+        description: 'Set to true if comment contains HTML markup (enables FogBugz rich text rendering). Default: false (plain text).',
+        optional: true,
+      },
       ixStatus: {
         type: 'number',
         description: 'Status ID to resolve with (use fogbugz_api_request with cmd=listStatuses to find valid IDs)',
@@ -324,6 +329,11 @@ export const reopenCaseTool: Tool = {
         description: 'Comment to add when reopening',
         optional: true,
       },
+      richText: {
+        type: 'boolean',
+        description: 'Set to true if comment contains HTML markup (enables FogBugz rich text rendering). Default: false (plain text).',
+        optional: true,
+      },
     },
     required: ['caseId'],
   },
@@ -343,6 +353,11 @@ export const closeCaseTool: Tool = {
       comment: {
         type: 'string',
         description: 'Comment to add when closing',
+        optional: true,
+      },
+      richText: {
+        type: 'boolean',
+        description: 'Set to true if comment contains HTML markup (enables FogBugz rich text rendering). Default: false (plain text).',
         optional: true,
       },
     },
