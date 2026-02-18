@@ -11,8 +11,9 @@ Allows LLMs to perform FogBugz operations:
 - Searching and listing cases with full event/comment history
 - Listing users, categories, projects, and areas
 - Creating new projects
-- Rich text (HTML) support for case descriptions and comments
 - Generic API requests for advanced use cases
+
+> **Note:** All text fields (descriptions, comments) support **plain text only**. HTML and Markdown formatting are not rendered by the FogBugz 8.x XML API.
 
 ## XML API vs JSON API
 
@@ -129,29 +130,11 @@ npm test       # run Jest tests
 |------|-------------|
 | `fogbugz_api_request` | Make a generic XML API request for queries not covered by other tools |
 
-## Rich Text (HTML) Support
+## Text Formatting
 
-The `description` / `comment` parameter on several tools accepts HTML when the `richText: true` parameter is set. Without it, content is treated as plain text.
+All text fields (`description`, `comment`) accept **plain text only**.
 
-Tools with `richText` support:
-
-| Tool | Text parameter |
-|------|---------------|
-| `fogbugz_create_case` | `description` |
-| `fogbugz_update_case` | `description` |
-| `fogbugz_resolve_case` | `comment` |
-| `fogbugz_reopen_case` | `comment` |
-| `fogbugz_close_case` | `comment` |
-
-Example with HTML:
-
-```json
-{
-  "caseId": 123,
-  "description": "<b>Root cause:</b> missing null check in <code>parseToken()</code>",
-  "richText": true
-}
-```
+The FogBugz 8.x XML API (`/api.asp`) does not support rich text formatting via the API – HTML tags and Markdown are stored and displayed literally as plain text. Do not include HTML or Markdown markup in descriptions or comments.
 
 ## Environment Variables
 

@@ -39,10 +39,7 @@ export class FogBugzApi {
     });
   }
 
-  /**
-   * Make a GET request to the FogBugz XML API
-   */
-  // Commands that modify data – sent as POST to avoid GET sanitization of HTML
+  // Commands that modify data – sent as POST
   private static readonly WRITE_COMMANDS = new Set([
     'new', 'edit', 'assign', 'resolve', 'reopen', 'close',
     'newProject', 'editProject', 'newArea', 'editArea',
@@ -70,16 +67,17 @@ export class FogBugzApi {
         }
       }
 
-      // Use POST for write operations so HTML in sEvent is not URL-sanitized
       const isWrite = FogBugzApi.WRITE_COMMANDS.has(cmd);
       const response = isWrite
         ? await axios.post(this.apiEndpoint, new URLSearchParams(flatParams), {
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             responseType: 'text',
+            timeout: 30000,
           })
         : await axios.get(this.apiEndpoint, {
             params: flatParams,
             responseType: 'text',
+            timeout: 30000,
           });
 
       const parsed = this.xmlParser.parse(response.data);
@@ -240,9 +238,8 @@ export class FogBugzApi {
     params: CreateCaseParams,
     _attachments: FileAttachment[] = []
   ): Promise<FogBugzCase> {
-    // XML API: cmd=new&sTitle=...&sEvent=...&token=XXX
     const root = await this.request('new', params);
-    const rawCase = root.case?.[0] || root.case || root;
+    const rawCase = root.case?.[0] || root.case || root.cases?.[0] || root;
     return this.normalizeCase(rawCase);
   }
 
@@ -254,7 +251,7 @@ export class FogBugzApi {
     _attachments: FileAttachment[] = []
   ): Promise<FogBugzCase> {
     const root = await this.request('edit', params);
-    const rawCase = root.case?.[0] || root.case || root;
+    const rawCase = root.case?.[0] || root.case || root.cases?.[0] || root;
     return this.normalizeCase(rawCase);
   }
 
@@ -270,7 +267,7 @@ export class FogBugzApi {
       sPersonAssignedTo: personName,
     };
     const root = await this.request('assign', params);
-    const rawCase = root.case?.[0] || root.case || root;
+    const rawCase = root.case?.[0] || root.case || root.cases?.[0] || root;
     return this.normalizeCase(rawCase);
   }
 

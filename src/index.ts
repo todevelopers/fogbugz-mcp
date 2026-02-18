@@ -83,14 +83,12 @@ async function startMcpServer(api: FogBugzApi) {
         // Client has completed initialization
         log.info('Client sent initialized notification');
         // This is a notification, no response needed
-      } else if (method === 'mcp.ping') {
-        // Handle ping requests
+      } else if (method === 'ping' || method === 'mcp.ping') {
+        // Handle ping/keepalive requests (MCP spec uses 'ping', respond with empty result)
         const response = {
           jsonrpc: "2.0",
           id,
-          result: {
-            pong: params.ping || "pong"
-          }
+          result: {}
         };
         console.log(JSON.stringify(response));
       } else if (method === 'mcp.listTools' || method === 'tools/list') {
