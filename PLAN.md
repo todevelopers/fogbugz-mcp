@@ -49,7 +49,7 @@ Note: Response normalization (`normalizeCase()`) should work for both clients vi
 - `fogbugz-mcp.code-workspace` — IDE workspace file
 
 **Update `package.json`:**
-- `"author": "Tomas Gazovic"` (fill in blank field)
+- `"author": { "name": "ToDevelopers", "url": "https://github.com/ToDevelopers" }` (organization as author)
 - `"license": "MIT"` (change from ISC — MIT is standard for Anthropic extensions)
 - Add `"contributors": [{ "name": "akari2600", "url": "https://github.com/akari2600/fogbugz-mcp" }]`
 - Improve keywords: `["mcp", "fogbugz", "issue-tracking", "project-management", "anthropic", "claude"]`
@@ -63,7 +63,7 @@ Note: Response normalization (`normalizeCase()`) should work for both clients vi
 
 **`manifest.json`:**
 ```json
-"author": { "name": "Tomas Gazovic" }
+"author": { "name": "ToDevelopers" }
 ```
 Manifest schema only supports one `author`. Put co-author credit in README and package.json contributors.
 
