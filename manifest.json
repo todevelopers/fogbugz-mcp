@@ -1,0 +1,41 @@
+{
+  "$schema": "https://raw.githubusercontent.com/anthropics/mcpb/main/schemas/mcpb-manifest-v0.4.schema.json",
+  "manifest_version": "0.4",
+  "name": "fogbugz-mcp",
+  "version": "0.0.1",
+  "description": "Interact with FogBugz issue tracking via LLMs — create, search, update, assign, resolve, and close cases.",
+  "author": {
+    "name": "Tomas Gazovic"
+  },
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/server/index.js"],
+      "env": {
+        "FOGBUGZ_URL": "${user_config.fogbugzUrl}",
+        "FOGBUGZ_API_KEY": "${user_config.fogbugzApiKey}"
+      }
+    }
+  },
+  "user_config": {
+    "fogbugzUrl": {
+      "type": "string",
+      "title": "FogBugz URL",
+      "description": "Base URL of your FogBugz instance (e.g. https://yourcompany.fogbugz.com).",
+      "required": true
+    },
+    "fogbugzApiKey": {
+      "type": "string",
+      "title": "FogBugz API Key",
+      "description": "Your personal FogBugz API token. Found under My Settings → API Tokens.",
+      "required": true,
+      "sensitive": true
+    }
+  },
+  "compatibility": {
+    "claude_desktop": ">=1.0.0",
+    "platforms": ["darwin", "win32", "linux"]
+  }
+}

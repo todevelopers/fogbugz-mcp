@@ -23,6 +23,8 @@ coverage/
 dist/
 dist-electron/
 out/
+server/
+*.mcpb
 
 # Mac files
 .DS_Store
