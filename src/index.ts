@@ -22,8 +22,8 @@ async function main() {
 
   // Use the official MCP SDK so the initialize handshake completes before
   // any FogBugz HTTP calls, preventing the "transport closed unexpectedly" crash.
-  const { McpServer } = require('@modelcontextprotocol/sdk/dist/cjs/server/mcp');
-  const { StdioServerTransport } = require('@modelcontextprotocol/sdk/dist/cjs/server/stdio');
+  const { McpServer } = require('@modelcontextprotocol/sdk/server/mcp');
+  const { StdioServerTransport } = require('@modelcontextprotocol/sdk/server/stdio');
 
   const server = new McpServer({ name: SERVER_NAME, version: SERVER_VERSION });
 
