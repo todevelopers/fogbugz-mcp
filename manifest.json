@@ -2,7 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/anthropics/mcpb/main/schemas/mcpb-manifest-v0.4.schema.json",
   "manifest_version": "0.4",
   "name": "fogbugz-mcp",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Interact with FogBugz issue tracking via LLMs — create, search, update, assign, resolve, and close cases.",
   "author": {
     "name": "Tomas Gazovic"
@@ -34,6 +34,7 @@
       "sensitive": true
     }
   },
+  "icon": "icon.png",
   "compatibility": {
     "claude_desktop": ">=1.0.0",
     "platforms": ["darwin", "win32", "linux"]
