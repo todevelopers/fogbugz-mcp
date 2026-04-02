@@ -1,11 +1,36 @@
 #!/usr/bin/env node
+
+// Catch uncaught exceptions as early as possible (before imports execute)
+process.on('uncaughtException', (error) => {
+  console.error('[FATAL] Uncaught exception:', error);
+  process.exit(1);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('[FATAL] Unhandled rejection:', reason);
+  process.exit(1);
+});
+
+console.error('[DEBUG] Starting module imports...');
+
 import dotenv from 'dotenv';
+console.error('[DEBUG] dotenv imported');
+
 import { FogBugzApi } from './api';
+console.error('[DEBUG] FogBugzApi imported');
+
 import { fogbugzTools } from './commands/tools';
+console.error('[DEBUG] fogbugzTools imported');
+
 import * as handlers from './commands';
+console.error('[DEBUG] handlers imported');
 
 // Load environment variables
 dotenv.config();
+console.error('[DEBUG] dotenv.config() done');
+console.error('[DEBUG] Node version:', process.version);
+console.error('[DEBUG] CWD:', process.cwd());
+console.error('[DEBUG] FOGBUGZ_URL set:', !!process.env.FOGBUGZ_URL);
+console.error('[DEBUG] FOGBUGZ_API_KEY set:', !!process.env.FOGBUGZ_API_KEY);
 
 // Logger that writes to stderr instead of stdout
 const log = {
@@ -227,37 +252,51 @@ async function startMcpServer(api: FogBugzApi) {
 }
 
 async function main() {
+  log.debug('main() started');
+
   // Parse command line arguments
   const args = process.argv.slice(2);
-  
+  log.debug('argv:', process.argv);
+
   // Get API configuration from environment or command line
   const fogbugzUrl = args[0] || process.env.FOGBUGZ_URL || '';
   const fogbugzApiKey = args[1] || process.env.FOGBUGZ_API_KEY || '';
-  
+
+  log.debug('FOGBUGZ_URL resolved:', fogbugzUrl ? `"${fogbugzUrl}"` : '(empty)');
+  log.debug('FOGBUGZ_API_KEY resolved:', fogbugzApiKey ? '(set)' : '(empty)');
+
   if (!fogbugzUrl || !fogbugzApiKey) {
     log.error('Error: FogBugz URL and API key are required');
     log.error('Usage: fogbugz-mcp <fogbugz-url> <api-key>');
     log.error('       or set FOGBUGZ_URL and FOGBUGZ_API_KEY environment variables');
     process.exit(1);
   }
-  
+
   log.info(`Starting FogBugz MCP server for ${fogbugzUrl}`);
-  
+
   // Initialize the FogBugz API client
   const api = new FogBugzApi({
     baseUrl: fogbugzUrl,
     apiKey: fogbugzApiKey
   });
-  
+
   try {
     // Test connection by getting current user
+    log.debug('Calling getCurrentUser()...');
     const user = await api.getCurrentUser();
     log.info(`Connected to FogBugz as ${user.sPerson || user.sFullName} (${user.sEmail})`);
-    
+
     // Start the MCP server
+    log.debug('Starting MCP server...');
     await startMcpServer(api);
-  } catch (error) {
-    log.error('Error initializing FogBugz API:', error);
+  } catch (error: any) {
+    log.error('Error initializing FogBugz API:', error?.message || error);
+    log.error('Error details:', JSON.stringify({
+      code: error?.code,
+      status: error?.response?.status,
+      data: error?.response?.data,
+      stack: error?.stack,
+    }));
     process.exit(1);
   }
 }

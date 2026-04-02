@@ -25,3 +25,7 @@ CLAUDE.md
 
 # Node package metadata (deps are bundled in server/node_modules)
 package.json
+package-lock.json
+
+# Root node_modules (deps are bundled in server/node_modules)
+/node_modules/

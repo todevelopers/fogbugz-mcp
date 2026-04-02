@@ -1,6 +1,6 @@
 {
   "name": "fogbugz-mcp",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "FogBugz MCP Server for interacting with FogBugz via LLMs",
   "main": "dist/index.js",
   "bin": {
@@ -8,6 +8,8 @@
   },
   "scripts": {
     "build": "tsc",
+    "build:server": "npm run build && node -e \"const{cpSync,rmSync,mkdirSync}=require('fs');rmSync('server',{recursive:true,force:true});mkdirSync('server',{recursive:true});cpSync('dist','server',{recursive:true});cpSync('node_modules','server/node_modules',{recursive:true});\"",
+    "build:mcpb": "npm run build:server && npx @anthropic-ai/mcpb pack",
     "start": "node dist/index.js",
     "dev": "ts-node src/index.ts",
     "test": "jest",
