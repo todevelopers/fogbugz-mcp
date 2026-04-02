@@ -176,7 +176,7 @@ Road map split by phase. Each task is independently actionable.
 
 ### Phase 2 — Repository Cleanup
 
-- [ ] **2.1** Remove `DEVELOPMENT-PLAN.md`
+- [x] **2.1** Remove `DEVELOPMENT-PLAN.md`
 - [ ] **2.2** Remove `scripts/api-explorer.ts` and `scripts/api-explorer.js`
 - [ ] **2.3** Remove `mcp.json` and `fogbugz-mcp.code-workspace`
 - [ ] **2.4** Update `package.json` — author, license MIT, contributors, keywords, remove unused `@anthropic-ai/sdk`
