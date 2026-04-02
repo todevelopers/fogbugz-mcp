@@ -38,6 +38,8 @@ Implement all same operations as XML client using JSON API format:
 
 Note: Response normalization (`normalizeCase()`) should work for both clients via shared `src/api/types.ts` types.
 
+**Testing constraint:** JSON API client is implemented per the official FogBugz API spec but **not tested against a real newer FogBugz server** (only XML API on 8.x available). All JSON client tests use mocked axios responses. README must transparently state this — see Phase 4.4.
+
 ---
 
 ## Phase 2: Repository Cleanup
@@ -89,19 +91,23 @@ Manifest schema only supports one `author`. Put co-author credit in README and p
 
 ### 4.3 Add tests for JSON API client
 
-`tests/json-client.test.ts` — mock axios, verify:
-- Auto-detection falls back to XML when JSON probe fails
-- JSON client correctly serializes/deserializes requests
-- Error handling for `errors` array in JSON response
+`tests/json-client.test.ts` — all tests use **mocked axios** (no real JSON API server available):
+- Auto-detection falls back to XML when JSON probe fails or returns non-JSON
+- Auto-detection selects JSON client when probe succeeds
+- JSON client correctly serializes request body (`cmd`, `token`, native booleans, arrays)
+- JSON client correctly parses `data` field from response
+- Error handling: throws when `errors` array is non-empty
 
 ### 4.4 README overhaul
 
 Update `README.md`:
-- Clear one-liner description and screenshot/demo GIF at top
+- **Demo GIF/screenshots at top** — read-only operations on real (anonymized) tracker: e.g. *"Summarize all open high-priority cases assigned to me"* showing `search_cases` + `get_case` + Claude reasoning. No create/edit in demo — avoids touching production data.
 - Installation section: one-click MCPB install + manual npm config
 - Tool catalog table with description of each tool
 - Config parameters (URL + API key) with where to find them
-- FogBugz version compatibility table (XML for 7.x/8.x, JSON for 8.x+)
+- FogBugz version compatibility table:
+  - XML API: tested on FogBugz 8.x
+  - JSON API: implemented per official spec, **not yet verified on a live newer instance** — contributions welcome
 - Co-author/attribution section
 - License section (MIT)
 
@@ -168,5 +174,5 @@ npx @anthropic-ai/mcpb pack
 2. `npm test` — all tests pass
 3. `npx @anthropic-ai/mcpb validate` — manifest valid
 4. `npx @anthropic-ai/mcpb pack` — produces `fogbugz-mcp.mcpb`
-5. Manual test: install `.mcpb` in Claude Desktop, connect to a FogBugz 8.x instance, verify XML auto-detection; connect to newer instance, verify JSON auto-detection
+5. Manual test: install `.mcpb` in Claude Desktop, connect to FogBugz 8.x — verify XML auto-detection and read-only tools work (search, get, list). JSON API auto-detection verified only via mocked tests.
 6. GitHub Actions workflow produces release artifact on `v1.0.0` tag
