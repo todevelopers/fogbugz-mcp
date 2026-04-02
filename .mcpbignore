@@ -1,29 +1,32 @@
+# All patterns use a leading / to anchor them to the repo root,
+# preventing accidental matches inside server/node_modules/**
+
 # Development source files (compiled output is in server/)
-src/
-dist/
-tsconfig.json
-jest.config.js
+/src/
+/dist/
+/tsconfig.json
+/jest.config.js
 
 # Test files
-tests/
+/tests/
 
 # Scripts / dev tools
-scripts/
+/scripts/
 
 # API reference documentation
-docs/
+/docs/
 
 # Planning and project instructions
-PLAN.md
-CLAUDE.md
+/PLAN.md
+/CLAUDE.md
 
 # CI/CD
-.github/
+/.github/
 
 # Local Claude Code settings
-.claude/
+/.claude/
 
-# Root-level npm metadata only (use leading / to avoid stripping node_modules package.json files)
+# Root-level npm metadata only
 /package.json
 /package-lock.json
 
