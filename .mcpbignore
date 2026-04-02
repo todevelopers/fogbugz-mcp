@@ -1,0 +1,27 @@
+# Development source files (compiled output is in server/)
+src/
+dist/
+tsconfig.json
+jest.config.js
+
+# Test files
+tests/
+
+# Scripts / dev tools
+scripts/
+
+# API reference documentation
+docs/
+
+# Planning and project instructions
+PLAN.md
+CLAUDE.md
+
+# CI/CD
+.github/
+
+# Local Claude Code settings
+.claude/
+
+# Node package metadata (deps are bundled in server/node_modules)
+package.json
