@@ -23,9 +23,9 @@ CLAUDE.md
 # Local Claude Code settings
 .claude/
 
-# Node package metadata (deps are bundled in server/node_modules)
-package.json
-package-lock.json
+# Root-level npm metadata only (use leading / to avoid stripping node_modules package.json files)
+/package.json
+/package-lock.json
 
 # Root node_modules (deps are bundled in server/node_modules)
 /node_modules/
