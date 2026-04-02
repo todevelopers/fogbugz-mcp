@@ -8,6 +8,10 @@ Before creating a git tag, always update the version in **both** files to match 
 
 Example: tag `v0.0.3` → both files must have `"version": "0.0.3"`.
 
+**Version increment rules:**
+- Always increment the **PATCH** version (third number) by default: `0.0.9` → `0.0.10`.
+- Only increment **MINOR** (second number) or **MAJOR** (first number) when explicitly instructed by the user.
+
 ## Language
 
 All content in this repository must be written in **English** — code, comments, commit messages, documentation, and planning files. No other language is permitted.

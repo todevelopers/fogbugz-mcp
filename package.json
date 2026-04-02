@@ -1,6 +1,6 @@
 {
   "name": "fogbugz-mcp",
-  "version": "0.1.0",
+  "version": "0.0.10",
   "description": "FogBugz MCP Server for interacting with FogBugz via LLMs",
   "main": "dist/index.js",
   "bin": {
