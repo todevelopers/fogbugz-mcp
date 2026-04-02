@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 import { FogBugzApi } from './api';
 import { fogbugzTools } from './commands/tools';
 import * as handlers from './commands';
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 
 dotenv.config();
 
@@ -19,11 +21,6 @@ async function main() {
   }
 
   const api = new FogBugzApi({ baseUrl: fogbugzUrl, apiKey: fogbugzApiKey });
-
-  // Use the official MCP SDK so the initialize handshake completes before
-  // any FogBugz HTTP calls, preventing the "transport closed unexpectedly" crash.
-  const { McpServer } = require('@modelcontextprotocol/sdk/server/mcp');
-  const { StdioServerTransport } = require('@modelcontextprotocol/sdk/server/stdio');
 
   const server = new McpServer({ name: SERVER_NAME, version: SERVER_VERSION });
 
