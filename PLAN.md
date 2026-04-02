@@ -164,49 +164,49 @@ npx @anthropic-ai/mcpb pack
 
 ## Tasks
 
-Road map rozdelený podľa fáz. Každá úloha je samostatne vykonateľná.
+Road map split by phase. Each task is independently actionable.
 
 ### Phase 1 — JSON API + Auto-Detection
 
-- [ ] **1.1** Vytvoriť `src/api/base-client.ts` — abstraktné rozhranie `IFogBugzClient`
-- [ ] **1.2** Extrahovať `FogBugzApi` do `src/api/xml-client.ts`
-- [ ] **1.3** Implementovať `src/api/json-client.ts` — všetky operácie cez `POST /f/api/0/jsonapi`
-- [ ] **1.4** Prepísať `src/api/index.ts` — factory `createFogBugzClient()` s auto-detection logikou
-- [ ] **1.5** Overiť, že `src/api/types.ts` typy fungujú pre oba klienty bez zmien
+- [ ] **1.1** Create `src/api/base-client.ts` — abstract interface `IFogBugzClient`
+- [ ] **1.2** Extract `FogBugzApi` into `src/api/xml-client.ts`
+- [ ] **1.3** Implement `src/api/json-client.ts` — all operations via `POST /f/api/0/jsonapi`
+- [ ] **1.4** Rewrite `src/api/index.ts` — factory `createFogBugzClient()` with auto-detection logic
+- [ ] **1.5** Verify `src/api/types.ts` types work for both clients without modification
 
 ### Phase 2 — Repository Cleanup
 
-- [ ] **2.1** Odstrániť `DEVELOPMENT-PLAN.md`
-- [ ] **2.2** Odstrániť `scripts/api-explorer.ts` a `scripts/api-explorer.js`
-- [ ] **2.3** Odstrániť `mcp.json` a `fogbugz-mcp.code-workspace`
-- [ ] **2.4** Aktualizovať `package.json` — author, license MIT, contributors, keywords, odstrániť `@anthropic-ai/sdk`
+- [ ] **2.1** Remove `DEVELOPMENT-PLAN.md`
+- [ ] **2.2** Remove `scripts/api-explorer.ts` and `scripts/api-explorer.js`
+- [ ] **2.3** Remove `mcp.json` and `fogbugz-mcp.code-workspace`
+- [ ] **2.4** Update `package.json` — author, license MIT, contributors, keywords, remove unused `@anthropic-ai/sdk`
 
 ### Phase 3 — Attribution
 
-- [ ] **3.1** Aktualizovať `manifest.json` — nastaviť `"author": { "name": "ToDevelopers" }`
-- [ ] **3.2** Pridať do `README.md` sekciu "Based on / inspired by" s odkazom na [akari2600/fogbugz-mcp](https://github.com/akari2600/fogbugz-mcp)
+- [ ] **3.1** Update `manifest.json` — set `"author": { "name": "ToDevelopers" }`
+- [ ] **3.2** Add "Based on / inspired by" section to `README.md` crediting [akari2600/fogbugz-mcp](https://github.com/akari2600/fogbugz-mcp)
 
 ### Phase 4 — Quality
 
-- [ ] **4.1** Zlepšiť popisy nástrojov v `src/commands/tools.ts` — príklady, `title` polia, `readOnlyHint`
-- [ ] **4.2** Odstrániť `attachmentPath` parameter zo schém nástrojov (neimplementované)
-- [ ] **4.3** Napísať testy `tests/json-client.test.ts` — auto-detection fallback, serializácia, error handling
-- [ ] **4.4** Prepísať `README.md` — popis, inštalácia, katalóg nástrojov, config, kompatibilita, licencia
-- [ ] **4.5** Pridať `LICENSE` súbor (MIT, 2024–2025, Tomas Gazovic)
+- [ ] **4.1** Improve tool descriptions in `src/commands/tools.ts` — examples, `title` fields, `readOnlyHint`
+- [ ] **4.2** Remove unimplemented `attachmentPath` parameter from tool schemas
+- [ ] **4.3** Write `tests/json-client.test.ts` — auto-detection fallback, serialization, error handling
+- [ ] **4.4** Overhaul `README.md` — description, installation, tool catalog, config params, compatibility, license
+- [ ] **4.5** Add `LICENSE` file (MIT, 2024–2025, Tomas Gazovic)
 
 ### Phase 5 — Manifest Quality
 
-- [ ] **5.1** Aktualizovať `manifest.json` — `description`, `homepage`, `keywords`
-- [ ] **5.2** Spustiť `npx @anthropic-ai/mcpb validate` a opraviť prípadné chyby
+- [ ] **5.1** Update `manifest.json` — `description`, `homepage`, `keywords`
+- [ ] **5.2** Run `npx @anthropic-ai/mcpb validate` and fix any reported issues
 
 ### Phase 6 — Release
 
-- [ ] **6.1** Bumpur verzie na `1.0.0` v `package.json` aj `manifest.json`
-- [ ] **6.2** `npm run build` — žiadne TypeScript chyby
-- [ ] **6.3** `npm test` — všetky testy prechádzajú
-- [ ] **6.4** `npx @anthropic-ai/mcpb pack` — vygeneruje `fogbugz-mcp.mcpb`
-- [ ] **6.5** Nastaviť GitHub Actions workflow na produkciu release artifaktu pri tagu `v1.0.0`
-- [ ] **6.6** Vytvoriť git tag `v1.0.0` a pushnúť
+- [ ] **6.1** Bump version to `1.0.0` in both `package.json` and `manifest.json`
+- [ ] **6.2** `npm run build` — no TypeScript errors
+- [ ] **6.3** `npm test` — all tests pass
+- [ ] **6.4** `npx @anthropic-ai/mcpb pack` — produces `fogbugz-mcp.mcpb`
+- [ ] **6.5** Set up GitHub Actions workflow to produce a release artifact on `v1.0.0` tag
+- [ ] **6.6** Create git tag `v1.0.0` and push
 
 ---
 
