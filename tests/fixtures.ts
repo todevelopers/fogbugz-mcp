@@ -96,8 +96,18 @@ export function xmlPerson(fields: PersonFields = {}): string {
   </person>`;
 }
 
+/**
+ * viewPerson response: fields are direct children of <response> (no <person> wrapper).
+ * getCurrentUser() does `root.person || root` — if person is wrapped, the XMLParser
+ * forces it into an array (isArray config) and field access fails.
+ */
 export function xmlPersonResponse(fields: PersonFields = {}): string {
-  return xmlResponse(xmlPerson(fields));
+  const { ixPerson = 1, sFullName = 'Test User', sEmail = 'test@example.com' } = fields;
+  return xmlResponse(`
+    <ixPerson>${ixPerson}</ixPerson>
+    <sFullName>${sFullName}</sFullName>
+    <sEmail>${sEmail}</sEmail>
+  `);
 }
 
 export function xmlPeopleResponse(people: PersonFields[]): string {
