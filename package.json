@@ -12,7 +12,8 @@
     "build:mcpb": "npm run build:server && npx @anthropic-ai/mcpb pack",
     "start": "node dist/index.js",
     "dev": "ts-node src/index.ts",
-    "test": "jest",
+    "test": "jest tests/xml-api.test.ts tests/commands.test.ts tests/tools.test.ts",
+    "test:json": "jest tests/json-api.test.ts",
     "explore": "ts-node scripts/api-explorer.ts",
     "mcp": "node dist/index.js"
   },
