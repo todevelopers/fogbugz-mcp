@@ -447,8 +447,9 @@ describe('FogBugzApi', () => {
 
   describe('getCurrentUser() edge cases', () => {
     it('returns empty string for missing sEmail', async () => {
+      // Use raw XML without <sEmail> to test the missing-field fallback
       mockAxios.get.mockResolvedValueOnce({
-        data: xmlPersonResponse({ ixPerson: 3, sFullName: 'No Email' }),
+        data: xmlResponse(`<person><ixPerson>3</ixPerson><sFullName>No Email</sFullName></person>`),
       });
       const user = await api.getCurrentUser();
       expect(user.sEmail).toBe('');
