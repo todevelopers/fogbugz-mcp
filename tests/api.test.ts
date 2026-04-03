@@ -418,6 +418,134 @@ describe('FogBugzApi', () => {
     });
   });
 
+  // ─── listMilestones edge cases ────────────────────────────────────────────
+
+  describe('listMilestones() edge cases', () => {
+    it('returns empty array when no milestones', async () => {
+      mockAxios.get.mockResolvedValueOnce({
+        data: xmlResponse('<fixfors></fixfors>'),
+      });
+      const milestones = await api.listMilestones();
+      expect(milestones).toEqual([]);
+    });
+  });
+
+  // ─── listPeople edge cases ────────────────────────────────────────────────
+
+  describe('listPeople() edge cases', () => {
+    it('returns single person as array', async () => {
+      mockAxios.get.mockResolvedValueOnce({
+        data: xmlPeopleResponse([{ ixPerson: 7, sFullName: 'Solo', sEmail: 'solo@x.com' }]),
+      });
+      const people = await api.listPeople();
+      expect(people).toHaveLength(1);
+      expect(people[0].sFullName).toBe('Solo');
+    });
+  });
+
+  // ─── getCurrentUser edge cases ────────────────────────────────────────────
+
+  describe('getCurrentUser() edge cases', () => {
+    it('returns empty string for missing sEmail', async () => {
+      mockAxios.get.mockResolvedValueOnce({
+        data: xmlPersonResponse({ ixPerson: 3, sFullName: 'No Email' }),
+      });
+      const user = await api.getCurrentUser();
+      expect(user.sEmail).toBe('');
+      expect(user.sFullName).toBe('No Email');
+    });
+  });
+
+  // ─── error handling edge cases ────────────────────────────────────────────
+
+  describe('error handling edge cases', () => {
+    it('propagates axios timeout error unchanged', async () => {
+      const timeoutErr = Object.assign(new Error('timeout of 30000ms exceeded'), {
+        code: 'ECONNABORTED',
+      });
+      mockAxios.get.mockRejectedValueOnce(timeoutErr);
+      await expect(api.getCurrentUser()).rejects.toThrow('timeout of 30000ms exceeded');
+    });
+
+    it('includes HTTP status in error for 401', async () => {
+      mockAxios.get.mockRejectedValueOnce({
+        response: { status: 401, data: 'Unauthorized' },
+      });
+      await expect(api.getCurrentUser()).rejects.toThrow('401');
+    });
+  });
+
+  // ─── normalizeCase: events edge cases ─────────────────────────────────────
+
+  describe('normalizeCase() events edge cases', () => {
+    it('case with no <events> element has events as undefined', async () => {
+      // xmlCase fixture has no events element
+      mockAxios.get.mockResolvedValueOnce({
+        data: xmlCasesResponse([{ ixBug: 5, sTitle: 'No events' }]),
+      });
+      const c = await api.getCase(5);
+      expect(c.events).toBeUndefined();
+    });
+
+    it('case with single event returns 1-element events array', async () => {
+      const xml = xmlResponse(`
+        <cases count="1">
+          <case ixBug="6">
+            <ixBug>6</ixBug>
+            <sTitle>One event</sTitle>
+            <events>
+              <event>
+                <ixBugEvent>10</ixBugEvent>
+                <sVerb>Opened</sVerb>
+                <s>text</s>
+                <dt>2024-01-01T00:00:00Z</dt>
+                <sPerson>Alice</sPerson>
+                <ixPerson>2</ixPerson>
+              </event>
+            </events>
+          </case>
+        </cases>
+      `);
+      mockAxios.get.mockResolvedValueOnce({ data: xml });
+      const c = await api.getCase(6);
+      expect(c.events).toHaveLength(1);
+      expect(c.events![0].sVerb).toBe('Opened');
+    });
+
+    it('case with two events returns 2-element events array', async () => {
+      const xml = xmlResponse(`
+        <cases count="1">
+          <case ixBug="7">
+            <ixBug>7</ixBug>
+            <sTitle>Two events</sTitle>
+            <events>
+              <event>
+                <ixBugEvent>1</ixBugEvent>
+                <sVerb>Opened</sVerb>
+                <s>first</s>
+                <dt>2024-01-01T00:00:00Z</dt>
+                <sPerson>Alice</sPerson>
+                <ixPerson>2</ixPerson>
+              </event>
+              <event>
+                <ixBugEvent>2</ixBugEvent>
+                <sVerb>Edited</sVerb>
+                <s>second</s>
+                <dt>2024-01-02T00:00:00Z</dt>
+                <sPerson>Bob</sPerson>
+                <ixPerson>3</ixPerson>
+              </event>
+            </events>
+          </case>
+        </cases>
+      `);
+      mockAxios.get.mockResolvedValueOnce({ data: xml });
+      const c = await api.getCase(7);
+      expect(c.events).toHaveLength(2);
+      expect(c.events![1].sVerb).toBe('Edited');
+    });
+  });
+
   // ─── rawRequest ───────────────────────────────────────────────────────────
 
   describe('rawRequest()', () => {

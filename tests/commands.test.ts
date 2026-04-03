@@ -82,6 +82,13 @@ describe('createCase handler', () => {
     const result = JSON.parse(await commands.createCase(api, { title: 'T' }));
     expect(result.error).toBe('API down');
   });
+
+  it('forwards attachmentPath to api.createCase as second argument', async () => {
+    const api = makeMockApi({ createCase: jest.fn().mockResolvedValue(CASE_42) });
+    await commands.createCase(api, { title: 'T', attachmentPath: '/tmp/screen.png' });
+    const attachments = (api.createCase as jest.Mock).mock.calls[0][1];
+    expect(attachments).toEqual([{ path: '/tmp/screen.png', fieldName: 'File1' }]);
+  });
 });
 
 // ─── updateCase ──────────────────────────────────────────────────────────────
@@ -474,5 +481,64 @@ describe('createProject handler', () => {
     const api = makeMockApi({ createProject: jest.fn().mockRejectedValue(new Error('dup name')) });
     const result = JSON.parse(await commands.createProject(api, { name: 'P' }));
     expect(result.error).toBe('dup name');
+  });
+});
+
+// ─── searchCases edge cases ───────────────────────────────────────────────────
+
+describe('searchCases handler — edge cases', () => {
+  it('returns count 0 and empty cases array when no results', async () => {
+    const api = makeMockApi({ searchCases: jest.fn().mockResolvedValue([]) });
+    const result = JSON.parse(await commands.searchCases(api, { query: 'nothing' }));
+    expect(result.count).toBe(0);
+    expect(result.cases).toEqual([]);
+  });
+});
+
+// ─── listUserCases edge cases ─────────────────────────────────────────────────
+
+describe('listUserCases handler — edge cases', () => {
+  it('returns count 0 and empty cases array when no results', async () => {
+    const api = makeMockApi({ searchCases: jest.fn().mockResolvedValue([]) });
+    const result = JSON.parse(await commands.listUserCases(api, {}));
+    expect(result.count).toBe(0);
+    expect(result.cases).toEqual([]);
+  });
+});
+
+// ─── getCase edge cases ───────────────────────────────────────────────────────
+
+describe('getCase handler — edge cases', () => {
+  it('returns events: undefined when case has no events', async () => {
+    const api = makeMockApi({ getCase: jest.fn().mockResolvedValue({ ...CASE_42, events: undefined }) });
+    const result = JSON.parse(await commands.getCase(api, { caseId: 42 }));
+    expect(result.events).toBeUndefined();
+  });
+
+  it('returns all events when case has multiple events', async () => {
+    const caseWithEvents = {
+      ...CASE_42,
+      events: [
+        { ixBugEvent: 1, sVerb: 'Opened', sText: 'First', dt: '2024-01-01', sPerson: 'Alice', ixPerson: 2 },
+        { ixBugEvent: 2, sVerb: 'Edited', sText: 'Second', dt: '2024-01-02', sPerson: 'Bob', ixPerson: 3 },
+        { ixBugEvent: 3, sVerb: 'Resolved', sText: 'Done', dt: '2024-01-03', sPerson: 'Alice', ixPerson: 2 },
+      ],
+    };
+    const api = makeMockApi({ getCase: jest.fn().mockResolvedValue(caseWithEvents) });
+    const result = JSON.parse(await commands.getCase(api, { caseId: 42 }));
+    expect(result.events).toHaveLength(3);
+    expect(result.events[1].verb).toBe('Edited');
+    expect(result.events[2].verb).toBe('Resolved');
+  });
+});
+
+// ─── apiRequest edge cases ────────────────────────────────────────────────────
+
+describe('apiRequest handler — edge cases', () => {
+  it('handles empty object response without throwing', async () => {
+    const api = makeMockApi({ rawRequest: jest.fn().mockResolvedValue({}) });
+    const result = JSON.parse(await commands.apiRequest(api, { cmd: 'listStuff' }));
+    expect(result.cmd).toBe('listStuff');
+    expect(result.result).toEqual({});
   });
 });
