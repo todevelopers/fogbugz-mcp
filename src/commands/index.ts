@@ -531,23 +531,8 @@ export async function createProject(api: FogBugzApi, args: any): Promise<string>
       sProject: name
     };
 
-    // Add optional parameters if provided
-    // For primaryContact, we need to use the ixPersonPrimaryContact parameter
-    if (primaryContact) {
-      try {
-        // If primaryContact is a number, use it directly
-        if (!isNaN(Number(primaryContact))) {
-          params.ixPersonPrimaryContact = Number(primaryContact);
-        } else {
-          // Otherwise, try to find the person ID from the name
-          // We know Akari Lara has ID 2 from the API explorer output
-          if (primaryContact === 'Akari Lara') {
-            params.ixPersonPrimaryContact = 2;
-          }
-        }
-      } catch (err) {
-        console.error('Error setting primary contact:', err);
-      }
+    if (primaryContact !== undefined && !isNaN(Number(primaryContact))) {
+      params.ixPersonPrimaryContact = Number(primaryContact);
     }
     
     if (isInbox !== undefined) params.fInbox = isInbox;
