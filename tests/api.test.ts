@@ -249,7 +249,7 @@ describe('FogBugzApi', () => {
         sPersonAssignedTo: 'Alice',
         ixPriority: 1,
       });
-      const body: URLSearchParams = mockAxios.post.mock.calls[0][1];
+      const body = mockAxios.post.mock.calls[0][1] as URLSearchParams;
       expect(body.get('sEvent')).toBe('Desc');
       expect(body.get('sProject')).toBe('Alpha');
       expect(body.get('ixPriority')).toBe('1');
@@ -270,7 +270,7 @@ describe('FogBugzApi', () => {
     it('includes ixBug in POST body', async () => {
       mockAxios.post.mockResolvedValueOnce({ data: xmlCaseResponse({ ixBug: 7 }) });
       await api.updateCase({ ixBug: 7 });
-      const body: URLSearchParams = mockAxios.post.mock.calls[0][1];
+      const body = mockAxios.post.mock.calls[0][1] as URLSearchParams;
       expect(body.get('ixBug')).toBe('7');
     });
   });
@@ -287,7 +287,7 @@ describe('FogBugzApi', () => {
     it('sends ixBug and sPersonAssignedTo', async () => {
       mockAxios.post.mockResolvedValueOnce({ data: xmlCaseResponse({ ixBug: 12 }) });
       await api.assignCase(12, 'Alice');
-      const body: URLSearchParams = mockAxios.post.mock.calls[0][1];
+      const body = mockAxios.post.mock.calls[0][1] as URLSearchParams;
       expect(body.get('ixBug')).toBe('12');
       expect(body.get('sPersonAssignedTo')).toBe('Alice');
     });
@@ -317,14 +317,14 @@ describe('FogBugzApi', () => {
     it('joins cols array as comma-separated string', async () => {
       mockAxios.get.mockResolvedValueOnce({ data: xmlCasesResponse([]) });
       await api.searchCases({ q: 'x', cols: ['sTitle', 'sStatus', 'sPriority'] });
-      const params = mockAxios.get.mock.calls[0][1].params;
+      const params = (mockAxios.get.mock.calls[0][1] as any).params;
       expect(params.cols).toBe('sTitle,sStatus,sPriority');
     });
 
     it('forwards max parameter', async () => {
       mockAxios.get.mockResolvedValueOnce({ data: xmlCasesResponse([]) });
       await api.searchCases({ q: 'x', max: 5 });
-      const params = mockAxios.get.mock.calls[0][1].params;
+      const params = (mockAxios.get.mock.calls[0][1] as any).params;
       expect(params.max).toBe('5');
     });
   });
@@ -406,14 +406,14 @@ describe('FogBugzApi', () => {
     it('sends fInbox as 1/0', async () => {
       mockAxios.post.mockResolvedValueOnce({ data: xmlProjectResponse() });
       await api.createProject({ sProject: 'P', fInbox: true });
-      const body: URLSearchParams = mockAxios.post.mock.calls[0][1];
+      const body = mockAxios.post.mock.calls[0][1] as URLSearchParams;
       expect(body.get('fInbox')).toBe('1');
     });
 
     it('sends fAllowPublicSubmit as 1/0', async () => {
       mockAxios.post.mockResolvedValueOnce({ data: xmlProjectResponse() });
       await api.createProject({ sProject: 'P', fAllowPublicSubmit: false });
-      const body: URLSearchParams = mockAxios.post.mock.calls[0][1];
+      const body = mockAxios.post.mock.calls[0][1] as URLSearchParams;
       expect(body.get('fAllowPublicSubmit')).toBe('0');
     });
   });
