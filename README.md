@@ -1,5 +1,7 @@
 # FogBugz MCP Server (XML API)
 
+![Tests](https://github.com/tommy-gun/fogbugz-xmlapi-mcp/actions/workflows/test.yml/badge.svg)
+
 A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server for interacting with FogBugz through LLMs such as Claude. Uses the **XML API** (`/api.asp`) to support older FogBugz versions (8.x).
 
 ## Overview
