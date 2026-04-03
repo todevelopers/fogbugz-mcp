@@ -198,7 +198,7 @@ Road map split by phase. Each task is independently actionable.
 - [ ] **4.2** Remove unimplemented `attachmentPath` parameter from tool schemas
 - [ ] **4.3** Write `tests/json-client.test.ts` — auto-detection fallback, serialization, error handling
 - [ ] **4.4** Overhaul `README.md` — description, installation, tool catalog, config params, compatibility, license
-- [ ] **4.5** Add `LICENSE` file (MIT, 2024–2025, Tomas Gazovic)
+- [x] **4.5** Add `LICENSE` file (MIT, 2024–2025, Tomas Gazovic)
 
 ### Phase 5 — Manifest Quality
 
