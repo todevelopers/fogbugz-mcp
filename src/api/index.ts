@@ -149,7 +149,7 @@ export class FogBugzApi {
    */
   async getCurrentUser(): Promise<FogBugzPerson> {
     const root = await this.request('viewPerson');
-    const p = root.person || root;
+    const p = root.person?.[0] || root;
     return {
       ixPerson: Number(p.ixPerson || 0),
       sFullName: p.sFullName || '',
