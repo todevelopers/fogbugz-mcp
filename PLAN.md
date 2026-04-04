@@ -123,7 +123,7 @@ Update `README.md`:
 
 ---
 
-## Phase 6: Version Bump & Submission
+## Phase 7: Version Bump & Submission
 
 **Bump version to `1.0.0`** in both `package.json` and `manifest.json` (per CLAUDE.md project rules).
 
@@ -205,14 +205,60 @@ Road map split by phase. Each task is independently actionable.
 - [ ] **5.1** Update `manifest.json` — `description`, `homepage`, `keywords`
 - [ ] **5.2** Run `npx @anthropic-ai/mcpb validate` and fix any reported issues
 
-### Phase 6 — Release
+### Phase 6 — Time Management Tools
 
-- [ ] **6.1** Bump version to `1.0.0` in both `package.json` and `manifest.json`
-- [ ] **6.2** `npm run build` — no TypeScript errors
-- [ ] **6.3** `npm test` — all tests pass
-- [ ] **6.4** `npx @anthropic-ai/mcpb pack` — produces `fogbugz-mcp.mcpb`
-- [ ] **6.5** Set up GitHub Actions workflow to produce a release artifact on `v1.0.0` tag
-- [ ] **6.6** Create git tag `v1.0.0` and push
+- [ ] **6.1** Add `TimeInterval` type to `src/api/types.ts`
+- [ ] **6.2** Add `startWork`, `stopWork`, `newInterval`, `listIntervals` to `IFogBugzClient` interface
+- [ ] **6.3** Implement the four commands in `src/api/xml-client.ts` (parse `<interval>` XML elements)
+- [ ] **6.4** Implement the four commands in `src/api/json-client.ts` (`data.interval` / `data.intervals`)
+- [ ] **6.5** Define `fogbugz_start_work`, `fogbugz_stop_work`, `fogbugz_log_interval`, `fogbugz_list_intervals` tool schemas in `src/commands/tools.ts`
+- [ ] **6.6** Wire handlers for all four tools in `src/commands/index.ts`
+- [ ] **6.7** Write `tests/time-tracking.test.ts` — startWork, stopWork, newInterval, listIntervals with mocked client
+
+### Phase 7 — Release
+
+- [ ] **7.1** Bump version to `1.0.0` in both `package.json` and `manifest.json`
+- [ ] **7.2** `npm run build` — no TypeScript errors
+- [ ] **7.3** `npm test` — all tests pass
+- [ ] **7.4** `npx @anthropic-ai/mcpb pack` — produces `fogbugz-mcp.mcpb`
+- [ ] **7.5** Set up GitHub Actions workflow to produce a release artifact on `v1.0.0` tag
+- [ ] **7.6** Create git tag `v1.0.0` and push
+
+---
+
+## Phase 6: Time Management Tools
+
+Expose FogBugz time tracking via dedicated MCP tools so users can start/stop the stopwatch, log manual intervals, and query time spent — all from Claude.
+
+### 6.1 New MCP tools in `src/commands/tools.ts`
+
+| Tool | FogBugz cmd | Description |
+|------|-------------|-------------|
+| `fogbugz_start_work` | `startWork` | Start the stopwatch on a case (stops any currently active interval first) |
+| `fogbugz_stop_work` | `stopWork` | Stop the currently active interval without starting a new one |
+| `fogbugz_log_interval` | `newInterval` | Import a manually tracked time interval (dtStart + dtEnd, ISO 8601 UTC) |
+| `fogbugz_list_intervals` | `listIntervals` | List time intervals filtered by case, person, and/or date range |
+
+All four tools must be marked `readOnlyHint: false` except `fogbugz_list_intervals` (`readOnlyHint: true`).
+
+### 6.2 API client implementations
+
+Add the four commands to both `IFogBugzClient` (base interface), `FogBugzXmlClient`, and `FogBugzJsonClient`:
+- XML client: parse `<interval>` elements from responses
+- JSON client: use `data.interval` / `data.intervals` fields
+- Shared types: add `TimeInterval` type to `src/api/types.ts`
+
+### 6.3 Handler wiring in `src/commands/index.ts`
+
+Route all four new tool names to their respective client methods.
+
+### 6.4 Tests
+
+`tests/time-tracking.test.ts` — unit tests with mocked client:
+- `startWork` returns the targeted case ID
+- `stopWork` succeeds with empty data
+- `newInterval` returns an interval with `ixInterval`, `dtStart`, `dtEnd`
+- `listIntervals` filters correctly by case and date range; respects admin-only `ixPerson` param
 
 ---
 
