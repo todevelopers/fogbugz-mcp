@@ -186,6 +186,7 @@ Road map split by phase. Each task is independently actionable.
 - [ ] **2.2** Remove `scripts/api-explorer.ts` and `scripts/api-explorer.js`
 - [x] **2.3** Remove `mcp.json` and `fogbugz-mcp.code-workspace`
 - [ ] **2.4** Update `package.json` — author, license MIT, contributors, keywords, remove unused `@anthropic-ai/sdk`
+- [ ] **2.5** Remove `fogbugz_` prefix from all tool names in `src/commands/tools.ts`, `src/commands/index.ts`, and `manifest.json` (e.g. `fogbugz_create_case` → `create_case`)
 
 ### Phase 3 — Attribution
 
