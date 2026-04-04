@@ -217,6 +217,7 @@ Road map split by phase. Each task is independently actionable.
 
 ### Phase 7 — Release
 
+- [ ] **7.0** Migrate repository: transfer `tommy-gun/fogbugz-xmlapi-mcp` to the `ToDevelopers` organization and rename it to `fogbugz-mcp`. After migration update: `repository.url` and `support` in `manifest.json`, install URL in `README.md`, and git remote origin.
 - [ ] **7.1** Bump version to `1.0.0` in both `package.json` and `manifest.json`
 - [ ] **7.2** `npm run build` — no TypeScript errors
 - [ ] **7.3** `npm test` — all tests pass

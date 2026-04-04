@@ -3,11 +3,33 @@
   "manifest_version": "0.4",
   "name": "fogbugz-mcp",
   "display_name": "FogBugz",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "description": "Interact with FogBugz issue tracking via LLMs — create, search, update, assign, resolve, and close cases.",
   "author": {
-    "name": "Tomas Gazovic"
+    "name": "ToDevelopers"
   },
+  "homepage": "https://trial.fogbugz.com/",
+  "documentation": "https://api.manuscript.com/",
+  "repository": { "type": "git", "url": "https://github.com/tommy-gun/fogbugz-xmlapi-mcp" },
+  "keywords": ["fogbugz", "issue-tracking", "project-management"],
+  "tools": [
+    { "name": "fogbugz_create_case", "description": "Creates a new FogBugz case with optional screenshot attachments." },
+    { "name": "fogbugz_update_case", "description": "Updates an existing FogBugz case with new field values." },
+    { "name": "fogbugz_assign_case", "description": "Assigns a FogBugz case to a specific user." },
+    { "name": "fogbugz_resolve_case", "description": "Resolves (marks as fixed/completed) a FogBugz case." },
+    { "name": "fogbugz_reopen_case", "description": "Reopens a previously closed or resolved FogBugz case." },
+    { "name": "fogbugz_close_case", "description": "Closes a FogBugz case." },
+    { "name": "fogbugz_list_my_cases", "description": "Lists FogBugz cases assigned to a specific user." },
+    { "name": "fogbugz_search_cases", "description": "Searches for FogBugz cases based on a query string. Supports FogBugz search syntax." },
+    { "name": "fogbugz_get_case_link", "description": "Gets a direct URL link to a FogBugz case." },
+    { "name": "fogbugz_get_case", "description": "Gets detailed information about a specific FogBugz case, including events/comments history." },
+    { "name": "fogbugz_list_people", "description": "Lists all people (users) in FogBugz with their IDs, names, and emails." },
+    { "name": "fogbugz_list_categories", "description": "Lists all case categories in FogBugz (e.g., Bug, Feature Request, Inquiry)." },
+    { "name": "fogbugz_view_project", "description": "Gets detailed information about a specific FogBugz project." },
+    { "name": "fogbugz_view_area", "description": "Gets detailed information about a specific FogBugz area." },
+    { "name": "fogbugz_create_project", "description": "Creates a new project in FogBugz." },
+    { "name": "fogbugz_api_request", "description": "Makes a generic FogBugz XML API request for advanced queries not covered by other tools." }
+  ],
   "server": {
     "type": "node",
     "entry_point": "server/index.js",
