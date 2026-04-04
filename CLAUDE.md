@@ -16,6 +16,10 @@ Example: tag `v0.0.3` → both files must have `"version": "0.0.3"`.
 
 All content in this repository must be written in **English** — code, comments, commit messages, documentation, and planning files. No other language is permitted.
 
+## Company name
+
+The correct legal name of the company is **ToDevelopers s.r.o.** — always use this full name in legal or formal contexts (LICENSE, package.json author, manifest author). The short form **ToDevelopers** is acceptable in UI-facing fields such as `display_name` and `author.name` in the manifest.
+
 ## Tools manifest sync
 
 Any time a tool is **added, renamed, or removed** in `src/commands/tools.ts`, the `"tools"` array in `manifest.json` must be updated to match — same name, same description. These two files must always be in sync.
