@@ -189,7 +189,7 @@ Road map split by phase. Each task is independently actionable.
 
 ### Phase 3 — Attribution
 
-- [ ] **3.1** Update `manifest.json` — set `"author": { "name": "ToDevelopers" }`
+- [x] **3.1** Update `manifest.json` — set `"author": { "name": "ToDevelopers" }`
 - [ ] **3.2** Add "Based on / inspired by" section to `README.md` crediting [akari2600/fogbugz-mcp](https://github.com/akari2600/fogbugz-mcp)
 
 ### Phase 4 — Quality
@@ -202,8 +202,8 @@ Road map split by phase. Each task is independently actionable.
 
 ### Phase 5 — Manifest Quality
 
-- [ ] **5.1** Update `manifest.json` — `description`, `homepage`, `keywords`
-- [ ] **5.2** Run `npx @anthropic-ai/mcpb validate` and fix any reported issues
+- [x] **5.1** Update `manifest.json` — `description`, `homepage`, `keywords`
+- [x] **5.2** Run `npx @anthropic-ai/mcpb validate` and fix any reported issues
 
 ### Phase 6 — Time Management Tools
 
