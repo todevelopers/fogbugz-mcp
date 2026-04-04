@@ -151,4 +151,4 @@ Tested with FogBugz 8.8.53. Should work with any FogBugz version that supports t
 
 ## License
 
-[MIT](LICENSE) © Tomáš Gažovič, ToDevelopers
+[MIT](LICENSE) © Tomáš Gažovič, ToDevelopers s.r.o.

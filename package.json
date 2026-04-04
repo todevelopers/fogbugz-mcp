@@ -22,7 +22,7 @@
     "fogbugz",
     "llm"
   ],
-  "author": "Tomáš Gažovič, ToDevelopers",
+  "author": "Tomáš Gažovič, ToDevelopers s.r.o.",
   "license": "MIT",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",

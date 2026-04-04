@@ -51,7 +51,7 @@ Note: Response normalization (`normalizeCase()`) should work for both clients vi
 - `fogbugz-mcp.code-workspace` — IDE workspace file
 
 **Update `package.json`:**
-- `"author": { "name": "ToDevelopers", "url": "https://github.com/ToDevelopers" }` (organization as author)
+- `"author": { "name": "ToDevelopers s.r.o.", "url": "https://github.com/ToDevelopers s.r.o." }` (organization as author)
 - `"license": "MIT"` (change from ISC — MIT is standard for Anthropic extensions)
 - Add `"contributors": [{ "name": "akari2600", "url": "https://github.com/akari2600/fogbugz-mcp" }]`
 - Improve keywords: `["mcp", "fogbugz", "issue-tracking", "project-management", "anthropic", "claude"]`
@@ -65,7 +65,7 @@ Note: Response normalization (`normalizeCase()`) should work for both clients vi
 
 **`manifest.json`:**
 ```json
-"author": { "name": "ToDevelopers" }
+"author": { "name": "ToDevelopers s.r.o." }
 ```
 Manifest schema only supports one `author`. Put co-author credit in README and package.json contributors.
 
@@ -190,7 +190,7 @@ Road map split by phase. Each task is independently actionable.
 
 ### Phase 3 — Attribution
 
-- [x] **3.1** Update `manifest.json` — set `"author": { "name": "ToDevelopers" }`
+- [x] **3.1** Update `manifest.json` — set `"author": { "name": "ToDevelopers s.r.o." }`
 - [ ] **3.2** Add "Based on / inspired by" section to `README.md` crediting [akari2600/fogbugz-mcp](https://github.com/akari2600/fogbugz-mcp)
 
 ### Phase 4 — Quality
@@ -218,7 +218,7 @@ Road map split by phase. Each task is independently actionable.
 
 ### Phase 7 — Release
 
-- [ ] **7.0** Migrate repository: transfer `tommy-gun/fogbugz-xmlapi-mcp` to the `ToDevelopers` organization and rename it to `fogbugz-mcp`. After migration update: `repository.url` and `support` in `manifest.json`, install URL in `README.md`, and git remote origin.
+- [ ] **7.0** Migrate repository: transfer `tommy-gun/fogbugz-xmlapi-mcp` to the `ToDevelopers s.r.o.` organization and rename it to `fogbugz-mcp`. After migration update: `repository.url` and `support` in `manifest.json`, install URL in `README.md`, and git remote origin.
 - [ ] **7.1** Bump version to `1.0.0` in both `package.json` and `manifest.json`
 - [ ] **7.2** `npm run build` — no TypeScript errors
 - [ ] **7.3** `npm test` — all tests pass
