@@ -3,10 +3,10 @@
   "manifest_version": "0.4",
   "name": "fogbugz-mcp",
   "display_name": "FogBugz",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "description": "Interact with FogBugz issue tracking via LLMs — create, search, update, assign, resolve, and close cases.",
   "author": {
-    "name": "ToDevelopers",
+    "name": "ToDevelopers s.r.o.",
     "url": "https://github.com/todevelopers"
   },
   "homepage": "https://trial.fogbugz.com/",
