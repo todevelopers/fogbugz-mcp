@@ -1,6 +1,6 @@
 # FogBugz MCP Server (XML API)
 
-![Tests](https://github.com/tommy-gun/fogbugz-xmlapi-mcp/actions/workflows/test.yml/badge.svg)
+![Tests](https://github.com/todevelopers/fogbugz-mcp/actions/workflows/test.yml/badge.svg)
 
 A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server for interacting with FogBugz through LLMs such as Claude. Uses the **XML API** (`/api.asp`) to support older FogBugz versions (8.x).
 
@@ -30,8 +30,8 @@ Key differences:
 ## Installation
 
 ```bash
-git clone https://github.com/tommy-gun/fogbugz-xmlapi-mcp.git
-cd fogbugz-xmlapi-mcp
+git clone https://github.com/todevelopers/fogbugz-mcp.git
+cd fogbugz-mcp
 npm install
 npm run build
 ```
@@ -45,7 +45,7 @@ Add to your MCP client config (e.g. Claude Desktop `claude_desktop_config.json`)
   "mcpServers": {
     "fogbugz": {
       "command": "node",
-      "args": ["/absolute/path/to/fogbugz-xmlapi-mcp/dist/index.js"],
+      "args": ["/absolute/path/to/fogbugz-mcp/dist/index.js"],
       "env": {
         "FOGBUGZ_URL": "https://your-fogbugz-server.com",
         "FOGBUGZ_API_KEY": "your-api-token"
@@ -63,7 +63,7 @@ Alternatively, pass credentials as command-line arguments:
     "fogbugz": {
       "command": "node",
       "args": [
-        "/absolute/path/to/fogbugz-xmlapi-mcp/dist/index.js",
+        "/absolute/path/to/fogbugz-mcp/dist/index.js",
         "https://your-fogbugz-server.com",
         "your-api-token"
       ]

@@ -11,8 +11,8 @@
   },
   "homepage": "https://trial.fogbugz.com/",
   "documentation": "https://api.manuscript.com/",
-  "support": "https://github.com/tommy-gun/fogbugz-xmlapi-mcp/issues",
-  "repository": { "type": "git", "url": "https://github.com/tommy-gun/fogbugz-xmlapi-mcp" },
+  "support": "https://github.com/todevelopers/fogbugz-mcp/issues",
+  "repository": { "type": "git", "url": "https://github.com/todevelopers/fogbugz-mcp" },
   "keywords": ["fogbugz", "issue-tracking", "project-management"],
   "tools": [
     { "name": "create_case", "description": "Creates a new FogBugz case with optional screenshot attachments." },
