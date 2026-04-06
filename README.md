@@ -100,37 +100,37 @@ npm test       # run Jest tests
 
 | Tool | Description |
 |------|-------------|
-| `fogbugz_create_case` | Create a new case |
-| `fogbugz_update_case` | Update an existing case (title, comment, project, area, milestone, priority) |
-| `fogbugz_assign_case` | Assign a case to a user |
-| `fogbugz_resolve_case` | Resolve (mark as fixed/completed) a case |
-| `fogbugz_reopen_case` | Reopen a resolved or closed case |
-| `fogbugz_close_case` | Close a case |
+| `create_case` | Create a new case |
+| `update_case` | Update an existing case (title, comment, project, area, milestone, priority) |
+| `assign_case` | Assign a case to a user |
+| `resolve_case` | Resolve (mark as fixed/completed) a case |
+| `reopen_case` | Reopen a resolved or closed case |
+| `close_case` | Close a case |
 
 ### Search & View
 
 | Tool | Description |
 |------|-------------|
-| `fogbugz_search_cases` | Search using FogBugz query syntax (e.g. `project:Website status:Active`) |
-| `fogbugz_list_my_cases` | List cases assigned to a user (defaults to current user) |
-| `fogbugz_get_case` | Get detailed case info including full event/comment history |
-| `fogbugz_get_case_link` | Get a direct URL to a case |
+| `search_cases` | Search using FogBugz query syntax (e.g. `project:Website status:Active`) |
+| `list_my_cases` | List cases assigned to a user (defaults to current user) |
+| `get_case` | Get detailed case info including full event/comment history |
+| `get_case_link` | Get a direct URL to a case |
 
 ### Reference Data
 
 | Tool | Description |
 |------|-------------|
-| `fogbugz_list_people` | List all users with IDs, names, and emails |
-| `fogbugz_list_categories` | List case categories (Bug, Feature Request, etc.) |
-| `fogbugz_view_project` | Get detailed project information |
-| `fogbugz_view_area` | Get detailed area information |
-| `fogbugz_create_project` | Create a new project |
+| `list_people` | List all users with IDs, names, and emails |
+| `list_categories` | List case categories (Bug, Feature Request, etc.) |
+| `view_project` | Get detailed project information |
+| `view_area` | Get detailed area information |
+| `create_project` | Create a new project |
 
 ### Advanced
 
 | Tool | Description |
 |------|-------------|
-| `fogbugz_api_request` | Make a generic XML API request for queries not covered by other tools |
+| `api_request` | Make a generic XML API request for queries not covered by other tools |
 
 ## Text Formatting
 

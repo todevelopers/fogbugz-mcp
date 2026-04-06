@@ -19,7 +19,7 @@ interface Tool {
 
 // Tool: Create a new FogBugz case
 export const createCaseTool: Tool = {
-  name: 'fogbugz_create_case',
+  name: 'create_case',
   annotations: { readOnlyHint: false },
   description: 'Creates a new FogBugz case with optional screenshot attachments.',
   inputSchema: {
@@ -71,7 +71,7 @@ export const createCaseTool: Tool = {
 
 // Tool: Update an existing FogBugz case
 export const updateCaseTool: Tool = {
-  name: 'fogbugz_update_case',
+  name: 'update_case',
   annotations: { readOnlyHint: false },
   description: 'Updates an existing FogBugz case with new field values.',
   inputSchema: {
@@ -123,7 +123,7 @@ export const updateCaseTool: Tool = {
 
 // Tool: Assign a FogBugz case to a user
 export const assignCaseTool: Tool = {
-  name: 'fogbugz_assign_case',
+  name: 'assign_case',
   annotations: { readOnlyHint: false },
   description: 'Assigns a FogBugz case to a specific user.',
   inputSchema: {
@@ -144,7 +144,7 @@ export const assignCaseTool: Tool = {
 
 // Tool: List cases assigned to a user
 export const listUserCasesTool: Tool = {
-  name: 'fogbugz_list_my_cases',
+  name: 'list_my_cases',
   annotations: { readOnlyHint: true },
   description: 'Lists FogBugz cases assigned to a specific user.',
   inputSchema: {
@@ -172,7 +172,7 @@ export const listUserCasesTool: Tool = {
 
 // Tool: Search for cases in FogBugz
 export const searchCasesTool: Tool = {
-  name: 'fogbugz_search_cases',
+  name: 'search_cases',
   annotations: { readOnlyHint: true },
   description: 'Searches for FogBugz cases based on a query string. Supports FogBugz search syntax.',
   inputSchema: {
@@ -194,7 +194,7 @@ export const searchCasesTool: Tool = {
 
 // Tool: Get a direct link to a FogBugz case
 export const getCaseLinkTool: Tool = {
-  name: 'fogbugz_get_case_link',
+  name: 'get_case_link',
   annotations: { readOnlyHint: true },
   description: 'Gets a direct URL link to a FogBugz case.',
   inputSchema: {
@@ -211,7 +211,7 @@ export const getCaseLinkTool: Tool = {
 
 // Tool: Create a new FogBugz project
 export const createProjectTool: Tool = {
-  name: 'fogbugz_create_project',
+  name: 'create_project',
   annotations: { readOnlyHint: false },
   description: 'Creates a new project in FogBugz.',
   inputSchema: {
@@ -243,7 +243,7 @@ export const createProjectTool: Tool = {
 
 // Tool: Get detailed information about a specific case
 export const getCaseTool: Tool = {
-  name: 'fogbugz_get_case',
+  name: 'get_case',
   annotations: { readOnlyHint: true },
   description: 'Gets detailed information about a specific FogBugz case, including events/comments history.',
   inputSchema: {
@@ -265,7 +265,7 @@ export const getCaseTool: Tool = {
 
 // Tool: Generic FogBugz API request for experimental queries
 export const apiRequestTool: Tool = {
-  name: 'fogbugz_api_request',
+  name: 'api_request',
   description: 'Makes a generic FogBugz XML API request. Use this for experimental or advanced queries not covered by other tools. The token is added automatically. Example: cmd=listProjects, cmd=listCategories, cmd=search&q=project:"MyProject"&cols=sTitle,sStatus',
   inputSchema: {
     type: 'object',
@@ -286,7 +286,7 @@ export const apiRequestTool: Tool = {
 
 // Tool: Resolve a FogBugz case
 export const resolveCaseTool: Tool = {
-  name: 'fogbugz_resolve_case',
+  name: 'resolve_case',
   annotations: { readOnlyHint: false },
   description: 'Resolves (marks as fixed/completed) a FogBugz case.',
   inputSchema: {
@@ -303,7 +303,7 @@ export const resolveCaseTool: Tool = {
       },
       ixStatus: {
         type: 'number',
-        description: 'Status ID to resolve with (use fogbugz_api_request with cmd=listStatuses to find valid IDs)',
+        description: 'Status ID to resolve with (use api_request with cmd=listStatuses to find valid IDs)',
         optional: true,
       },
     },
@@ -313,7 +313,7 @@ export const resolveCaseTool: Tool = {
 
 // Tool: Reopen a FogBugz case
 export const reopenCaseTool: Tool = {
-  name: 'fogbugz_reopen_case',
+  name: 'reopen_case',
   annotations: { readOnlyHint: false },
   description: 'Reopens a previously closed or resolved FogBugz case.',
   inputSchema: {
@@ -335,7 +335,7 @@ export const reopenCaseTool: Tool = {
 
 // Tool: Close a FogBugz case
 export const closeCaseTool: Tool = {
-  name: 'fogbugz_close_case',
+  name: 'close_case',
   annotations: { readOnlyHint: false },
   description: 'Closes a FogBugz case.',
   inputSchema: {
@@ -357,7 +357,7 @@ export const closeCaseTool: Tool = {
 
 // Tool: List all people/users in FogBugz
 export const listPeopleTool: Tool = {
-  name: 'fogbugz_list_people',
+  name: 'list_people',
   annotations: { readOnlyHint: true },
   description: 'Lists all people (users) in FogBugz with their IDs, names, and emails.',
   inputSchema: {
@@ -369,7 +369,7 @@ export const listPeopleTool: Tool = {
 
 // Tool: List all case categories
 export const listCategoriesTool: Tool = {
-  name: 'fogbugz_list_categories',
+  name: 'list_categories',
   annotations: { readOnlyHint: true },
   description: 'Lists all case categories in FogBugz (e.g., Bug, Feature Request, Inquiry).',
   inputSchema: {
@@ -381,7 +381,7 @@ export const listCategoriesTool: Tool = {
 
 // Tool: View project details
 export const viewProjectTool: Tool = {
-  name: 'fogbugz_view_project',
+  name: 'view_project',
   annotations: { readOnlyHint: true },
   description: 'Gets detailed information about a specific FogBugz project.',
   inputSchema: {
@@ -398,7 +398,7 @@ export const viewProjectTool: Tool = {
 
 // Tool: View area details
 export const viewAreaTool: Tool = {
-  name: 'fogbugz_view_area',
+  name: 'view_area',
   annotations: { readOnlyHint: true },
   description: 'Gets detailed information about a specific FogBugz area.',
   inputSchema: {

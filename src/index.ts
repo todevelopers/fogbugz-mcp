@@ -34,22 +34,22 @@ async function main() {
     let content: string;
 
     switch (name) {
-      case 'fogbugz_create_case':     content = await handlers.createCase(api, args); break;
-      case 'fogbugz_update_case':     content = await handlers.updateCase(api, args); break;
-      case 'fogbugz_assign_case':     content = await handlers.assignCase(api, args); break;
-      case 'fogbugz_list_my_cases':   content = await handlers.listUserCases(api, args); break;
-      case 'fogbugz_search_cases':    content = await handlers.searchCases(api, args); break;
-      case 'fogbugz_get_case_link':   content = await handlers.getCaseLink(api, args); break;
-      case 'fogbugz_get_case':        content = await handlers.getCase(api, args); break;
-      case 'fogbugz_resolve_case':    content = await handlers.resolveCase(api, args); break;
-      case 'fogbugz_reopen_case':     content = await handlers.reopenCase(api, args); break;
-      case 'fogbugz_close_case':      content = await handlers.closeCase(api, args); break;
-      case 'fogbugz_list_people':     content = await handlers.listPeople(api, args); break;
-      case 'fogbugz_list_categories': content = await handlers.listCategories(api, args); break;
-      case 'fogbugz_view_project':    content = await handlers.viewProject(api, args); break;
-      case 'fogbugz_view_area':       content = await handlers.viewArea(api, args); break;
-      case 'fogbugz_create_project':  content = await handlers.createProject(api, args); break;
-      case 'fogbugz_api_request':     content = await handlers.apiRequest(api, args); break;
+      case 'create_case':     content = await handlers.createCase(api, args); break;
+      case 'update_case':     content = await handlers.updateCase(api, args); break;
+      case 'assign_case':     content = await handlers.assignCase(api, args); break;
+      case 'list_my_cases':   content = await handlers.listUserCases(api, args); break;
+      case 'search_cases':    content = await handlers.searchCases(api, args); break;
+      case 'get_case_link':   content = await handlers.getCaseLink(api, args); break;
+      case 'get_case':        content = await handlers.getCase(api, args); break;
+      case 'resolve_case':    content = await handlers.resolveCase(api, args); break;
+      case 'reopen_case':     content = await handlers.reopenCase(api, args); break;
+      case 'close_case':      content = await handlers.closeCase(api, args); break;
+      case 'list_people':     content = await handlers.listPeople(api, args); break;
+      case 'list_categories': content = await handlers.listCategories(api, args); break;
+      case 'view_project':    content = await handlers.viewProject(api, args); break;
+      case 'view_area':       content = await handlers.viewArea(api, args); break;
+      case 'create_project':  content = await handlers.createProject(api, args); break;
+      case 'api_request':     content = await handlers.apiRequest(api, args); break;
       default:
         return { content: [{ type: 'text' as const, text: JSON.stringify({ error: `Unknown tool: ${name}` }) }], isError: true };
     }

@@ -20,6 +20,10 @@ All content in this repository must be written in **English** — code, comments
 
 The correct legal name of the company is **ToDevelopers s.r.o.** — always use this full name in legal or formal contexts (LICENSE, package.json author, manifest author). The short form **ToDevelopers** is acceptable in UI-facing fields such as `display_name` and `author.name` in the manifest.
 
+## Tool naming
+
+Tool names must **never** use a `fogbugz_` prefix. Use plain descriptive names only (e.g. `create_case`, `search_cases`). This applies to all new tools added to `src/commands/tools.ts`.
+
 ## Tools manifest sync
 
 Any time a tool is **added, renamed, or removed** in `src/commands/tools.ts`, the `"tools"` array in `manifest.json` must be updated to match — same name, same description. These two files must always be in sync.

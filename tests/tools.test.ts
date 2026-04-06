@@ -2,45 +2,45 @@ import { fogbugzTools } from '../src/commands/tools';
 
 // The set of tool names that the dispatch switch in src/index.ts handles
 const DISPATCH_TOOL_NAMES = new Set([
-  'fogbugz_create_case',
-  'fogbugz_update_case',
-  'fogbugz_assign_case',
-  'fogbugz_list_my_cases',
-  'fogbugz_search_cases',
-  'fogbugz_get_case_link',
-  'fogbugz_get_case',
-  'fogbugz_resolve_case',
-  'fogbugz_reopen_case',
-  'fogbugz_close_case',
-  'fogbugz_list_people',
-  'fogbugz_list_categories',
-  'fogbugz_view_project',
-  'fogbugz_view_area',
-  'fogbugz_create_project',
-  'fogbugz_api_request',
+  'create_case',
+  'update_case',
+  'assign_case',
+  'list_my_cases',
+  'search_cases',
+  'get_case_link',
+  'get_case',
+  'resolve_case',
+  'reopen_case',
+  'close_case',
+  'list_people',
+  'list_categories',
+  'view_project',
+  'view_area',
+  'create_project',
+  'api_request',
 ]);
 
 // Tools that should be read-only
 const READ_ONLY_TOOL_NAMES = new Set([
-  'fogbugz_list_my_cases',
-  'fogbugz_search_cases',
-  'fogbugz_get_case_link',
-  'fogbugz_get_case',
-  'fogbugz_list_people',
-  'fogbugz_list_categories',
-  'fogbugz_view_project',
-  'fogbugz_view_area',
+  'list_my_cases',
+  'search_cases',
+  'get_case_link',
+  'get_case',
+  'list_people',
+  'list_categories',
+  'view_project',
+  'view_area',
 ]);
 
 // Tools that mutate data
 const WRITE_TOOL_NAMES = new Set([
-  'fogbugz_create_case',
-  'fogbugz_update_case',
-  'fogbugz_assign_case',
-  'fogbugz_resolve_case',
-  'fogbugz_reopen_case',
-  'fogbugz_close_case',
-  'fogbugz_create_project',
+  'create_case',
+  'update_case',
+  'assign_case',
+  'resolve_case',
+  'reopen_case',
+  'close_case',
+  'create_project',
 ]);
 
 describe('fogbugzTools schema validation', () => {

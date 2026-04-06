@@ -186,7 +186,7 @@ Road map split by phase. Each task is independently actionable.
 - [ ] **2.2** Remove `scripts/api-explorer.ts` and `scripts/api-explorer.js`
 - [x] **2.3** Remove `mcp.json` and `fogbugz-mcp.code-workspace`
 - [ ] **2.4** Update `package.json` — author, license MIT, contributors, keywords, remove unused `@anthropic-ai/sdk`
-- [ ] **2.5** Remove `fogbugz_` prefix from all tool names in `src/commands/tools.ts`, `src/commands/index.ts`, and `manifest.json` (e.g. `fogbugz_create_case` → `create_case`)
+- [x] **2.5** Remove `fogbugz_` prefix from all tool names in `src/commands/tools.ts`, `src/index.ts`, `manifest.json`, `tests/tools.test.ts`, and `README.md` (e.g. `fogbugz_create_case` → `create_case`)
 
 ### Phase 3 — Attribution
 
@@ -212,7 +212,7 @@ Road map split by phase. Each task is independently actionable.
 - [ ] **6.2** Add `startWork`, `stopWork`, `newInterval`, `listIntervals` to `IFogBugzClient` interface
 - [ ] **6.3** Implement the four commands in `src/api/xml-client.ts` (parse `<interval>` XML elements)
 - [ ] **6.4** Implement the four commands in `src/api/json-client.ts` (`data.interval` / `data.intervals`)
-- [ ] **6.5** Define `fogbugz_start_work`, `fogbugz_stop_work`, `fogbugz_log_interval`, `fogbugz_list_intervals` tool schemas in `src/commands/tools.ts`
+- [ ] **6.5** Define `start_work`, `stop_work`, `log_interval`, `list_intervals` tool schemas in `src/commands/tools.ts`
 - [ ] **6.6** Wire handlers for all four tools in `src/commands/index.ts`
 - [ ] **6.7** Write `tests/time-tracking.test.ts` — startWork, stopWork, newInterval, listIntervals with mocked client
 
@@ -236,12 +236,12 @@ Expose FogBugz time tracking via dedicated MCP tools so users can start/stop the
 
 | Tool | FogBugz cmd | Description |
 |------|-------------|-------------|
-| `fogbugz_start_work` | `startWork` | Start the stopwatch on a case (stops any currently active interval first) |
-| `fogbugz_stop_work` | `stopWork` | Stop the currently active interval without starting a new one |
-| `fogbugz_log_interval` | `newInterval` | Import a manually tracked time interval (dtStart + dtEnd, ISO 8601 UTC) |
-| `fogbugz_list_intervals` | `listIntervals` | List time intervals filtered by case, person, and/or date range |
+| `start_work` | `startWork` | Start the stopwatch on a case (stops any currently active interval first) |
+| `stop_work` | `stopWork` | Stop the currently active interval without starting a new one |
+| `log_interval` | `newInterval` | Import a manually tracked time interval (dtStart + dtEnd, ISO 8601 UTC) |
+| `list_intervals` | `listIntervals` | List time intervals filtered by case, person, and/or date range |
 
-All four tools must be marked `readOnlyHint: false` except `fogbugz_list_intervals` (`readOnlyHint: true`).
+All four tools must be marked `readOnlyHint: false` except `list_intervals` (`readOnlyHint: true`).
 
 ### 6.2 API client implementations
 
