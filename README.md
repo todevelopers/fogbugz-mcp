@@ -1,8 +1,8 @@
-# FogBugz MCP Server (XML API)
+# FogBugz MCP Server
 
 ![Tests](https://github.com/todevelopers/fogbugz-mcp/actions/workflows/test.yml/badge.svg)
 
-A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server for interacting with FogBugz through LLMs such as Claude. Uses the **XML API** (`/api.asp`) to support older FogBugz versions (8.x).
+A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server for interacting with FogBugz through LLMs such as Claude. Supports both the **XML API** (`/api.asp`) and the **JSON API** (`/f/api/0/jsonapi`) with automatic version detection at startup.
 
 ## Overview
 
@@ -15,19 +15,30 @@ Allows LLMs to perform FogBugz operations:
 - Creating new projects
 - Generic API requests for advanced use cases
 
-> **Note:** All text fields (descriptions, comments) support **plain text only**. HTML and Markdown formatting are not rendered by the FogBugz 8.x XML API.
+## API Auto-Detection
 
-## XML API vs JSON API
+At startup the server automatically selects the right API client for your FogBugz instance:
 
-The [original project](https://github.com/akari2600/fogbugz-mcp) uses the newer FogBugz JSON API (`/f/api/0/jsonapi`). This fork uses the older **XML API** (`/api.asp`) for compatibility with FogBugz 8.x (tested on 8.8.53).
+1. Probes `/api.xml` to read the FogBugz version number.
+2. If version ≥ 9, attempts to reach the JSON API (`/f/api/0/jsonapi`) — uses `FogBugzJsonClient` on success.
+3. Falls back to `FogBugzXmlClient` (XML API via `/api.asp`) for version < 9 or if the JSON endpoint is unreachable.
 
-Key differences:
-- **Endpoint**: `/api.asp` instead of `/f/api/0/jsonapi`
-- **HTTP method**: GET with query parameters instead of POST with JSON body
-- **Response format**: XML parsed via `fast-xml-parser` instead of JSON
-- **Token**: Passed as a query parameter (`?token=XXX`) with each request
+No configuration is needed — the correct client is selected automatically.
+
+| FogBugz version | API used |
+|-----------------|----------|
+| ≥ 9 (JSON API available) | JSON API (`/f/api/0/jsonapi`) |
+| < 9 or JSON API unreachable | XML API (`/api.asp`) |
+
+> **Note on text formatting:** Plain text only is supported in descriptions and comments when connected to FogBugz 8.x via the XML API. HTML and Markdown are stored and displayed literally.
 
 ## Installation
+
+### One-click install (Claude Desktop)
+
+Download the latest `.mcpb` package from the [Releases](https://github.com/todevelopers/fogbugz-mcp/releases) page and open it — Claude Desktop will install and configure the server automatically, prompting you for your FogBugz URL and API key.
+
+### Manual install
 
 ```bash
 git clone https://github.com/todevelopers/fogbugz-mcp.git
@@ -91,7 +102,7 @@ npm start
 ```bash
 npm run dev    # run via ts-node (no build needed)
 npm run build  # compile TypeScript to dist/
-npm test       # run Jest tests
+npm test       # run all Jest tests
 ```
 
 ## MCP Tools
@@ -100,8 +111,8 @@ npm test       # run Jest tests
 
 | Tool | Description |
 |------|-------------|
-| `create_case` | Create a new case |
-| `update_case` | Update an existing case (title, comment, project, area, milestone, priority) |
+| `create_case` | Create a new case (supports optional file/screenshot attachment) |
+| `update_case` | Update an existing case (title, comment, project, area, milestone, priority, attachment) |
 | `assign_case` | Assign a case to a user |
 | `resolve_case` | Resolve (mark as fixed/completed) a case |
 | `reopen_case` | Reopen a resolved or closed case |
@@ -132,12 +143,6 @@ npm test       # run Jest tests
 |------|-------------|
 | `api_request` | Make a generic XML API request for queries not covered by other tools |
 
-## Text Formatting
-
-All text fields (`description`, `comment`) accept **plain text only**.
-
-The FogBugz 8.x XML API (`/api.asp`) does not support rich text formatting via the API – HTML tags and Markdown are stored and displayed literally as plain text. Do not include HTML or Markdown markup in descriptions or comments.
-
 ## Environment Variables
 
 | Variable | Required | Description |
@@ -147,7 +152,7 @@ The FogBugz 8.x XML API (`/api.asp`) does not support rich text formatting via t
 
 ## Compatibility
 
-Tested with FogBugz 8.8.53. Should work with any FogBugz version that supports the XML API at `/api.asp`.
+Tested with FogBugz 8.8.53 (XML API) and FogBugz instances with JSON API support. The server auto-detects which API to use at startup.
 
 ## License
 

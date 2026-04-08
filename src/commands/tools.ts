@@ -266,7 +266,7 @@ export const getCaseTool: Tool = {
 // Tool: Generic FogBugz API request for experimental queries
 export const apiRequestTool: Tool = {
   name: 'api_request',
-  description: 'Makes a generic FogBugz XML API request. Use this for experimental or advanced queries not covered by other tools. The token is added automatically. Example: cmd=listProjects, cmd=listCategories, cmd=search&q=project:"MyProject"&cols=sTitle,sStatus',
+  description: 'Makes a generic FogBugz API request (XML or JSON, selected automatically). Use this for experimental or advanced queries not covered by other tools. The token is added automatically. Example: cmd=listProjects, cmd=listCategories, cmd=search&q=project:"MyProject"&cols=sTitle,sStatus',
   inputSchema: {
     type: 'object',
     properties: {

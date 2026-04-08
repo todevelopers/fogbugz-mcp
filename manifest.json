@@ -3,7 +3,7 @@
   "manifest_version": "0.4",
   "name": "fogbugz-mcp",
   "display_name": "FogBugz",
-  "version": "0.0.20",
+  "version": "0.9.0",
   "description": "Interact with FogBugz issue tracking via LLMs — create, search, update, assign, resolve, and close cases.",
   "author": {
     "name": "ToDevelopers s.r.o.",
@@ -30,7 +30,7 @@
     { "name": "view_project", "description": "Gets detailed information about a specific FogBugz project." },
     { "name": "view_area", "description": "Gets detailed information about a specific FogBugz area." },
     { "name": "create_project", "description": "Creates a new project in FogBugz." },
-    { "name": "api_request", "description": "Makes a generic FogBugz XML API request for advanced queries not covered by other tools." }
+    { "name": "api_request", "description": "Makes a generic FogBugz API request (XML or JSON, selected automatically) for advanced queries not covered by other tools." }
   ],
   "server": {
     "type": "node",

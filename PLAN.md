@@ -2,7 +2,7 @@
 
 ## Context
 
-The project is a mature FogBugz MCP server (v0.0.6) that wraps the XML API for LLM interaction. The goal is to prepare it for submission as an official Anthropic extension with high approval probability. This means: dual-API support (XML + JSON auto-detection), attribution cleanup, repository hygiene, quality improvements for review criteria, and proper submission packaging.
+The project is a mature FogBugz MCP server that supports both the XML API and the JSON API with automatic version-based detection at startup. The goal is to prepare it for submission as an official Anthropic extension with high approval probability. This means: attribution cleanup, repository hygiene, quality improvements for review criteria, and proper submission packaging.
 
 ---
 
@@ -185,7 +185,7 @@ Road map split by phase. Each task is independently actionable.
 - [x] **2.1** Remove `DEVELOPMENT-PLAN.md`
 - [ ] **2.2** Remove `scripts/api-explorer.ts` and `scripts/api-explorer.js`
 - [x] **2.3** Remove `mcp.json` and `fogbugz-mcp.code-workspace`
-- [ ] **2.4** Update `package.json` — author, license MIT, contributors, keywords, remove unused `@anthropic-ai/sdk`
+- [ ] **2.4** Update `package.json` — author object format, contributors, remove unused `@anthropic-ai/sdk`
 - [x] **2.5** Remove `fogbugz_` prefix from all tool names in `src/commands/tools.ts`, `src/index.ts`, `manifest.json`, `tests/tools.test.ts`, and `README.md` (e.g. `fogbugz_create_case` → `create_case`)
 
 ### Phase 3 — Attribution
@@ -196,9 +196,9 @@ Road map split by phase. Each task is independently actionable.
 ### Phase 4 — Quality
 
 - [ ] **4.1** Improve tool descriptions in `src/commands/tools.ts` — examples, `title` fields, `readOnlyHint`
-- [ ] **4.2** Remove unimplemented `attachmentPath` parameter from tool schemas
-- [ ] **4.3** Write `tests/json-client.test.ts` — auto-detection fallback, serialization, error handling
-- [ ] **4.4** Overhaul `README.md` — description, installation, tool catalog, config params, compatibility, license
+- [ ] **4.2** Remove unimplemented `attachmentPath` parameter from tool schemas (`create_case`, `update_case` in `src/commands/tools.ts`)
+- [x] **4.3** Write JSON client tests — `tests/json-api.test.ts` (client operations) and `tests/auto-detection.test.ts` (factory fallback logic)
+- [x] **4.4** Overhaul `README.md` — dual-API description, one-click MCPB install, tool catalog, config params, compatibility table
 - [x] **4.5** Add `LICENSE` file (MIT, 2024–2025, Tomas Gazovic)
 
 ### Phase 5 — Manifest Quality
