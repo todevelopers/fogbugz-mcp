@@ -15,7 +15,7 @@
   "repository": { "type": "git", "url": "https://github.com/todevelopers/fogbugz-mcp" },
   "keywords": ["fogbugz", "issue-tracking", "project-management"],
   "tools": [
-    { "name": "create_case", "description": "Creates a new FogBugz case with optional screenshot attachments." },
+    { "name": "create_case", "description": "Creates a new FogBugz case." },
     { "name": "update_case", "description": "Updates an existing FogBugz case with new field values." },
     { "name": "assign_case", "description": "Assigns a FogBugz case to a specific user." },
     { "name": "resolve_case", "description": "Resolves (marks as fixed/completed) a FogBugz case." },

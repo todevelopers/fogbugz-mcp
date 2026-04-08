@@ -11,17 +11,20 @@ The project is a mature FogBugz MCP server that supports both the XML API and th
 ### 1.1 Refactor API layer into dual-client architecture
 
 **Files to create/modify:**
+
 - `src/api/base-client.ts` — abstract interface `IFogBugzClient` listing all operations both clients must implement
 - `src/api/xml-client.ts` — extract current `FogBugzApi` class from `src/api/index.ts`
 - `src/api/json-client.ts` — new JSON API client (`POST /f/api/0/jsonapi`)
 - `src/api/index.ts` — factory with auto-detection logic; exports `createFogBugzClient(url, token)`
 
 **Auto-detection logic in `createFogBugzClient()`:**
+
 1. `GET {url}/api.xml` → parse XML version info (always works on both old and new servers)
 2. Attempt `POST {url}/f/api/0/jsonapi` with `{ cmd: "listProjects", token }` — if JSON response with no errors → use JSON client
 3. Fall back to XML client if JSON API not available or returns non-JSON
 
 **JSON API client differences vs XML:**
+
 - All requests: `POST /f/api/0/jsonapi` with `Content-Type: application/json`
 - Request body: `{ cmd: "...", token: "...", ...params }` with native booleans and arrays
 - Response: `{ data: {...}, errors: [], warnings: [], meta: {} }`
@@ -30,6 +33,7 @@ The project is a mature FogBugz MCP server that supports both the XML API and th
 ### 1.2 Implement full FogBugzJsonClient
 
 Implement all same operations as XML client using JSON API format:
+
 - `getCurrentUser()`, `listProjects()`, `listAreas()`, `listMilestones()`, `listPriorities()`, `listPeople()`, `listCategories()`, `listStatuses()`
 - `createCase()`, `updateCase()`, `assignCase()`, `resolveCase()`, `reopenCase()`, `closeCase()`
 - `searchCases()`, `getCase()`
@@ -45,12 +49,14 @@ Note: Response normalization (`normalizeCase()`) should work for both clients vi
 ## Phase 2: Repository Cleanup
 
 **Remove dev artifacts** (not needed in published extension):
+
 - `DEVELOPMENT-PLAN.md` — internal implementation notes
 - `scripts/api-explorer.ts` and `scripts/api-explorer.js` — dev tooling
 - `mcp.json` — legacy config superseded by manifest.json
 - `fogbugz-mcp.code-workspace` — IDE workspace file
 
 **Update `package.json`:**
+
 - `"author": { "name": "ToDevelopers s.r.o.", "url": "https://github.com/ToDevelopers s.r.o." }` (organization as author)
 - `"license": "MIT"` (change from ISC — MIT is standard for Anthropic extensions)
 - Add `"contributors": [{ "name": "akari2600", "url": "https://github.com/akari2600/fogbugz-mcp" }]`
@@ -64,9 +70,11 @@ Note: Response normalization (`normalizeCase()`) should work for both clients vi
 ## Phase 3: Attribution (Co-author)
 
 **`manifest.json`:**
+
 ```json
 "author": { "name": "ToDevelopers s.r.o." }
 ```
+
 Manifest schema only supports one `author`. Put co-author credit in README and package.json contributors.
 
 **`README.md`** — add "Based on / inspired by" section crediting [akari2600/fogbugz-mcp](https://github.com/akari2600/fogbugz-mcp)
@@ -78,6 +86,7 @@ Manifest schema only supports one `author`. Put co-author credit in README and p
 ### 4.1 Tool quality (critical for approval)
 
 **`src/commands/tools.ts`** — improve tool descriptions:
+
 - Every tool: add 1–2 concrete examples in the description (e.g., query syntax examples for `fogbugz_search_cases`)
 - `fogbugz_api_request`: add warning that it's for advanced/experimental use
 - Ensure `readOnlyHint: true` on all read-only tools (already done in v0.0.6)
@@ -86,12 +95,14 @@ Manifest schema only supports one `author`. Put co-author credit in README and p
 ### 4.2 Fix attachment handling
 
 `src/commands/index.ts` + `src/api/xml-client.ts`:
+
 - Either implement file attachments properly (multipart/form-data upload) OR remove `attachmentPath` param from tool schemas entirely
 - Recommended: remove for now (unimplemented code is a red flag for reviewers)
 
 ### 4.3 Add tests for JSON API client
 
 `tests/json-client.test.ts` — all tests use **mocked axios** (no real JSON API server available):
+
 - Auto-detection falls back to XML when JSON probe fails or returns non-JSON
 - Auto-detection selects JSON client when probe succeeds
 - JSON client correctly serializes request body (`cmd`, `token`, native booleans, arrays)
@@ -101,6 +112,7 @@ Manifest schema only supports one `author`. Put co-author credit in README and p
 ### 4.4 README overhaul
 
 Update `README.md`:
+
 - **Demo GIF/screenshots at top** — read-only operations on real (anonymized) tracker: e.g. *"Summarize all open high-priority cases assigned to me"* showing `search_cases` + `get_case` + Claude reasoning. No create/edit in demo — avoids touching production data.
 - Installation section: one-click MCPB install + manual npm config
 - Tool catalog table with description of each tool
@@ -116,6 +128,7 @@ Update `README.md`:
 ## Phase 5: Manifest Quality
 
 **`manifest.json`** improvements:
+
 - `"description"` — make more specific: mention both XML and JSON API support
 - Add `"homepage"` field with GitHub repo URL
 - Add `"keywords"` array: `["fogbugz", "issue-tracking", "project-management"]`
@@ -128,6 +141,7 @@ Update `README.md`:
 **Bump version to `1.0.0`** in both `package.json` and `manifest.json` (per CLAUDE.md project rules).
 
 **Build & validate:**
+
 ```bash
 npm run build
 npx @anthropic-ai/mcpb validate
@@ -137,6 +151,7 @@ npx @anthropic-ai/mcpb pack
 **Create git tag `v1.0.0`** after both files are updated.
 
 **Submission checklist for Anthropic extension review:**
+
 - [ ] `manifest.json` validates against mcpb schema v0.4
 - [ ] `sensitive: true` on API key field (keychain storage)
 - [ ] All tools have descriptions + readOnlyHint where applicable
@@ -150,21 +165,21 @@ npx @anthropic-ai/mcpb pack
 
 ## Critical Files
 
-| File | Change |
-|------|--------|
-| `src/api/base-client.ts` | New — abstract interface |
-| `src/api/xml-client.ts` | New — extracted from current `src/api/index.ts` |
-| `src/api/json-client.ts` | New — JSON API implementation |
-| `src/api/index.ts` | Rewrite — factory with auto-detection |
-| `src/api/types.ts` | Minor — ensure types work for both clients |
-| `src/commands/tools.ts` | Improve descriptions, remove attachment params |
-| `src/commands/index.ts` | Remove attachment handling code |
-| `manifest.json` | Add homepage, keywords; bump to 1.0.0 |
-| `package.json` | author, license MIT, contributors, bump to 1.0.0 |
-| `README.md` | Major update |
-| `LICENSE` | New — MIT |
-| `tests/json-client.test.ts` | New — JSON client tests |
-| Remove: `DEVELOPMENT-PLAN.md`, `scripts/`, `mcp.json`, `fogbugz-mcp.code-workspace` | Cleanup |
+| File                                                                                | Change                                           |
+| ----------------------------------------------------------------------------------- | ------------------------------------------------ |
+| `src/api/base-client.ts`                                                            | New — abstract interface                         |
+| `src/api/xml-client.ts`                                                             | New — extracted from current `src/api/index.ts`  |
+| `src/api/json-client.ts`                                                            | New — JSON API implementation                    |
+| `src/api/index.ts`                                                                  | Rewrite — factory with auto-detection            |
+| `src/api/types.ts`                                                                  | Minor — ensure types work for both clients       |
+| `src/commands/tools.ts`                                                             | Improve descriptions, remove attachment params   |
+| `src/commands/index.ts`                                                             | Remove attachment handling code                  |
+| `manifest.json`                                                                     | Add homepage, keywords; bump to 1.0.0            |
+| `package.json`                                                                      | author, license MIT, contributors, bump to 1.0.0 |
+| `README.md`                                                                         | Major update                                     |
+| `LICENSE`                                                                           | New — MIT                                        |
+| `tests/json-client.test.ts`                                                         | New — JSON client tests                          |
+| Remove: `DEVELOPMENT-PLAN.md`, `scripts/`, `mcp.json`, `fogbugz-mcp.code-workspace` | Cleanup                                          |
 
 ---
 
@@ -196,7 +211,7 @@ Road map split by phase. Each task is independently actionable.
 ### Phase 4 — Quality
 
 - [ ] **4.1** Improve tool descriptions in `src/commands/tools.ts` — examples, `title` fields, `readOnlyHint`
-- [ ] **4.2** Remove unimplemented `attachmentPath` parameter from tool schemas (`create_case`, `update_case` in `src/commands/tools.ts`)
+- [x] **4.2** Remove unimplemented `attachmentPath` parameter from tool schemas (`create_case`, `update_case` in `src/commands/tools.ts`)
 - [x] **4.3** Write JSON client tests — `tests/json-api.test.ts` (client operations) and `tests/auto-detection.test.ts` (factory fallback logic)
 - [x] **4.4** Overhaul `README.md` — dual-API description, one-click MCPB install, tool catalog, config params, compatibility table
 - [x] **4.5** Add `LICENSE` file (MIT, 2024–2025, Tomas Gazovic)
@@ -206,17 +221,7 @@ Road map split by phase. Each task is independently actionable.
 - [x] **5.1** Update `manifest.json` — `description`, `homepage`, `keywords`
 - [x] **5.2** Run `npx @anthropic-ai/mcpb validate` and fix any reported issues
 
-### Phase 6 — Time Management Tools
-
-- [ ] **6.1** Add `TimeInterval` type to `src/api/types.ts`
-- [ ] **6.2** Add `startWork`, `stopWork`, `newInterval`, `listIntervals` to `IFogBugzClient` interface
-- [ ] **6.3** Implement the four commands in `src/api/xml-client.ts` (parse `<interval>` XML elements)
-- [ ] **6.4** Implement the four commands in `src/api/json-client.ts` (`data.interval` / `data.intervals`)
-- [ ] **6.5** Define `start_work`, `stop_work`, `log_interval`, `list_intervals` tool schemas in `src/commands/tools.ts`
-- [ ] **6.6** Wire handlers for all four tools in `src/commands/index.ts`
-- [ ] **6.7** Write `tests/time-tracking.test.ts` — startWork, stopWork, newInterval, listIntervals with mocked client
-
-### Phase 7 — Release
+### Phase 6 — Release
 
 - [x] **7.0** Migrate repository: transfer `tommy-gun/fogbugz-xmlapi-mcp` to the `ToDevelopers s.r.o.` organization and rename it to `fogbugz-mcp`. After migration update: `repository.url` and `support` in `manifest.json`, install URL in `README.md`, and git remote origin.
 - [ ] **7.1** Bump version to `1.0.0` in both `package.json` and `manifest.json`
@@ -228,42 +233,6 @@ Road map split by phase. Each task is independently actionable.
 
 ---
 
-## Phase 6: Time Management Tools
-
-Expose FogBugz time tracking via dedicated MCP tools so users can start/stop the stopwatch, log manual intervals, and query time spent — all from Claude.
-
-### 6.1 New MCP tools in `src/commands/tools.ts`
-
-| Tool | FogBugz cmd | Description |
-|------|-------------|-------------|
-| `start_work` | `startWork` | Start the stopwatch on a case (stops any currently active interval first) |
-| `stop_work` | `stopWork` | Stop the currently active interval without starting a new one |
-| `log_interval` | `newInterval` | Import a manually tracked time interval (dtStart + dtEnd, ISO 8601 UTC) |
-| `list_intervals` | `listIntervals` | List time intervals filtered by case, person, and/or date range |
-
-All four tools must be marked `readOnlyHint: false` except `list_intervals` (`readOnlyHint: true`).
-
-### 6.2 API client implementations
-
-Add the four commands to both `IFogBugzClient` (base interface), `FogBugzXmlClient`, and `FogBugzJsonClient`:
-- XML client: parse `<interval>` elements from responses
-- JSON client: use `data.interval` / `data.intervals` fields
-- Shared types: add `TimeInterval` type to `src/api/types.ts`
-
-### 6.3 Handler wiring in `src/commands/index.ts`
-
-Route all four new tool names to their respective client methods.
-
-### 6.4 Tests
-
-`tests/time-tracking.test.ts` — unit tests with mocked client:
-- `startWork` returns the targeted case ID
-- `stopWork` succeeds with empty data
-- `newInterval` returns an interval with `ixInterval`, `dtStart`, `dtEnd`
-- `listIntervals` filters correctly by case and date range; respects admin-only `ixPerson` param
-
----
-
 ## Verification
 
 1. `npm run build` — TypeScript compiles with no errors
@@ -272,3 +241,42 @@ Route all four new tool names to their respective client methods.
 4. `npx @anthropic-ai/mcpb pack` — produces `fogbugz-mcp.mcpb`
 5. Manual test: install `.mcpb` in Claude Desktop, connect to FogBugz 8.x — verify XML auto-detection and read-only tools work (search, get, list). JSON API auto-detection verified only via mocked tests.
 6. GitHub Actions workflow produces release artifact on `v1.0.0` tag
+
+---
+
+## Roadmap (post-1.0.0)
+
+Features planned after the initial Anthropic extension submission.
+
+### Time Management Tools
+
+Expose FogBugz time tracking via dedicated MCP tools so users can start/stop the stopwatch, log manual intervals, and query time spent — all from Claude.
+
+| Tool             | FogBugz cmd     | Description                                                               |
+| ---------------- | --------------- | ------------------------------------------------------------------------- |
+| `start_work`     | `startWork`     | Start the stopwatch on a case (stops any currently active interval first) |
+| `stop_work`      | `stopWork`      | Stop the currently active interval without starting a new one             |
+| `log_interval`   | `newInterval`   | Import a manually tracked time interval (dtStart + dtEnd, ISO 8601 UTC)   |
+| `list_intervals` | `listIntervals` | List time intervals filtered by case, person, and/or date range           |
+
+Implementation notes:
+
+- Add `TimeInterval` type to `src/api/types.ts`
+- Add four methods to `IFogBugzClient`, `FogBugzXmlClient` (parse `<interval>` XML), and `FogBugzJsonClient` (`data.interval` / `data.intervals`)
+- Write `tests/time-tracking.test.ts` with mocked client
+
+### File Attachments
+
+Allow attaching screenshots and files when creating or updating cases. The `attachmentPath` parameter already exists in the tool schemas but is currently unimplemented.
+
+- XML client: multipart/form-data upload to `/api.asp` before the case command, then reference the token
+- JSON client: equivalent multipart upload to the JSON API
+- Affects `create_case` and `update_case`
+
+### Formatted Messages (Rich Text)
+
+Support rich text in case descriptions and comments for FogBugz instances that accept HTML.
+
+- Auto-detect whether the connected instance supports HTML in `sEvent` / `sLatestTextSummary`
+- Accept Markdown in tool inputs, convert to safe HTML subset before sending
+- Fall back to plain text for XML API / FogBugz 8.x instances that strip HTML

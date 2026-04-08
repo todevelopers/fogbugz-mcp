@@ -21,7 +21,7 @@ interface Tool {
 export const createCaseTool: Tool = {
   name: 'create_case',
   annotations: { readOnlyHint: false },
-  description: 'Creates a new FogBugz case with optional screenshot attachments.',
+  description: 'Creates a new FogBugz case.',
   inputSchema: {
     type: 'object',
     properties: {
@@ -57,11 +57,6 @@ export const createCaseTool: Tool = {
       assignee: {
         type: 'string',
         description: 'Person to assign the case to',
-        optional: true,
-      },
-      attachmentPath: {
-        type: 'string',
-        description: 'Path to a screenshot or file to attach',
         optional: true,
       },
     },
@@ -109,11 +104,6 @@ export const updateCaseTool: Tool = {
       priority: {
         type: ['number', 'string'],
         description: 'Priority level (number 1-7) or name',
-        optional: true,
-      },
-      attachmentPath: {
-        type: 'string',
-        description: 'Path to a screenshot or file to attach',
         optional: true,
       },
     },

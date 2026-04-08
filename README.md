@@ -111,8 +111,8 @@ npm test       # run all Jest tests
 
 | Tool | Description |
 |------|-------------|
-| `create_case` | Create a new case (supports optional file/screenshot attachment) |
-| `update_case` | Update an existing case (title, comment, project, area, milestone, priority, attachment) |
+| `create_case` | Create a new case |
+| `update_case` | Update an existing case (title, comment, project, area, milestone, priority) |
 | `assign_case` | Assign a case to a user |
 | `resolve_case` | Resolve (mark as fixed/completed) a case |
 | `reopen_case` | Reopen a resolved or closed case |
