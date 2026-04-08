@@ -136,7 +136,7 @@ Update `README.md`:
 
 ---
 
-## Phase 7: Version Bump & Submission
+## Phase 6: Version Bump & Submission
 
 **Bump version to `1.0.0`** in both `package.json` and `manifest.json` (per CLAUDE.md project rules).
 
@@ -247,7 +247,7 @@ Road map split by phase. Each task is independently actionable.
 
 ---
 
-## Roadmap (post-1.0.0)
+## Features plan after 1.0.0 release
 
 Features planned after the initial Anthropic extension submission.
 
