@@ -1,0 +1,291 @@
+import axios from 'axios';
+import { XMLParser } from 'fast-xml-parser';
+import { IFogBugzClient } from './base-client';
+import {
+  FogBugzConfig,
+  FogBugzCase,
+  FogBugzProject,
+  FogBugzArea,
+  FogBugzFixFor,
+  FogBugzPriority,
+  FogBugzPerson,
+  CreateCaseParams,
+  EditCaseParams,
+  SearchParams,
+  CreateProjectParams,
+} from './types';
+
+export class FogBugzXmlClient implements IFogBugzClient {
+  private baseUrl: string;
+  private apiKey: string;
+  private apiEndpoint: string;
+  private xmlParser: XMLParser;
+
+  constructor(config: FogBugzConfig) {
+    this.baseUrl = config.baseUrl.endsWith('/')
+      ? config.baseUrl.slice(0, -1)
+      : config.baseUrl;
+    this.apiKey = config.apiKey;
+    this.apiEndpoint = `${this.baseUrl}/api.asp`;
+    this.xmlParser = new XMLParser({
+      ignoreAttributes: false,
+      attributeNamePrefix: '@_',
+      parseTagValue: true,
+      isArray: (name) => {
+        return ['case', 'project', 'area', 'fixfor', 'priority', 'person', 'event'].includes(name);
+      },
+    });
+  }
+
+  // Commands that modify data – sent as POST
+  private static readonly WRITE_COMMANDS = new Set([
+    'new', 'edit', 'assign', 'resolve', 'reopen', 'close',
+    'newProject', 'editProject', 'newArea', 'editArea',
+  ]);
+
+  private async request(
+    cmd: string,
+    params: Record<string, any> = {},
+  ): Promise<any> {
+    try {
+      const flatParams: Record<string, string> = {
+        cmd,
+        token: this.apiKey,
+      };
+
+      for (const [key, value] of Object.entries(params)) {
+        if (value === undefined || value === null) continue;
+        if (Array.isArray(value)) {
+          flatParams[key] = value.join(',');
+        } else if (typeof value === 'boolean') {
+          flatParams[key] = value ? '1' : '0';
+        } else {
+          flatParams[key] = String(value);
+        }
+      }
+
+      const isWrite = FogBugzXmlClient.WRITE_COMMANDS.has(cmd);
+      const response = isWrite
+        ? await axios.post(this.apiEndpoint, new URLSearchParams(flatParams), {
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            responseType: 'text',
+            timeout: 30000,
+          })
+        : await axios.get(this.apiEndpoint, {
+            params: flatParams,
+            responseType: 'text',
+            timeout: 30000,
+          });
+
+      const parsed = this.xmlParser.parse(response.data);
+      const root = parsed.response;
+
+      if (!root) {
+        throw new Error(`FogBugz API Error: unexpected XML response`);
+      }
+
+      if (root.error) {
+        const errorMsg = typeof root.error === 'string'
+          ? root.error
+          : root.error['#text'] || JSON.stringify(root.error);
+        throw new Error(`FogBugz API Error: ${errorMsg}`);
+      }
+
+      return root;
+    } catch (error: any) {
+      if (error.response) {
+        throw new Error(`FogBugz API Error: ${error.response.status} - ${error.response.data}`);
+      }
+      throw error;
+    }
+  }
+
+  private normalizeCase(raw: any): FogBugzCase {
+    const bugCase: FogBugzCase = {
+      ixBug: Number(raw.ixBug || raw['@_ixBug']),
+      sTitle: raw.sTitle || '',
+    };
+
+    const fields = [
+      'sStatus', 'ixStatus', 'sPriority', 'ixPriority',
+      'sProject', 'ixProject', 'sArea', 'ixArea',
+      'sFixFor', 'ixFixFor', 'sPersonAssignedTo', 'ixPersonAssignedTo',
+    ];
+    for (const field of fields) {
+      if (raw[field] !== undefined) {
+        bugCase[field] = raw[field];
+      }
+    }
+
+    if (raw.events && raw.events.event) {
+      const events = Array.isArray(raw.events.event)
+        ? raw.events.event
+        : [raw.events.event];
+      bugCase.events = events.map((e: any) => ({
+        ixBugEvent: Number(e.ixBugEvent),
+        sVerb: e.sVerb || '',
+        sText: e.s || e.sText || '',
+        dt: e.dt || '',
+        sPerson: e.sPerson || '',
+        ixPerson: Number(e.ixPerson || 0),
+      }));
+    }
+
+    return bugCase;
+  }
+
+  async getCurrentUser(): Promise<FogBugzPerson> {
+    const root = await this.request('viewPerson');
+    const p = root.person?.[0] || root;
+    return {
+      ixPerson: Number(p.ixPerson || 0),
+      sFullName: p.sFullName || '',
+      sEmail: p.sEmail || '',
+      sPerson: p.sFullName || '',
+    };
+  }
+
+  async listProjects(): Promise<FogBugzProject[]> {
+    const root = await this.request('listProjects');
+    const projects = root.projects?.project || root.project || [];
+    const list = Array.isArray(projects) ? projects : [projects];
+    return list.map((p: any) => ({
+      ixProject: Number(p.ixProject),
+      sProject: p.sProject || '',
+      ...p,
+    }));
+  }
+
+  async listAreas(): Promise<FogBugzArea[]> {
+    const root = await this.request('listAreas');
+    const areas = root.areas?.area || root.area || [];
+    const list = Array.isArray(areas) ? areas : [areas];
+    return list.map((a: any) => ({
+      ixArea: Number(a.ixArea),
+      sArea: a.sArea || '',
+      ixProject: Number(a.ixProject || 0),
+      ...a,
+    }));
+  }
+
+  async listMilestones(): Promise<FogBugzFixFor[]> {
+    const root = await this.request('listFixFors');
+    const fixfors = root.fixfors?.fixfor || root.fixfor || [];
+    const list = Array.isArray(fixfors) ? fixfors : [fixfors];
+    return list.map((f: any) => ({
+      ixFixFor: Number(f.ixFixFor),
+      sFixFor: f.sFixFor || '',
+      ...f,
+    }));
+  }
+
+  async listPriorities(): Promise<FogBugzPriority[]> {
+    const root = await this.request('listPriorities');
+    const priorities = root.priorities?.priority || root.priority || [];
+    const list = Array.isArray(priorities) ? priorities : [priorities];
+    return list.map((p: any) => ({
+      ixPriority: Number(p.ixPriority),
+      sPriority: p.sPriority || '',
+      ...p,
+    }));
+  }
+
+  async listPeople(): Promise<FogBugzPerson[]> {
+    const root = await this.request('listPeople');
+    const people = root.people?.person || root.person || [];
+    const list = Array.isArray(people) ? people : [people];
+    return list.map((p: any) => ({
+      ixPerson: Number(p.ixPerson),
+      sFullName: p.sFullName || '',
+      sEmail: p.sEmail || '',
+      sPerson: p.sFullName || '',
+      ...p,
+    }));
+  }
+
+  async createCase(params: CreateCaseParams): Promise<FogBugzCase> {
+    const root = await this.request('new', params);
+    const rawCase = root.case?.[0] || root.case || root.cases?.[0] || root;
+    return this.normalizeCase(rawCase);
+  }
+
+  async updateCase(params: EditCaseParams): Promise<FogBugzCase> {
+    const root = await this.request('edit', params);
+    const rawCase = root.case?.[0] || root.case || root.cases?.[0] || root;
+    return this.normalizeCase(rawCase);
+  }
+
+  async assignCase(caseId: number, personName: string): Promise<FogBugzCase> {
+    const params = {
+      ixBug: caseId,
+      sPersonAssignedTo: personName,
+    };
+    const root = await this.request('assign', params);
+    const rawCase = root.case?.[0] || root.case || root.cases?.[0] || root;
+    return this.normalizeCase(rawCase);
+  }
+
+  async searchCases(params: SearchParams): Promise<FogBugzCase[]> {
+    const requestParams: Record<string, any> = {
+      q: params.q,
+    };
+    if (params.cols) {
+      requestParams.cols = Array.isArray(params.cols)
+        ? params.cols.join(',')
+        : params.cols;
+    }
+    if (params.max) {
+      requestParams.max = params.max;
+    }
+
+    const root = await this.request('search', requestParams);
+    const cases = root.cases?.case || [];
+    const list = Array.isArray(cases) ? cases : [cases];
+
+    return list
+      .filter((c: any) => c && (c.ixBug || c['@_ixBug']))
+      .map((c: any) => this.normalizeCase(c));
+  }
+
+  async getCase(caseId: number, cols?: string): Promise<FogBugzCase> {
+    const defaultCols = 'sTitle,sStatus,sPriority,sProject,sArea,sFixFor,sPersonAssignedTo,events';
+    const cases = await this.searchCases({
+      q: String(caseId),
+      cols: cols || defaultCols,
+    });
+    if (cases.length === 0) {
+      throw new Error(`Case #${caseId} not found`);
+    }
+    return cases[0];
+  }
+
+  async rawRequest(cmd: string, params: Record<string, any> = {}): Promise<any> {
+    return this.request(cmd, params);
+  }
+
+  getCaseLink(caseId: number): string {
+    return `${this.baseUrl}/default.asp?${caseId}`;
+  }
+
+  async createProject(params: CreateProjectParams): Promise<FogBugzProject> {
+    const apiParams: Record<string, any> = {};
+    apiParams.sProject = params.sProject;
+    if (params.ixPersonPrimaryContact !== undefined) {
+      apiParams.ixPersonPrimaryContact = params.ixPersonPrimaryContact;
+    }
+    if (params.fInbox !== undefined) {
+      apiParams.fInbox = params.fInbox ? 1 : 0;
+    }
+    if (params.fAllowPublicSubmit !== undefined) {
+      apiParams.fAllowPublicSubmit = params.fAllowPublicSubmit ? 1 : 0;
+    }
+
+    const root = await this.request('newProject', apiParams);
+    const project = root.project?.[0] || root.project || root;
+    return {
+      ixProject: Number(project.ixProject),
+      sProject: project.sProject || '',
+      ...project,
+    };
+  }
+}

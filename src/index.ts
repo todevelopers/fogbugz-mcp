@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import dotenv from 'dotenv';
-import { FogBugzApi } from './api';
+import { createFogBugzClient, IFogBugzClient } from './api';
 import { fogbugzTools } from './commands/tools';
 import * as handlers from './commands';
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
@@ -18,7 +18,7 @@ async function main() {
     process.exit(1);
   }
 
-  const api = new FogBugzApi({ baseUrl: fogbugzUrl, apiKey: fogbugzApiKey });
+  const api: IFogBugzClient = await createFogBugzClient({ baseUrl: fogbugzUrl, apiKey: fogbugzApiKey });
 
   const server = new Server(
     { name: 'fogbugz-mcp', version: '0.0.14' },

@@ -1,4 +1,4 @@
-import { FogBugzApi } from '../src/api';
+import { FogBugzXmlClient as FogBugzApi } from '../src/api';
 import * as commands from '../src/commands';
 
 /**
@@ -83,12 +83,6 @@ describe('createCase handler', () => {
     expect(result.error).toBe('API down');
   });
 
-  it('forwards attachmentPath to api.createCase as second argument', async () => {
-    const api = makeMockApi({ createCase: jest.fn().mockResolvedValue(CASE_42) });
-    await commands.createCase(api, { title: 'T', attachmentPath: '/tmp/screen.png' });
-    const attachments = (api.createCase as jest.Mock).mock.calls[0][1];
-    expect(attachments).toEqual([{ path: '/tmp/screen.png', fieldName: 'File1' }]);
-  });
 });
 
 // ─── updateCase ──────────────────────────────────────────────────────────────

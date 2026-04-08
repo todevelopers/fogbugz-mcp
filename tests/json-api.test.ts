@@ -80,8 +80,7 @@ function jsonPriority(fields: Partial<{ ixPriority: number; sPriority: string }>
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
-// TODO: remove describe.skip when FogBugzJsonClient is implemented
-describe.skip('FogBugzJsonClient', () => {
+describe('FogBugzJsonClient', () => {
   let client: FogBugzJsonClient;
 
   beforeEach(() => {

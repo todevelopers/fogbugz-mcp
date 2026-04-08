@@ -174,11 +174,11 @@ Road map split by phase. Each task is independently actionable.
 
 ### Phase 1 — JSON API + Auto-Detection
 
-- [ ] **1.1** Create `src/api/base-client.ts` — abstract interface `IFogBugzClient`
-- [ ] **1.2** Extract `FogBugzApi` into `src/api/xml-client.ts`
-- [ ] **1.3** Implement `src/api/json-client.ts` — all operations via `POST /f/api/0/jsonapi`
-- [ ] **1.4** Rewrite `src/api/index.ts` — factory `createFogBugzClient()` with auto-detection logic
-- [ ] **1.5** Verify `src/api/types.ts` types work for both clients without modification
+- [x] **1.1** Create `src/api/base-client.ts` — abstract interface `IFogBugzClient`
+- [x] **1.2** Extract `FogBugzApi` into `src/api/xml-client.ts`
+- [x] **1.3** Implement `src/api/json-client.ts` — all operations via `POST /f/api/0/jsonapi`
+- [x] **1.4** Rewrite `src/api/index.ts` — factory `createFogBugzClient()` with version-based auto-detection (GET /api.xml → version >= 9 → JSON probe)
+- [x] **1.5** Verify `src/api/types.ts` types work for both clients without modification
 
 ### Phase 2 — Repository Cleanup
 

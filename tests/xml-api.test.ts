@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { FogBugzApi } from '../src/api';
+import { FogBugzXmlClient as FogBugzApi } from '../src/api';
 import {
   xmlResponse,
   xmlError,

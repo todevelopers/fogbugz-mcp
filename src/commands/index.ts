@@ -1,5 +1,5 @@
-import { FogBugzApi } from '../api';
-import { FileAttachment, CreateCaseParams, EditCaseParams, CreateProjectParams } from '../api/types';
+import { IFogBugzClient } from '../api';
+import { CreateCaseParams, EditCaseParams, CreateProjectParams } from '../api/types';
 
 /**
  * MCP command implementations for FogBugz operations
@@ -8,7 +8,7 @@ import { FileAttachment, CreateCaseParams, EditCaseParams, CreateProjectParams }
 /**
  * Creates a new FogBugz case
  */
-export async function createCase(api: FogBugzApi, args: any): Promise<string> {
+export async function createCase(api: IFogBugzClient, args: any): Promise<string> {
   const {
     title,
     description,
@@ -17,22 +17,18 @@ export async function createCase(api: FogBugzApi, args: any): Promise<string> {
     milestone,
     priority,
     assignee,
-    attachmentPath,
   } = args;
 
-  // Prepare case parameters
   const params: CreateCaseParams = {
     sTitle: title,
   };
 
-  // Add optional parameters if provided
   if (description) params.sEvent = description;
   if (project) params.sProject = project;
   if (area) params.sArea = area;
   if (milestone) params.sFixFor = milestone;
   if (assignee) params.sPersonAssignedTo = assignee;
 
-  // Handle priority (could be a number or string)
   if (priority !== undefined) {
     if (typeof priority === 'number') {
       params.ixPriority = priority;
@@ -41,20 +37,8 @@ export async function createCase(api: FogBugzApi, args: any): Promise<string> {
     }
   }
 
-  // Prepare attachments if any
-  const attachments: FileAttachment[] = [];
-  if (attachmentPath) {
-    attachments.push({
-      path: attachmentPath,
-      fieldName: 'File1',
-    });
-  }
-
   try {
-    // Create the case
-    const newCase = await api.createCase(params, attachments);
-    
-    // Generate a response
+    const newCase = await api.createCase(params);
     const caseLink = api.getCaseLink(newCase.ixBug);
     return JSON.stringify({
       caseId: newCase.ixBug,
@@ -71,7 +55,7 @@ export async function createCase(api: FogBugzApi, args: any): Promise<string> {
 /**
  * Updates an existing FogBugz case
  */
-export async function updateCase(api: FogBugzApi, args: any): Promise<string> {
+export async function updateCase(api: IFogBugzClient, args: any): Promise<string> {
   const {
     caseId,
     title,
@@ -80,22 +64,18 @@ export async function updateCase(api: FogBugzApi, args: any): Promise<string> {
     area,
     milestone,
     priority,
-    attachmentPath,
   } = args;
 
-  // Prepare case parameters
   const params: EditCaseParams = {
     ixBug: caseId,
   };
 
-  // Add optional parameters if provided
   if (title) params.sTitle = title;
   if (description) params.sEvent = description;
   if (project) params.sProject = project;
   if (area) params.sArea = area;
   if (milestone) params.sFixFor = milestone;
 
-  // Handle priority (could be a number or string)
   if (priority !== undefined) {
     if (typeof priority === 'number') {
       params.ixPriority = priority;
@@ -104,20 +84,8 @@ export async function updateCase(api: FogBugzApi, args: any): Promise<string> {
     }
   }
 
-  // Prepare attachments if any
-  const attachments: FileAttachment[] = [];
-  if (attachmentPath) {
-    attachments.push({
-      path: attachmentPath,
-      fieldName: 'File1',
-    });
-  }
-
   try {
-    // Update the case
-    const updatedCase = await api.updateCase(params, attachments);
-    
-    // Generate a response
+    const updatedCase = await api.updateCase(params);
     const caseLink = api.getCaseLink(updatedCase.ixBug);
     return JSON.stringify({
       caseId: updatedCase.ixBug,
@@ -134,14 +102,11 @@ export async function updateCase(api: FogBugzApi, args: any): Promise<string> {
 /**
  * Assigns a FogBugz case to a user
  */
-export async function assignCase(api: FogBugzApi, args: any): Promise<string> {
+export async function assignCase(api: IFogBugzClient, args: any): Promise<string> {
   const { caseId, assignee } = args;
 
   try {
-    // Assign the case
     const updatedCase = await api.assignCase(caseId, assignee);
-    
-    // Generate a response
     const caseLink = api.getCaseLink(updatedCase.ixBug);
     return JSON.stringify({
       caseId: updatedCase.ixBug,
@@ -158,26 +123,24 @@ export async function assignCase(api: FogBugzApi, args: any): Promise<string> {
 /**
  * Lists FogBugz cases assigned to a user
  */
-export async function listUserCases(api: FogBugzApi, args: any): Promise<string> {
+export async function listUserCases(api: IFogBugzClient, args: any): Promise<string> {
   const { assignee, status, limit } = args;
 
   try {
-    // Create query for assigned cases
     let query = '';
-    
+
     if (assignee) {
       query = `assignedto:"${assignee}"`;
     } else {
       query = 'assignedto:me';
     }
-    
+
     if (status) {
       query += ` status:${status}`;
     } else {
       query += ' status:active';
     }
-    
-    // Get cases assigned to the user
+
     const cases = await api.searchCases({
       q: query,
       cols: [
@@ -191,8 +154,7 @@ export async function listUserCases(api: FogBugzApi, args: any): Promise<string>
       ],
       max: limit || 20,
     });
-    
-    // Format case information
+
     const formattedCases = cases.map(bugCase => ({
       id: bugCase.ixBug,
       title: bugCase.sTitle,
@@ -203,8 +165,7 @@ export async function listUserCases(api: FogBugzApi, args: any): Promise<string>
       milestone: bugCase.sFixFor,
       link: api.getCaseLink(bugCase.ixBug),
     }));
-    
-    // Generate a response
+
     const userDisplay = assignee || 'current user';
     return JSON.stringify({
       assignee: userDisplay,
@@ -222,11 +183,10 @@ export async function listUserCases(api: FogBugzApi, args: any): Promise<string>
 /**
  * Searches for FogBugz cases
  */
-export async function searchCases(api: FogBugzApi, args: any): Promise<string> {
+export async function searchCases(api: IFogBugzClient, args: any): Promise<string> {
   const { query, limit } = args;
 
   try {
-    // Search for cases
     const cases = await api.searchCases({
       q: query,
       cols: [
@@ -241,8 +201,7 @@ export async function searchCases(api: FogBugzApi, args: any): Promise<string> {
       ],
       max: limit || 20,
     });
-    
-    // Format case information
+
     const formattedCases = cases.map(bugCase => ({
       id: bugCase.ixBug,
       title: bugCase.sTitle,
@@ -254,8 +213,7 @@ export async function searchCases(api: FogBugzApi, args: any): Promise<string> {
       assignee: bugCase.sPersonAssignedTo,
       link: api.getCaseLink(bugCase.ixBug),
     }));
-    
-    // Generate a response
+
     return JSON.stringify({
       query,
       count: formattedCases.length,
@@ -272,13 +230,11 @@ export async function searchCases(api: FogBugzApi, args: any): Promise<string> {
 /**
  * Gets a direct link to a FogBugz case
  */
-export async function getCaseLink(api: FogBugzApi, args: any): Promise<string> {
+export async function getCaseLink(api: IFogBugzClient, args: any): Promise<string> {
   const { caseId } = args;
 
   try {
-    // Generate case link
     const caseLink = api.getCaseLink(caseId);
-    
     return JSON.stringify({
       caseId,
       caseLink,
@@ -294,7 +250,7 @@ export async function getCaseLink(api: FogBugzApi, args: any): Promise<string> {
 /**
  * Gets detailed information about a specific case
  */
-export async function getCase(api: FogBugzApi, args: any): Promise<string> {
+export async function getCase(api: IFogBugzClient, args: any): Promise<string> {
   const { caseId, cols } = args;
 
   try {
@@ -330,7 +286,7 @@ export async function getCase(api: FogBugzApi, args: any): Promise<string> {
 /**
  * Resolves a FogBugz case
  */
-export async function resolveCase(api: FogBugzApi, args: any): Promise<string> {
+export async function resolveCase(api: IFogBugzClient, args: any): Promise<string> {
   const { caseId, comment, ixStatus } = args;
 
   try {
@@ -339,6 +295,8 @@ export async function resolveCase(api: FogBugzApi, args: any): Promise<string> {
     if (ixStatus) params.ixStatus = ixStatus;
 
     const result = await api.rawRequest('resolve', params);
+    // XML client returns the root element; JSON client returns data directly.
+    // Both may carry case info at result.case (object or array).
     const rawCase = result.case?.[0] || result.case || result.cases?.[0] || result;
     const bugId = Number(rawCase.ixBug || rawCase['@_ixBug'] || caseId);
 
@@ -355,7 +313,7 @@ export async function resolveCase(api: FogBugzApi, args: any): Promise<string> {
 /**
  * Reopens a FogBugz case
  */
-export async function reopenCase(api: FogBugzApi, args: any): Promise<string> {
+export async function reopenCase(api: IFogBugzClient, args: any): Promise<string> {
   const { caseId, comment } = args;
 
   try {
@@ -379,7 +337,7 @@ export async function reopenCase(api: FogBugzApi, args: any): Promise<string> {
 /**
  * Closes a FogBugz case
  */
-export async function closeCase(api: FogBugzApi, args: any): Promise<string> {
+export async function closeCase(api: IFogBugzClient, args: any): Promise<string> {
   const { caseId, comment } = args;
 
   try {
@@ -403,7 +361,7 @@ export async function closeCase(api: FogBugzApi, args: any): Promise<string> {
 /**
  * Lists all people in FogBugz
  */
-export async function listPeople(api: FogBugzApi, _args: any): Promise<string> {
+export async function listPeople(api: IFogBugzClient, _args: any): Promise<string> {
   try {
     const people = await api.listPeople();
     const formatted = people.map(p => ({
@@ -425,10 +383,10 @@ export async function listPeople(api: FogBugzApi, _args: any): Promise<string> {
 /**
  * Lists all case categories
  */
-export async function listCategories(api: FogBugzApi, _args: any): Promise<string> {
+export async function listCategories(api: IFogBugzClient, _args: any): Promise<string> {
   try {
     const result = await api.rawRequest('listCategories');
-    const categories = result.categories?.category || result.category || [];
+    const categories = result.categories?.category || result.category || result.categories || [];
     const list = Array.isArray(categories) ? categories : [categories];
 
     const formatted = list.map((c: any) => ({
@@ -450,7 +408,7 @@ export async function listCategories(api: FogBugzApi, _args: any): Promise<strin
 /**
  * Views detailed project information
  */
-export async function viewProject(api: FogBugzApi, args: any): Promise<string> {
+export async function viewProject(api: IFogBugzClient, args: any): Promise<string> {
   const { ixProject } = args;
 
   try {
@@ -474,7 +432,7 @@ export async function viewProject(api: FogBugzApi, args: any): Promise<string> {
 /**
  * Views detailed area information
  */
-export async function viewArea(api: FogBugzApi, args: any): Promise<string> {
+export async function viewArea(api: IFogBugzClient, args: any): Promise<string> {
   const { ixArea } = args;
 
   try {
@@ -497,7 +455,7 @@ export async function viewArea(api: FogBugzApi, args: any): Promise<string> {
 /**
  * Makes a generic FogBugz API request
  */
-export async function apiRequest(api: FogBugzApi, args: any): Promise<string> {
+export async function apiRequest(api: IFogBugzClient, args: any): Promise<string> {
   const { cmd, params } = args;
 
   try {
@@ -517,31 +475,28 @@ export async function apiRequest(api: FogBugzApi, args: any): Promise<string> {
 /**
  * Creates a new FogBugz project
  */
-export async function createProject(api: FogBugzApi, args: any): Promise<string> {
+export async function createProject(api: IFogBugzClient, args: any): Promise<string> {
   const {
     name,
     primaryContact,
     isInbox,
-    allowPublicSubmit
+    allowPublicSubmit,
   } = args;
 
   try {
-    // Prepare project parameters
     const params: CreateProjectParams = {
-      sProject: name
+      sProject: name,
     };
 
     if (primaryContact !== undefined && !isNaN(Number(primaryContact))) {
       params.ixPersonPrimaryContact = Number(primaryContact);
     }
-    
+
     if (isInbox !== undefined) params.fInbox = isInbox;
     if (allowPublicSubmit !== undefined) params.fAllowPublicSubmit = allowPublicSubmit;
 
-    // Create the project
     const newProject = await api.createProject(params);
-    
-    // Generate a response
+
     return JSON.stringify({
       projectId: newProject.ixProject,
       projectName: newProject.sProject,
@@ -552,4 +507,4 @@ export async function createProject(api: FogBugzApi, args: any): Promise<string>
       error: error.message,
     });
   }
-} 
+}

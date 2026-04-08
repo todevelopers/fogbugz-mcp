@@ -1,358 +1,56 @@
 import axios from 'axios';
 import { XMLParser } from 'fast-xml-parser';
-import {
-  FogBugzConfig,
-  FogBugzCase,
-  FogBugzProject,
-  FogBugzArea,
-  FogBugzFixFor,
-  FogBugzPriority,
-  FogBugzPerson,
-  CreateCaseParams,
-  EditCaseParams,
-  SearchParams,
-  FileAttachment,
-  CreateProjectParams
-} from './types';
+import { FogBugzConfig } from './types';
+import { IFogBugzClient } from './base-client';
+import { FogBugzXmlClient } from './xml-client';
+import { FogBugzJsonClient } from './json-client';
 
-export class FogBugzApi {
-  private baseUrl: string;
-  private apiKey: string;
-  private apiEndpoint: string;
-  private xmlParser: XMLParser;
+/**
+ * Detect the FogBugz API version and return the appropriate client.
+ *
+ * Detection strategy:
+ * 1. GET /api.xml — always available, returns <version> number.
+ * 2. If version >= 9 (JSON API era), probe /f/api/0/jsonapi.
+ *    - Probe success (response has an `errors` array) → FogBugzJsonClient.
+ *    - Probe failure → FogBugzXmlClient (fallback).
+ * 3. If version < 9 or /api.xml is unreachable → FogBugzXmlClient.
+ */
+export async function createFogBugzClient(config: FogBugzConfig): Promise<IFogBugzClient> {
+  const baseUrl = config.baseUrl.endsWith('/')
+    ? config.baseUrl.slice(0, -1)
+    : config.baseUrl;
 
-  constructor(config: FogBugzConfig) {
-    this.baseUrl = config.baseUrl.endsWith('/')
-      ? config.baseUrl.slice(0, -1)
-      : config.baseUrl;
-    this.apiKey = config.apiKey;
-    this.apiEndpoint = `${this.baseUrl}/api.asp`;
-    this.xmlParser = new XMLParser({
-      ignoreAttributes: false,
-      attributeNamePrefix: '@_',
-      // Parse numeric-looking values as numbers
-      parseTagValue: true,
-      // Ensure arrays for elements that may have 0-N items
-      isArray: (name) => {
-        return ['case', 'project', 'area', 'fixfor', 'priority', 'person', 'event'].includes(name);
-      },
+  try {
+    const versionResponse = await axios.get(`${baseUrl}/api.xml`, {
+      timeout: 5000,
+      responseType: 'text',
     });
-  }
 
-  // Commands that modify data – sent as POST
-  private static readonly WRITE_COMMANDS = new Set([
-    'new', 'edit', 'assign', 'resolve', 'reopen', 'close',
-    'newProject', 'editProject', 'newArea', 'editArea',
-  ]);
+    const parser = new XMLParser({ parseTagValue: true });
+    const parsed = parser.parse(versionResponse.data);
+    const apiVersion = Number(parsed?.response?.version ?? 0);
 
-  private async request(
-    cmd: string,
-    params: Record<string, any> = {},
-  ): Promise<any> {
-    try {
-      // Build flat string params, converting booleans to 1/0
-      const flatParams: Record<string, string> = {
-        cmd,
-        token: this.apiKey,
-      };
-
-      for (const [key, value] of Object.entries(params)) {
-        if (value === undefined || value === null) continue;
-        if (Array.isArray(value)) {
-          flatParams[key] = value.join(',');
-        } else if (typeof value === 'boolean') {
-          flatParams[key] = value ? '1' : '0';
-        } else {
-          flatParams[key] = String(value);
+    if (apiVersion >= 9) {
+      try {
+        const probe = await axios.post(
+          `${baseUrl}/f/api/0/jsonapi`,
+          { cmd: 'listProjects', token: config.apiKey },
+          { headers: { 'Content-Type': 'application/json' }, timeout: 5000 },
+        );
+        if (probe.data && Array.isArray(probe.data.errors)) {
+          return new FogBugzJsonClient(config);
         }
-      }
-
-      const isWrite = FogBugzApi.WRITE_COMMANDS.has(cmd);
-      const response = isWrite
-        ? await axios.post(this.apiEndpoint, new URLSearchParams(flatParams), {
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            responseType: 'text',
-            timeout: 30000,
-          })
-        : await axios.get(this.apiEndpoint, {
-            params: flatParams,
-            responseType: 'text',
-            timeout: 30000,
-          });
-
-      const parsed = this.xmlParser.parse(response.data);
-      const root = parsed.response;
-
-      if (!root) {
-        throw new Error(`FogBugz API Error: unexpected XML response`);
-      }
-
-      // Check for errors in XML response: <error code="X">message</error>
-      if (root.error) {
-        const errorMsg = typeof root.error === 'string'
-          ? root.error
-          : root.error['#text'] || JSON.stringify(root.error);
-        throw new Error(`FogBugz API Error: ${errorMsg}`);
-      }
-
-      return root;
-    } catch (error: any) {
-      if (error.response) {
-        throw new Error(`FogBugz API Error: ${error.response.status} - ${error.response.data}`);
-      }
-      throw error;
-    }
-  }
-
-  /**
-   * Normalize a single case element from XML into a FogBugzCase object.
-   * XML returns fields as child elements, and ixBug may also appear as an attribute.
-   */
-  private normalizeCase(raw: any): FogBugzCase {
-    const bugCase: FogBugzCase = {
-      ixBug: Number(raw.ixBug || raw['@_ixBug']),
-      sTitle: raw.sTitle || '',
-    };
-
-    // Copy all known fields
-    const fields = [
-      'sStatus', 'ixStatus', 'sPriority', 'ixPriority',
-      'sProject', 'ixProject', 'sArea', 'ixArea',
-      'sFixFor', 'ixFixFor', 'sPersonAssignedTo', 'ixPersonAssignedTo',
-    ];
-    for (const field of fields) {
-      if (raw[field] !== undefined) {
-        bugCase[field] = raw[field];
+      } catch {
+        // JSON API unreachable despite version >= 9 — fall back to XML
       }
     }
-
-    // Handle events if present
-    if (raw.events && raw.events.event) {
-      const events = Array.isArray(raw.events.event)
-        ? raw.events.event
-        : [raw.events.event];
-      bugCase.events = events.map((e: any) => ({
-        ixBugEvent: Number(e.ixBugEvent),
-        sVerb: e.sVerb || '',
-        sText: e.s || e.sText || '',
-        dt: e.dt || '',
-        sPerson: e.sPerson || '',
-        ixPerson: Number(e.ixPerson || 0),
-      }));
-    }
-
-    return bugCase;
+  } catch {
+    // api.xml unreachable — fall back to XML
   }
 
-  /**
-   * Get information about the current user associated with the API key
-   */
-  async getCurrentUser(): Promise<FogBugzPerson> {
-    const root = await this.request('viewPerson');
-    const p = root.person?.[0] || root;
-    return {
-      ixPerson: Number(p.ixPerson || 0),
-      sFullName: p.sFullName || '',
-      sEmail: p.sEmail || '',
-      sPerson: p.sFullName || '',
-    };
-  }
-
-  /**
-   * Get a list of all projects
-   */
-  async listProjects(): Promise<FogBugzProject[]> {
-    const root = await this.request('listProjects');
-    const projects = root.projects?.project || root.project || [];
-    const list = Array.isArray(projects) ? projects : [projects];
-    return list.map((p: any) => ({
-      ixProject: Number(p.ixProject),
-      sProject: p.sProject || '',
-      ...p,
-    }));
-  }
-
-  /**
-   * Get a list of all areas
-   */
-  async listAreas(): Promise<FogBugzArea[]> {
-    const root = await this.request('listAreas');
-    const areas = root.areas?.area || root.area || [];
-    const list = Array.isArray(areas) ? areas : [areas];
-    return list.map((a: any) => ({
-      ixArea: Number(a.ixArea),
-      sArea: a.sArea || '',
-      ixProject: Number(a.ixProject || 0),
-      ...a,
-    }));
-  }
-
-  /**
-   * Get a list of all milestones (FixFors)
-   */
-  async listMilestones(): Promise<FogBugzFixFor[]> {
-    const root = await this.request('listFixFors');
-    const fixfors = root.fixfors?.fixfor || root.fixfor || [];
-    const list = Array.isArray(fixfors) ? fixfors : [fixfors];
-    return list.map((f: any) => ({
-      ixFixFor: Number(f.ixFixFor),
-      sFixFor: f.sFixFor || '',
-      ...f,
-    }));
-  }
-
-  /**
-   * Get a list of all priorities
-   */
-  async listPriorities(): Promise<FogBugzPriority[]> {
-    const root = await this.request('listPriorities');
-    const priorities = root.priorities?.priority || root.priority || [];
-    const list = Array.isArray(priorities) ? priorities : [priorities];
-    return list.map((p: any) => ({
-      ixPriority: Number(p.ixPriority),
-      sPriority: p.sPriority || '',
-      ...p,
-    }));
-  }
-
-  /**
-   * Get a list of all people (users)
-   */
-  async listPeople(): Promise<FogBugzPerson[]> {
-    const root = await this.request('listPeople');
-    const people = root.people?.person || root.person || [];
-    const list = Array.isArray(people) ? people : [people];
-    return list.map((p: any) => ({
-      ixPerson: Number(p.ixPerson),
-      sFullName: p.sFullName || '',
-      sEmail: p.sEmail || '',
-      sPerson: p.sFullName || '',
-      ...p,
-    }));
-  }
-
-  /**
-   * Create a new case
-   */
-  async createCase(
-    params: CreateCaseParams,
-    _attachments: FileAttachment[] = []
-  ): Promise<FogBugzCase> {
-    const root = await this.request('new', params);
-    const rawCase = root.case?.[0] || root.case || root.cases?.[0] || root;
-    return this.normalizeCase(rawCase);
-  }
-
-  /**
-   * Update an existing case
-   */
-  async updateCase(
-    params: EditCaseParams,
-    _attachments: FileAttachment[] = []
-  ): Promise<FogBugzCase> {
-    const root = await this.request('edit', params);
-    const rawCase = root.case?.[0] || root.case || root.cases?.[0] || root;
-    return this.normalizeCase(rawCase);
-  }
-
-  /**
-   * Assign a case to a person
-   */
-  async assignCase(
-    caseId: number,
-    personName: string
-  ): Promise<FogBugzCase> {
-    const params = {
-      ixBug: caseId,
-      sPersonAssignedTo: personName,
-    };
-    const root = await this.request('assign', params);
-    const rawCase = root.case?.[0] || root.case || root.cases?.[0] || root;
-    return this.normalizeCase(rawCase);
-  }
-
-  /**
-   * Search for cases
-   */
-  async searchCases(params: SearchParams): Promise<FogBugzCase[]> {
-    // XML API expects cols as comma-separated string
-    const requestParams: Record<string, any> = {
-      q: params.q,
-    };
-    if (params.cols) {
-      requestParams.cols = Array.isArray(params.cols)
-        ? params.cols.join(',')
-        : params.cols;
-    }
-    if (params.max) {
-      requestParams.max = params.max;
-    }
-
-    const root = await this.request('search', requestParams);
-
-    // XML response: <cases count="N"><case>...</case></cases>
-    const cases = root.cases?.case || [];
-    const list = Array.isArray(cases) ? cases : [cases];
-
-    // Filter out empty entries (when count=0, parser might give empty)
-    return list
-      .filter((c: any) => c && (c.ixBug || c['@_ixBug']))
-      .map((c: any) => this.normalizeCase(c));
-  }
-
-  /**
-   * Get detailed info about a specific case
-   */
-  async getCase(caseId: number, cols?: string): Promise<FogBugzCase> {
-    const defaultCols = 'sTitle,sStatus,sPriority,sProject,sArea,sFixFor,sPersonAssignedTo,events';
-    const cases = await this.searchCases({
-      q: String(caseId),
-      cols: cols || defaultCols,
-    });
-    if (cases.length === 0) {
-      throw new Error(`Case #${caseId} not found`);
-    }
-    return cases[0];
-  }
-
-  /**
-   * Make a raw/generic API request (for experimental queries)
-   */
-  async rawRequest(cmd: string, params: Record<string, any> = {}): Promise<any> {
-    return this.request(cmd, params);
-  }
-
-  /**
-   * Get a direct link to a case
-   */
-  getCaseLink(caseId: number): string {
-    return `${this.baseUrl}/default.asp?${caseId}`;
-  }
-
-  /**
-   * Create a new project
-   */
-  async createProject(params: CreateProjectParams): Promise<FogBugzProject> {
-    const apiParams: Record<string, any> = {};
-    apiParams.sProject = params.sProject;
-    if (params.ixPersonPrimaryContact !== undefined) {
-      apiParams.ixPersonPrimaryContact = params.ixPersonPrimaryContact;
-    }
-    if (params.fInbox !== undefined) {
-      apiParams.fInbox = params.fInbox ? 1 : 0;
-    }
-    if (params.fAllowPublicSubmit !== undefined) {
-      apiParams.fAllowPublicSubmit = params.fAllowPublicSubmit ? 1 : 0;
-    }
-
-    const root = await this.request('newProject', apiParams);
-    const project = root.project?.[0] || root.project || root;
-    return {
-      ixProject: Number(project.ixProject),
-      sProject: project.sProject || '',
-      ...project,
-    };
-  }
+  return new FogBugzXmlClient(config);
 }
 
+export { FogBugzXmlClient, FogBugzJsonClient };
+export type { IFogBugzClient };
 export * from './types';
