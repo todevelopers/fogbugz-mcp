@@ -206,7 +206,7 @@ Road map split by phase. Each task is independently actionable.
 ### Phase 3 — Attribution
 
 - [x] **3.1** Update `manifest.json` — set `"author": { "name": "ToDevelopers s.r.o." }`
-- [ ] **3.2** Add "Based on / inspired by" section to `README.md` crediting [akari2600/fogbugz-mcp](https://github.com/akari2600/fogbugz-mcp)
+- [x] **3.2** Add "Based on / inspired by" section to `README.md` crediting [akari2600/fogbugz-mcp](https://github.com/akari2600/fogbugz-mcp)
 
 ### Phase 4 — Quality
 
@@ -231,7 +231,7 @@ Road map split by phase. Each task is independently actionable.
 - [ ] **7.2** `npm run build` — no TypeScript errors
 - [ ] **7.3** `npm test` — all tests pass
 - [ ] **7.4** `npx @anthropic-ai/mcpb pack` — produces `fogbugz-mcp.mcpb`
-- [ ] **7.5** Set up GitHub Actions workflow to produce a release artifact on `v1.0.0` tag
+- [x] **7.5** Set up GitHub Actions workflow to produce a release artifact on `v1.0.0` tag
 - [ ] **7.6** Create git tag `v1.0.0` and push
 
 ---
