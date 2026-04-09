@@ -2,7 +2,7 @@
 
 ![Tests](https://github.com/todevelopers/fogbugz-mcp/actions/workflows/test.yml/badge.svg)
 
-A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server for interacting with FogBugz through LLMs such as Claude. Supports both the **XML API** (`/api.asp`) and the **JSON API** (`/f/api/0/jsonapi`) with automatic version detection at startup.
+A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server for interacting with FogBugz through LLMs such as Claude. Supports both the **XML API** (`/api.asp`) and the **JSON API** (`/f/api/0/jsonapi`) with automatic version detection at startup. Works with on-premise and on-demand FogBugz installations.
 
 ## Overview
 
