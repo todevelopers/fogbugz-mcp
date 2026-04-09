@@ -152,7 +152,7 @@ npm test       # run all Jest tests
 
 ## Compatibility
 
-Tested with FogBugz 8.8.53 (XML API) and FogBugz instances with JSON API support. The server auto-detects which API to use at startup.
+Tested with FogBugz 8.8.53 (XML API). JSON API support is implemented by specification. The server auto-detects which API to use at startup.
 
 ## License
 
