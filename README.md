@@ -154,6 +154,10 @@ npm test       # run all Jest tests
 
 Tested with FogBugz 8.8.53 (XML API). JSON API support is implemented by specification. The server auto-detects which API to use at startup.
 
+## Acknowledgements
+
+This project is based on the original work by [akari2600](https://github.com/akari2600/fogbugz-mcp) — thank you for the foundation.
+
 ## License
 
 [MIT](LICENSE) © Tomáš Gažovič, ToDevelopers s.r.o.
