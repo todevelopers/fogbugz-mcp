@@ -32,6 +32,28 @@ No configuration is needed — the correct client is selected automatically.
 
 > **Note on text formatting:** Plain text only is supported in descriptions and comments when connected to FogBugz 8.x via the XML API. HTML and Markdown are stored and displayed literally.
 
+## Getting a FogBugz API Token
+
+You need an API token to authenticate the MCP server with FogBugz. There are two ways to obtain one:
+
+### 1. Via the web UI
+
+Go to **Account & Settings → User Options** and click the **Create API Token** link.
+
+See the official guide: [Create API Token using the FogBugz UI](https://support.fogbugz.com/article/52425-create-api-token-using-the-fogbugz-ui)
+
+### 2. Via API request
+
+Send the following request (replace placeholders with your values):
+
+```
+https://[yourfogbugz]/api.asp?cmd=logon&email=[youremail]&password=[yourpassword]
+```
+
+The response will contain your API token.
+
+See the official guide: [Get an API Token using FogBugz API commands](https://support.fogbugz.com/article/55717-get-an-api-token-using-fogbugz-api-commands)
+
 ## Installation
 
 ### One-click install (Claude Desktop)
