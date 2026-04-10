@@ -47,7 +47,7 @@ See the official guide: [Create API Token using the FogBugz UI](https://support.
 Send the following request (replace placeholders with your values):
 
 ```
-https://[yourfogbugz]/api.asp?cmd=logon&email=[youremail]&password=[yourpassword]
+https://[your-fogbugz-server]/api.asp?cmd=logon&email=[your-email]&password=[your-password]
 ```
 
 The response will contain your API token.
