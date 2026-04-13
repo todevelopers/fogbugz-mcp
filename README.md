@@ -178,7 +178,7 @@ Tested with FogBugz 8.8.53 (XML API). JSON API support is implemented by specifi
 
 ## Acknowledgements
 
-This project is based on the original work by [akari2600](https://github.com/akari2600/fogbugz-mcp) — thank you for the foundation.
+This project is based on the original work by [Sarasvati Akari Lara-Almeida](https://github.com/akari2600/fogbugz-mcp) — thank you for the foundation.
 
 ## License
 

@@ -24,6 +24,12 @@
     "llm"
   ],
   "author": "Tomáš Gažovič, ToDevelopers s.r.o.",
+  "contributors": [
+    {
+      "name": "Sarasvati Akari Lara-Almeida",
+      "url": "https://github.com/akari2600"
+    }
+  ],
   "license": "MIT",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
