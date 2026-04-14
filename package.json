@@ -15,13 +15,15 @@
     "test": "jest",
     "test:xml": "jest tests/xml-api.test.ts tests/commands.test.ts tests/tools.test.ts",
     "test:json": "jest tests/json-api.test.ts",
-    "explore": "ts-node scripts/api-explorer.ts",
     "mcp": "node dist/index.js"
   },
   "keywords": [
     "mcp",
     "fogbugz",
-    "llm"
+    "issue-tracking",
+    "project-management",
+    "anthropic",
+    "claude"
   ],
   "author": "Tomáš Gažovič, ToDevelopers s.r.o.",
   "contributors": [
@@ -32,7 +34,6 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.39.0",
     "@modelcontextprotocol/sdk": "^1.8.0",
     "axios": "^1.6.7",
     "dotenv": "^16.4.5",
