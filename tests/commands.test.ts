@@ -532,11 +532,11 @@ describe('listStatuses handler', () => {
     expect(result.statuses[0].name).toBe('Solo');
   });
 
-  it('calls rawRequest with listStatus and no ixCategory when no filter given', async () => {
+  it('calls rawRequest with listStatuses and no ixCategory when no filter given', async () => {
     const api = makeMockApi({ rawRequest: jest.fn().mockResolvedValue({ statuses: { status: [] } }) });
     await commands.listStatuses(api, {});
     const [cmd, params] = (api.rawRequest as jest.Mock).mock.calls[0];
-    expect(cmd).toBe('listStatus');
+    expect(cmd).toBe('listStatuses');
     expect(params).not.toHaveProperty('ixCategory');
   });
 
@@ -544,7 +544,7 @@ describe('listStatuses handler', () => {
     const api = makeMockApi({ rawRequest: jest.fn().mockResolvedValue({ statuses: { status: [] } }) });
     await commands.listStatuses(api, { ixCategory: 2 });
     const [cmd, params] = (api.rawRequest as jest.Mock).mock.calls[0];
-    expect(cmd).toBe('listStatus');
+    expect(cmd).toBe('listStatuses');
     expect(params.ixCategory).toBe(2);
   });
 

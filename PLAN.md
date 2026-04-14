@@ -214,7 +214,7 @@ Road map split by phase. Each task is independently actionable.
 - [x] **4.2** Remove unimplemented `attachmentPath` parameter from tool schemas (`create_case`, `update_case` in `src/commands/tools.ts`)
 - [x] **4.6** Add `list_projects` tool — `cmd=listProjects`, returns all undeleted projects with IDs and names
 - [x] **4.7** Add `list_milestones` tool — `cmd=listFixFors`, optional `ixProject` filter, returns milestone names and dates
-- [x] **4.8** Add `list_statuses` tool — `cmd=listStatus` (singular), optional `ixCategory` filter, returns status names and resolved flags
+- [x] **4.8** Add `list_statuses` tool — `cmd=listStatuses` (plural, see Known Issues), optional `ixCategory` filter, returns status names and resolved flags
 - [x] **4.3** Write JSON client tests — `tests/json-api.test.ts` (client operations) and `tests/auto-detection.test.ts` (factory fallback logic)
 - [x] **4.4** Overhaul `README.md` — dual-API description, one-click MCPB install, tool catalog, config params, compatibility table
 - [x] **4.5** Add `LICENSE` file (MIT, 2024–2025, Tomas Gazovic)
@@ -244,6 +244,20 @@ Road map split by phase. Each task is independently actionable.
 4. `npx @anthropic-ai/mcpb pack` — produces `fogbugz-mcp.mcpb`
 5. Manual test: install `.mcpb` in Claude Desktop, connect to FogBugz 8.x — verify XML auto-detection and read-only tools work (search, get, list). JSON API auto-detection verified only via mocked tests.
 6. GitHub Actions workflow produces release artifact on `v1.0.0` tag
+
+---
+
+## Known Issues
+
+### `listStatuses` vs `listStatus` command name
+
+The official FogBugz web documentation lists the command as `listStatus` (singular). However, `listStatus` does not work on FogBugz 8.x — only `listStatuses` (plural) returns results. Every other list command uses the plural form (`listProjects`, `listAreas`, `listCategories`, `listPriorities`, `listPeople`, `listFixFors`), so `listStatus` appears to be a documentation typo.
+
+**Current implementation:** uses `listStatuses` (plural) — matches actual API behavior on FogBugz 8.x.
+
+**Task 4.8 note in Tasks section** references `cmd=listStatus (singular)` — this is incorrect and reflects the documentation error, not the real behavior.
+
+**Action needed:** Verify whether a specific FogBugz version introduced `listStatus` as an alias or whether the web documentation has always been wrong. If `listStatus` works on newer instances, a version-conditional fallback may be needed.
 
 ---
 

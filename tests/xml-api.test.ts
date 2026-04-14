@@ -565,34 +565,34 @@ describe('FogBugzApi', () => {
       expect(mockAxios.post).toHaveBeenCalledTimes(1);
     });
 
-    // ── listStatus (used by list_statuses tool handler) ──────────────────────
+    // ── listStatuses (used by list_statuses tool handler) ──────────────────────
 
-    it('listStatus — returns parsed statuses', async () => {
+    it('listStatuses — returns parsed statuses', async () => {
       mockAxios.get.mockResolvedValueOnce({
         data: xmlStatusesResponse([
           { ixStatus: 1, sStatus: 'Active', fResolved: 0 },
           { ixStatus: 2, sStatus: 'Resolved', fResolved: 1 },
         ]),
       });
-      const result = await api.rawRequest('listStatus');
+      const result = await api.rawRequest('listStatuses');
       expect(result.statuses).toBeDefined();
     });
 
-    it('listStatus — sends cmd=listStatus in GET params', async () => {
+    it('listStatuses — sends cmd=listStatuses in GET params', async () => {
       mockAxios.get.mockResolvedValueOnce({ data: xmlStatusesResponse([]) });
-      await api.rawRequest('listStatus');
+      await api.rawRequest('listStatuses');
       expect(mockAxios.get).toHaveBeenCalledWith(
         API_ENDPOINT,
-        expect.objectContaining({ params: expect.objectContaining({ cmd: 'listStatus' }) })
+        expect.objectContaining({ params: expect.objectContaining({ cmd: 'listStatuses' }) })
       );
     });
 
-    it('listStatus — sends ixCategory filter when provided', async () => {
+    it('listStatuses — sends ixCategory filter when provided', async () => {
       mockAxios.get.mockResolvedValueOnce({ data: xmlStatusesResponse([]) });
-      await api.rawRequest('listStatus', { ixCategory: 2 });
+      await api.rawRequest('listStatuses', { ixCategory: 2 });
       expect(mockAxios.get).toHaveBeenCalledWith(
         API_ENDPOINT,
-        expect.objectContaining({ params: expect.objectContaining({ cmd: 'listStatus', ixCategory: '2' }) })
+        expect.objectContaining({ params: expect.objectContaining({ cmd: 'listStatuses', ixCategory: '2' }) })
       );
     });
 

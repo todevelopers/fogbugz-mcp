@@ -625,9 +625,9 @@ describe('FogBugzJsonClient', () => {
       expect(body.cmd).toBe('resolve');
     });
 
-    // ── listStatus (used by list_statuses tool handler) ───────────────────────
+    // ── listStatuses (used by list_statuses tool handler) ───────────────────────
 
-    it('listStatus — returns parsed statuses from data field', async () => {
+    it('listStatuses — returns parsed statuses from data field', async () => {
       mockAxios.post.mockResolvedValueOnce({
         data: jsonOk({
           statuses: [
@@ -636,22 +636,22 @@ describe('FogBugzJsonClient', () => {
           ],
         }),
       });
-      const result = await client.rawRequest('listStatus');
+      const result = await client.rawRequest('listStatuses');
       expect(result.statuses).toHaveLength(2);
     });
 
-    it('listStatus — sends cmd=listStatus in POST body', async () => {
+    it('listStatuses — sends cmd=listStatuses in POST body', async () => {
       mockAxios.post.mockResolvedValueOnce({ data: jsonOk({ statuses: [] }) });
-      await client.rawRequest('listStatus');
+      await client.rawRequest('listStatuses');
       const body = mockAxios.post.mock.calls[0][1] as any;
-      expect(body.cmd).toBe('listStatus');
+      expect(body.cmd).toBe('listStatuses');
     });
 
-    it('listStatus — sends ixCategory filter in POST body when provided', async () => {
+    it('listStatuses — sends ixCategory filter in POST body when provided', async () => {
       mockAxios.post.mockResolvedValueOnce({ data: jsonOk({ statuses: [] }) });
-      await client.rawRequest('listStatus', { ixCategory: 3 });
+      await client.rawRequest('listStatuses', { ixCategory: 3 });
       const body = mockAxios.post.mock.calls[0][1] as any;
-      expect(body.cmd).toBe('listStatus');
+      expect(body.cmd).toBe('listStatuses');
       expect(body.ixCategory).toBe(3);
     });
 

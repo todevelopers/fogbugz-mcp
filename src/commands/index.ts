@@ -463,7 +463,7 @@ export async function listStatuses(api: IFogBugzClient, args: any): Promise<stri
     const params: Record<string, any> = {};
     if (args?.ixCategory) params.ixCategory = args.ixCategory;
 
-    const result = await api.rawRequest('listStatus', params);
+    const result = await api.rawRequest('listStatuses', params);
     const statuses = result.statuses?.status || result.status || result.statuses || [];
     const list = Array.isArray(statuses) ? statuses : [statuses];
 

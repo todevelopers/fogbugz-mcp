@@ -3,7 +3,7 @@
   "manifest_version": "0.4",
   "name": "fogbugz-mcp",
   "display_name": "FogBugz",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "description": "Interact with FogBugz issue tracking via LLMs — create, search, update, assign, resolve, and close cases.",
   "author": {
     "name": "ToDevelopers s.r.o.",
