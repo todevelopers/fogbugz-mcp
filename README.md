@@ -1,7 +1,6 @@
 # <img src="icon.png" width="64" alt="FogBugz MCP Server icon" /> FogBugz MCP Server
 
 <p align="center">
-  <img src="https://github.com/todevelopers/fogbugz-mcp/actions/workflows/test.yml/badge.svg" alt="Tests" />
   <img src="https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/tommy-gun/6c206a2756e6294e7f635c9b89a7d20f/raw/fogbugz-mcp-tests.json&cacheSeconds=0" alt="Test count" />
   <img src="https://img.shields.io/github/package-json/v/todevelopers/fogbugz-mcp" alt="Version" />
   <img src="https://img.shields.io/github/license/todevelopers/fogbugz-mcp" alt="License" />
