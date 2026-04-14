@@ -20,4 +20,22 @@ jobs:
         run: npm ci
 
       - name: Run tests
-        run: npx jest
+        run: npx jest --json --outputFile=jest-results.json
+
+      - name: Extract test count
+        id: test-count
+        run: |
+          PASSED=$(node -e "const r=require('./jest-results.json'); console.log(r.numPassedTests)")
+          FAILED=$(node -e "const r=require('./jest-results.json'); console.log(r.numFailedTests)")
+          echo "passed=$PASSED" >> $GITHUB_OUTPUT
+          echo "failed=$FAILED" >> $GITHUB_OUTPUT
+
+      - name: Update test count badge
+        uses: schneegans/dynamic-badges-action@v1.7.0
+        with:
+          auth: ${{ secrets.GIST_SECRET }}
+          gistID: 6c206a2756e6294e7f635c9b89a7d20f
+          filename: fogbugz-mcp-tests.json
+          label: tests
+          message: ${{ steps.test-count.outputs.passed }} passed
+          color: ${{ steps.test-count.outputs.failed == '0' && 'brightgreen' || 'red' }}
