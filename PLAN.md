@@ -210,7 +210,7 @@ Road map split by phase. Each task is independently actionable.
 
 ### Phase 4 — Quality
 
-- [ ] **4.1** Improve tool descriptions in `src/commands/tools.ts` — examples, `title` fields, `readOnlyHint`
+- [x] **4.1** Improve tool descriptions in `src/commands/tools.ts` — examples, `title` fields, `readOnlyHint`
 - [x] **4.2** Remove unimplemented `attachmentPath` parameter from tool schemas (`create_case`, `update_case` in `src/commands/tools.ts`)
 - [ ] **4.6** Add `list_projects` tool — `cmd=listProjects`, returns all undeleted projects with IDs and names
 - [ ] **4.7** Add `list_milestones` tool — `cmd=listFixFors`, optional `ixProject` filter, returns milestone names and dates
