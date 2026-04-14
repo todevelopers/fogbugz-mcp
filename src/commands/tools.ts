@@ -22,7 +22,7 @@ interface Tool {
 export const createCaseTool: Tool = {
   name: 'create_case',
   title: 'Create Case',
-  annotations: { readOnlyHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   description: 'Creates a new FogBugz case. Example: create a bug titled "Login fails on Safari" in project "Website", area "Auth", assigned to "john@example.com", priority 2.',
   inputSchema: {
     type: 'object',
@@ -70,7 +70,7 @@ export const createCaseTool: Tool = {
 export const updateCaseTool: Tool = {
   name: 'update_case',
   title: 'Update Case',
-  annotations: { readOnlyHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   description: 'Updates an existing FogBugz case with new field values. Example: change the title of case 42 to "Improved error message", move it to milestone "v2.1", or add a comment explaining what changed.',
   inputSchema: {
     type: 'object',
@@ -118,7 +118,7 @@ export const updateCaseTool: Tool = {
 export const assignCaseTool: Tool = {
   name: 'assign_case',
   title: 'Assign Case',
-  annotations: { readOnlyHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   description: 'Assigns a FogBugz case to a specific user. Example: assign case 42 to "jane@example.com" or to "Jane Smith".',
   inputSchema: {
     type: 'object',
@@ -210,7 +210,7 @@ export const getCaseLinkTool: Tool = {
 export const createProjectTool: Tool = {
   name: 'create_project',
   title: 'Create Project',
-  annotations: { readOnlyHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   description: 'Creates a new project in FogBugz. Example: create project "Mobile App" with primary contact "alice@example.com".',
   inputSchema: {
     type: 'object',
@@ -266,7 +266,7 @@ export const getCaseTool: Tool = {
 export const apiRequestTool: Tool = {
   name: 'api_request',
   title: 'Raw API Request',
-  annotations: { readOnlyHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   description: 'Advanced/experimental: makes a raw FogBugz API request (XML or JSON selected automatically). Use this only when no dedicated tool covers the operation. The token is added automatically. Examples: cmd=listProjects; cmd=listCategories; cmd=search with params {"q": "project:Website", "cols": "sTitle,sStatus", "max": "10"}.',
   inputSchema: {
     type: 'object',
@@ -289,7 +289,7 @@ export const apiRequestTool: Tool = {
 export const resolveCaseTool: Tool = {
   name: 'resolve_case',
   title: 'Resolve Case',
-  annotations: { readOnlyHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   description: 'Resolves (marks as fixed/completed) a FogBugz case. Example: resolve case 42 with comment "Fixed in commit abc123".',
   inputSchema: {
     type: 'object',
@@ -317,7 +317,7 @@ export const resolveCaseTool: Tool = {
 export const reopenCaseTool: Tool = {
   name: 'reopen_case',
   title: 'Reopen Case',
-  annotations: { readOnlyHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   description: 'Reopens a previously closed or resolved FogBugz case. Example: reopen case 42 with comment "Issue reproduced on v2.1".',
   inputSchema: {
     type: 'object',
@@ -340,7 +340,7 @@ export const reopenCaseTool: Tool = {
 export const closeCaseTool: Tool = {
   name: 'close_case',
   title: 'Close Case',
-  annotations: { readOnlyHint: false },
+  annotations: { readOnlyHint: false, destructiveHint: true },
   description: 'Closes a FogBugz case (marks it as will not fix / done). Example: close case 42 with comment "Closed — duplicate of case 10".',
   inputSchema: {
     type: 'object',
