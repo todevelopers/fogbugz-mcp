@@ -36,6 +36,6 @@ jobs:
           auth: ${{ secrets.GIST_SECRET }}
           gistID: 6c206a2756e6294e7f635c9b89a7d20f
           filename: fogbugz-mcp-tests.json
-          label: tests
+          label: Tests
           message: ${{ steps.test-count.outputs.passed }} passed
           color: ${{ steps.test-count.outputs.failed == '0' && 'brightgreen' || 'red' }}
