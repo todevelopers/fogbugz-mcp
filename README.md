@@ -1,4 +1,4 @@
-# FogBugz MCP Server
+# <img src="icon.png" width="64" alt="FogBugz MCP Server icon" /> FogBugz MCP Server
 
 ![Tests](https://github.com/todevelopers/fogbugz-mcp/actions/workflows/test.yml/badge.svg)
 
@@ -25,10 +25,10 @@ At startup the server automatically selects the right API client for your FogBug
 
 No configuration is needed — the correct client is selected automatically.
 
-| FogBugz version | API used |
-|-----------------|----------|
-| ≥ 9 (JSON API available) | JSON API (`/f/api/0/jsonapi`) |
-| < 9 or JSON API unreachable | XML API (`/api.asp`) |
+| FogBugz version             | API used                      |
+| --------------------------- | ----------------------------- |
+| ≥ 9 (JSON API available)    | JSON API (`/f/api/0/jsonapi`) |
+| < 9 or JSON API unreachable | XML API (`/api.asp`)          |
 
 > **Note on text formatting:** Plain text only is supported in descriptions and comments when connected to FogBugz 8.x via the XML API. HTML and Markdown are stored and displayed literally.
 
@@ -131,46 +131,46 @@ npm test       # run all Jest tests
 
 ### Case Management
 
-| Tool | Description |
-|------|-------------|
-| `create_case` | Create a new case |
-| `update_case` | Update an existing case (title, comment, project, area, milestone, priority) |
-| `assign_case` | Assign a case to a user |
-| `resolve_case` | Resolve (mark as fixed/completed) a case |
-| `reopen_case` | Reopen a resolved or closed case |
-| `close_case` | Close a case |
+| Tool           | Description                                                                  |
+| -------------- | ---------------------------------------------------------------------------- |
+| `create_case`  | Create a new case                                                            |
+| `update_case`  | Update an existing case (title, comment, project, area, milestone, priority) |
+| `assign_case`  | Assign a case to a user                                                      |
+| `resolve_case` | Resolve (mark as fixed/completed) a case                                     |
+| `reopen_case`  | Reopen a resolved or closed case                                             |
+| `close_case`   | Close a case                                                                 |
 
 ### Search & View
 
-| Tool | Description |
-|------|-------------|
-| `search_cases` | Search using FogBugz query syntax (e.g. `project:Website status:Active`) |
-| `list_my_cases` | List cases assigned to a user (defaults to current user) |
-| `get_case` | Get detailed case info including full event/comment history |
-| `get_case_link` | Get a direct URL to a case |
+| Tool            | Description                                                              |
+| --------------- | ------------------------------------------------------------------------ |
+| `search_cases`  | Search using FogBugz query syntax (e.g. `project:Website status:Active`) |
+| `list_my_cases` | List cases assigned to a user (defaults to current user)                 |
+| `get_case`      | Get detailed case info including full event/comment history              |
+| `get_case_link` | Get a direct URL to a case                                               |
 
 ### Reference Data
 
-| Tool | Description |
-|------|-------------|
-| `list_people` | List all users with IDs, names, and emails |
+| Tool              | Description                                       |
+| ----------------- | ------------------------------------------------- |
+| `list_people`     | List all users with IDs, names, and emails        |
 | `list_categories` | List case categories (Bug, Feature Request, etc.) |
-| `view_project` | Get detailed project information |
-| `view_area` | Get detailed area information |
-| `create_project` | Create a new project |
+| `view_project`    | Get detailed project information                  |
+| `view_area`       | Get detailed area information                     |
+| `create_project`  | Create a new project                              |
 
 ### Advanced
 
-| Tool | Description |
-|------|-------------|
+| Tool          | Description                                                           |
+| ------------- | --------------------------------------------------------------------- |
 | `api_request` | Make a generic XML API request for queries not covered by other tools |
 
 ## Environment Variables
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `FOGBUGZ_URL` | Yes | Base URL of your FogBugz instance (e.g. `https://company.fogbugz.com`) |
-| `FOGBUGZ_API_KEY` | Yes | FogBugz API token |
+| Variable          | Required | Description                                                            |
+| ----------------- | -------- | ---------------------------------------------------------------------- |
+| `FOGBUGZ_URL`     | Yes      | Base URL of your FogBugz instance (e.g. `https://company.fogbugz.com`) |
+| `FOGBUGZ_API_KEY` | Yes      | FogBugz API token                                                      |
 
 ## Compatibility
 
