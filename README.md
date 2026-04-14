@@ -2,6 +2,10 @@
 
 ![Tests](https://github.com/todevelopers/fogbugz-mcp/actions/workflows/test.yml/badge.svg)
 ![Test count](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/tommy-gun/6c206a2756e6294e7f635c9b89a7d20f/raw/fogbugz-mcp-tests.json&cacheSeconds=0)
+![Version](https://img.shields.io/github/package-json/v/todevelopers/fogbugz-mcp)
+![License](https://img.shields.io/github/license/todevelopers/fogbugz-mcp)
+![Node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)
+![MCP](https://img.shields.io/badge/MCP-compatible-blue)
 
 A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server for interacting with FogBugz through LLMs such as Claude. Supports both the **XML API** (`/api.asp`) and the **JSON API** (`/f/api/0/jsonapi`) with automatic version detection at startup. Works with on-premise and on-demand FogBugz installations.
 
