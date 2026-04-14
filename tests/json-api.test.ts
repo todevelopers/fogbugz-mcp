@@ -624,5 +624,45 @@ describe('FogBugzJsonClient', () => {
       expect(body.ixBug).toBe(5);
       expect(body.cmd).toBe('resolve');
     });
+
+    // ── listStatus (used by list_statuses tool handler) ───────────────────────
+
+    it('listStatus — returns parsed statuses from data field', async () => {
+      mockAxios.post.mockResolvedValueOnce({
+        data: jsonOk({
+          statuses: [
+            { ixStatus: 1, sStatus: 'Active', fResolved: false },
+            { ixStatus: 2, sStatus: 'Resolved', fResolved: true },
+          ],
+        }),
+      });
+      const result = await client.rawRequest('listStatus');
+      expect(result.statuses).toHaveLength(2);
+    });
+
+    it('listStatus — sends cmd=listStatus in POST body', async () => {
+      mockAxios.post.mockResolvedValueOnce({ data: jsonOk({ statuses: [] }) });
+      await client.rawRequest('listStatus');
+      const body = mockAxios.post.mock.calls[0][1] as any;
+      expect(body.cmd).toBe('listStatus');
+    });
+
+    it('listStatus — sends ixCategory filter in POST body when provided', async () => {
+      mockAxios.post.mockResolvedValueOnce({ data: jsonOk({ statuses: [] }) });
+      await client.rawRequest('listStatus', { ixCategory: 3 });
+      const body = mockAxios.post.mock.calls[0][1] as any;
+      expect(body.cmd).toBe('listStatus');
+      expect(body.ixCategory).toBe(3);
+    });
+
+    // ── listFixFors with ixProject filter (used by list_milestones tool handler) ─
+
+    it('listFixFors — sends ixProject filter in POST body when provided', async () => {
+      mockAxios.post.mockResolvedValueOnce({ data: jsonOk({ fixfors: [] }) });
+      await client.rawRequest('listFixFors', { ixProject: 5 });
+      const body = mockAxios.post.mock.calls[0][1] as any;
+      expect(body.cmd).toBe('listFixFors');
+      expect(body.ixProject).toBe(5);
+    });
   });
 });

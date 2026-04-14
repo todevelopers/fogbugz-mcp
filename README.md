@@ -161,6 +161,9 @@ npm test       # run all Jest tests
 | ----------------- | ------------------------------------------------- |
 | `list_people`     | List all users with IDs, names, and emails        |
 | `list_categories` | List case categories (Bug, Feature Request, etc.) |
+| `list_projects`   | List all active projects with IDs and names       |
+| `list_milestones` | List milestones/fix-fors, optionally by project   |
+| `list_statuses`   | List case statuses with resolved flags, optionally by category |
 | `view_project`    | Get detailed project information                  |
 | `view_area`       | Get detailed area information                     |
 | `create_project`  | Create a new project                              |

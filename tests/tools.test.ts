@@ -14,6 +14,9 @@ const DISPATCH_TOOL_NAMES = new Set([
   'close_case',
   'list_people',
   'list_categories',
+  'list_projects',
+  'list_milestones',
+  'list_statuses',
   'view_project',
   'view_area',
   'create_project',
@@ -28,6 +31,9 @@ const READ_ONLY_TOOL_NAMES = new Set([
   'get_case',
   'list_people',
   'list_categories',
+  'list_projects',
+  'list_milestones',
+  'list_statuses',
   'view_project',
   'view_area',
 ]);
@@ -44,8 +50,8 @@ const WRITE_TOOL_NAMES = new Set([
 ]);
 
 describe('fogbugzTools schema validation', () => {
-  it('exports an array of 16 tools', () => {
-    expect(fogbugzTools).toHaveLength(16);
+  it('exports an array of 19 tools', () => {
+    expect(fogbugzTools).toHaveLength(19);
   });
 
   it('has no duplicate tool names', () => {

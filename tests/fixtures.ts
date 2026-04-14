@@ -203,6 +203,22 @@ export function xmlPrioritiesResponse(priorities: PriorityFields[]): string {
   return xmlResponse(`<priorities>${priorities.map(xmlPriority).join('')}</priorities>`);
 }
 
+export interface StatusFields {
+  ixStatus?: number;
+  sStatus?: string;
+  fResolved?: 0 | 1;
+}
+
+export function xmlStatusesResponse(statuses: StatusFields[]): string {
+  const inner = statuses
+    .map(
+      ({ ixStatus = 1, sStatus = 'Active', fResolved = 0 }) =>
+        `<status><ixStatus>${ixStatus}</ixStatus><sStatus>${sStatus}</sStatus><fResolved>${fResolved}</fResolved></status>`
+    )
+    .join('');
+  return xmlResponse(`<statuses>${inner}</statuses>`);
+}
+
 export interface CategoryFields {
   ixCategory?: number;
   sCategory?: string;

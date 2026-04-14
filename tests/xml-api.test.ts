@@ -12,6 +12,7 @@ import {
   xmlAreasResponse,
   xmlFixForsResponse,
   xmlPrioritiesResponse,
+  xmlStatusesResponse,
 } from './fixtures';
 
 jest.mock('axios');
@@ -562,6 +563,50 @@ describe('FogBugzApi', () => {
       mockAxios.post.mockResolvedValueOnce({ data: xmlCaseResponse({ ixBug: 5 }) });
       await api.rawRequest('resolve', { ixBug: 5 });
       expect(mockAxios.post).toHaveBeenCalledTimes(1);
+    });
+
+    // ── listStatus (used by list_statuses tool handler) ──────────────────────
+
+    it('listStatus — returns parsed statuses', async () => {
+      mockAxios.get.mockResolvedValueOnce({
+        data: xmlStatusesResponse([
+          { ixStatus: 1, sStatus: 'Active', fResolved: 0 },
+          { ixStatus: 2, sStatus: 'Resolved', fResolved: 1 },
+        ]),
+      });
+      const result = await api.rawRequest('listStatus');
+      expect(result.statuses).toBeDefined();
+    });
+
+    it('listStatus — sends cmd=listStatus in GET params', async () => {
+      mockAxios.get.mockResolvedValueOnce({ data: xmlStatusesResponse([]) });
+      await api.rawRequest('listStatus');
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        API_ENDPOINT,
+        expect.objectContaining({ params: expect.objectContaining({ cmd: 'listStatus' }) })
+      );
+    });
+
+    it('listStatus — sends ixCategory filter when provided', async () => {
+      mockAxios.get.mockResolvedValueOnce({ data: xmlStatusesResponse([]) });
+      await api.rawRequest('listStatus', { ixCategory: 2 });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        API_ENDPOINT,
+        expect.objectContaining({ params: expect.objectContaining({ cmd: 'listStatus', ixCategory: '2' }) })
+      );
+    });
+
+    // ── listFixFors with ixProject filter (used by list_milestones tool handler) ─
+
+    it('listFixFors — sends ixProject filter when provided', async () => {
+      mockAxios.get.mockResolvedValueOnce({
+        data: xmlResponse('<fixfors></fixfors>'),
+      });
+      await api.rawRequest('listFixFors', { ixProject: 5 });
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        API_ENDPOINT,
+        expect.objectContaining({ params: expect.objectContaining({ cmd: 'listFixFors', ixProject: '5' }) })
+      );
     });
   });
 });

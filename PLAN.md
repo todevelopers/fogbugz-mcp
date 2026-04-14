@@ -212,9 +212,9 @@ Road map split by phase. Each task is independently actionable.
 
 - [x] **4.1** Improve tool descriptions in `src/commands/tools.ts` — examples, `title` fields, `readOnlyHint`
 - [x] **4.2** Remove unimplemented `attachmentPath` parameter from tool schemas (`create_case`, `update_case` in `src/commands/tools.ts`)
-- [ ] **4.6** Add `list_projects` tool — `cmd=listProjects`, returns all undeleted projects with IDs and names
-- [ ] **4.7** Add `list_milestones` tool — `cmd=listFixFors`, optional `ixProject` filter, returns milestone names and dates
-- [ ] **4.8** Add `list_statuses` tool — `cmd=listStatus` (singular), optional `ixCategory` filter, returns status names and resolved flags
+- [x] **4.6** Add `list_projects` tool — `cmd=listProjects`, returns all undeleted projects with IDs and names
+- [x] **4.7** Add `list_milestones` tool — `cmd=listFixFors`, optional `ixProject` filter, returns milestone names and dates
+- [x] **4.8** Add `list_statuses` tool — `cmd=listStatus` (singular), optional `ixCategory` filter, returns status names and resolved flags
 - [x] **4.3** Write JSON client tests — `tests/json-api.test.ts` (client operations) and `tests/auto-detection.test.ts` (factory fallback logic)
 - [x] **4.4** Overhaul `README.md` — dual-API description, one-click MCPB install, tool catalog, config params, compatibility table
 - [x] **4.5** Add `LICENSE` file (MIT, 2024–2025, Tomas Gazovic)

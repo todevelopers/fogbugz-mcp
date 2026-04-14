@@ -376,6 +376,185 @@ describe('listCategories handler', () => {
   });
 });
 
+// ─── listProjects ────────────────────────────────────────────────────────────
+
+describe('listProjects handler', () => {
+  it('returns formatted projects list', async () => {
+    const api = makeMockApi({
+      listProjects: jest.fn().mockResolvedValue([
+        { ixProject: 1, sProject: 'Alpha' },
+        { ixProject: 2, sProject: 'Beta' },
+      ]),
+    });
+    const result = JSON.parse(await commands.listProjects(api, {}));
+    expect(result.count).toBe(2);
+    expect(result.projects[0].id).toBe(1);
+    expect(result.projects[0].name).toBe('Alpha');
+    expect(result.projects[1].id).toBe(2);
+    expect(result.projects[1].name).toBe('Beta');
+    expect(result.message).toContain('2');
+  });
+
+  it('returns count 0 and empty array when no projects', async () => {
+    const api = makeMockApi({ listProjects: jest.fn().mockResolvedValue([]) });
+    const result = JSON.parse(await commands.listProjects(api, {}));
+    expect(result.count).toBe(0);
+    expect(result.projects).toEqual([]);
+  });
+
+  it('returns error JSON on failure', async () => {
+    const api = makeMockApi({ listProjects: jest.fn().mockRejectedValue(new Error('API down')) });
+    const result = JSON.parse(await commands.listProjects(api, {}));
+    expect(result.error).toBe('API down');
+  });
+});
+
+// ─── listMilestones ───────────────────────────────────────────────────────────
+
+describe('listMilestones handler', () => {
+  it('returns formatted milestones from nested fixfors.fixfor structure', async () => {
+    const api = makeMockApi({
+      rawRequest: jest.fn().mockResolvedValue({
+        fixfors: {
+          fixfor: [
+            { ixFixFor: 10, sFixFor: 'v1.0', ixProject: 1, dt: '2024-06-01' },
+            { ixFixFor: 11, sFixFor: 'v2.0', ixProject: 1, dt: '2024-12-01' },
+          ],
+        },
+      }),
+    });
+    const result = JSON.parse(await commands.listMilestones(api, {}));
+    expect(result.count).toBe(2);
+    expect(result.milestones[0].id).toBe(10);
+    expect(result.milestones[0].name).toBe('v1.0');
+    expect(result.milestones[0].projectId).toBe(1);
+    expect(result.milestones[0].date).toBe('2024-06-01');
+    expect(result.milestones[1].name).toBe('v2.0');
+  });
+
+  it('handles flat fixfor structure (no wrapper)', async () => {
+    const api = makeMockApi({
+      rawRequest: jest.fn().mockResolvedValue({
+        fixfor: [{ ixFixFor: 5, sFixFor: 'Milestone A', ixProject: 2, dt: '' }],
+      }),
+    });
+    const result = JSON.parse(await commands.listMilestones(api, {}));
+    expect(result.count).toBe(1);
+    expect(result.milestones[0].name).toBe('Milestone A');
+  });
+
+  it('wraps a single object into an array', async () => {
+    const api = makeMockApi({
+      rawRequest: jest.fn().mockResolvedValue({
+        fixfors: { fixfor: { ixFixFor: 7, sFixFor: 'Solo', ixProject: 3, dt: '' } },
+      }),
+    });
+    const result = JSON.parse(await commands.listMilestones(api, {}));
+    expect(result.count).toBe(1);
+    expect(result.milestones[0].name).toBe('Solo');
+  });
+
+  it('calls rawRequest with listFixFors and no ixProject when no filter given', async () => {
+    const api = makeMockApi({ rawRequest: jest.fn().mockResolvedValue({ fixfors: { fixfor: [] } }) });
+    await commands.listMilestones(api, {});
+    const [cmd, params] = (api.rawRequest as jest.Mock).mock.calls[0];
+    expect(cmd).toBe('listFixFors');
+    expect(params).not.toHaveProperty('ixProject');
+  });
+
+  it('passes ixProject filter to rawRequest when provided', async () => {
+    const api = makeMockApi({ rawRequest: jest.fn().mockResolvedValue({ fixfors: { fixfor: [] } }) });
+    await commands.listMilestones(api, { ixProject: 5 });
+    const [cmd, params] = (api.rawRequest as jest.Mock).mock.calls[0];
+    expect(cmd).toBe('listFixFors');
+    expect(params.ixProject).toBe(5);
+  });
+
+  it('returns error JSON on failure', async () => {
+    const api = makeMockApi({ rawRequest: jest.fn().mockRejectedValue(new Error('fail')) });
+    const result = JSON.parse(await commands.listMilestones(api, {}));
+    expect(result.error).toBe('fail');
+  });
+});
+
+// ─── listStatuses ─────────────────────────────────────────────────────────────
+
+describe('listStatuses handler', () => {
+  it('returns formatted statuses from nested statuses.status structure', async () => {
+    const api = makeMockApi({
+      rawRequest: jest.fn().mockResolvedValue({
+        statuses: {
+          status: [
+            { ixStatus: 1, sStatus: 'Active', fResolved: '0' },
+            { ixStatus: 2, sStatus: 'Resolved', fResolved: '1' },
+          ],
+        },
+      }),
+    });
+    const result = JSON.parse(await commands.listStatuses(api, {}));
+    expect(result.count).toBe(2);
+    expect(result.statuses[0].id).toBe(1);
+    expect(result.statuses[0].name).toBe('Active');
+    expect(result.statuses[0].resolved).toBe(false);
+    expect(result.statuses[1].name).toBe('Resolved');
+    expect(result.statuses[1].resolved).toBe(true);
+  });
+
+  it('handles flat status structure (no wrapper)', async () => {
+    const api = makeMockApi({
+      rawRequest: jest.fn().mockResolvedValue({
+        status: [{ ixStatus: 3, sStatus: 'Closed', fResolved: '1' }],
+      }),
+    });
+    const result = JSON.parse(await commands.listStatuses(api, {}));
+    expect(result.count).toBe(1);
+    expect(result.statuses[0].resolved).toBe(true);
+  });
+
+  it('treats boolean true fResolved as resolved', async () => {
+    const api = makeMockApi({
+      rawRequest: jest.fn().mockResolvedValue({
+        statuses: { status: [{ ixStatus: 4, sStatus: 'Done', fResolved: true }] },
+      }),
+    });
+    const result = JSON.parse(await commands.listStatuses(api, {}));
+    expect(result.statuses[0].resolved).toBe(true);
+  });
+
+  it('wraps a single status object into an array', async () => {
+    const api = makeMockApi({
+      rawRequest: jest.fn().mockResolvedValue({
+        statuses: { status: { ixStatus: 9, sStatus: 'Solo', fResolved: '0' } },
+      }),
+    });
+    const result = JSON.parse(await commands.listStatuses(api, {}));
+    expect(result.count).toBe(1);
+    expect(result.statuses[0].name).toBe('Solo');
+  });
+
+  it('calls rawRequest with listStatus and no ixCategory when no filter given', async () => {
+    const api = makeMockApi({ rawRequest: jest.fn().mockResolvedValue({ statuses: { status: [] } }) });
+    await commands.listStatuses(api, {});
+    const [cmd, params] = (api.rawRequest as jest.Mock).mock.calls[0];
+    expect(cmd).toBe('listStatus');
+    expect(params).not.toHaveProperty('ixCategory');
+  });
+
+  it('passes ixCategory filter to rawRequest when provided', async () => {
+    const api = makeMockApi({ rawRequest: jest.fn().mockResolvedValue({ statuses: { status: [] } }) });
+    await commands.listStatuses(api, { ixCategory: 2 });
+    const [cmd, params] = (api.rawRequest as jest.Mock).mock.calls[0];
+    expect(cmd).toBe('listStatus');
+    expect(params.ixCategory).toBe(2);
+  });
+
+  it('returns error JSON on failure', async () => {
+    const api = makeMockApi({ rawRequest: jest.fn().mockRejectedValue(new Error('fail')) });
+    const result = JSON.parse(await commands.listStatuses(api, {}));
+    expect(result.error).toBe('fail');
+  });
+});
+
 // ─── viewProject ─────────────────────────────────────────────────────────────
 
 describe('viewProject handler', () => {

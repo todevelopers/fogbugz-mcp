@@ -3,7 +3,7 @@
   "manifest_version": "0.4",
   "name": "fogbugz-mcp",
   "display_name": "FogBugz",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Interact with FogBugz issue tracking via LLMs — create, search, update, assign, resolve, and close cases.",
   "author": {
     "name": "ToDevelopers s.r.o.",
@@ -27,6 +27,9 @@
     { "name": "get_case", "description": "Gets detailed information about a specific FogBugz case, including its full event/comment history. Example: fetch all details and comments for case 42." },
     { "name": "list_people", "description": "Lists all people (users) in FogBugz with their IDs, names, and email addresses. Useful for finding the correct assignee name or ID before creating or updating a case." },
     { "name": "list_categories", "description": "Lists all case categories defined in FogBugz (e.g., Bug, Feature Request, Inquiry). Returns category IDs and names." },
+    { "name": "list_projects", "description": "Lists all active (non-deleted) projects in FogBugz with their IDs and names. Example: retrieve all projects to find the correct project ID before creating a case." },
+    { "name": "list_milestones", "description": "Lists milestones (fix-for versions) in FogBugz. Optionally filter by project ID. Example: list all milestones for project 5 to find the right target release." },
+    { "name": "list_statuses", "description": "Lists all case statuses defined in FogBugz. Optionally filter by category ID. Returns status names and whether each status counts as resolved. Example: list statuses for category 1 (Bug) to see available workflow states." },
     { "name": "view_project", "description": "Gets detailed information about a specific FogBugz project by its numeric ID. Example: view details for project with ID 3." },
     { "name": "view_area", "description": "Gets detailed information about a specific FogBugz area by its numeric ID. Example: view details for area with ID 7." },
     { "name": "create_project", "description": "Creates a new project in FogBugz. Example: create project \"Mobile App\" with primary contact \"alice@example.com\"." },

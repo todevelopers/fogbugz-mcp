@@ -46,6 +46,9 @@ async function main() {
       case 'close_case':      content = await handlers.closeCase(api, args); break;
       case 'list_people':     content = await handlers.listPeople(api, args); break;
       case 'list_categories': content = await handlers.listCategories(api, args); break;
+      case 'list_projects':   content = await handlers.listProjects(api, args); break;
+      case 'list_milestones': content = await handlers.listMilestones(api, args); break;
+      case 'list_statuses':   content = await handlers.listStatuses(api, args); break;
       case 'view_project':    content = await handlers.viewProject(api, args); break;
       case 'view_area':       content = await handlers.viewArea(api, args); break;
       case 'create_project':  content = await handlers.createProject(api, args); break;

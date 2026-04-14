@@ -406,6 +406,84 @@ export async function listCategories(api: IFogBugzClient, _args: any): Promise<s
 }
 
 /**
+ * Lists all active projects
+ */
+export async function listProjects(api: IFogBugzClient, _args: any): Promise<string> {
+  try {
+    const projects = await api.listProjects();
+    const formatted = projects.map(p => ({
+      id: p.ixProject,
+      name: p.sProject,
+    }));
+
+    return JSON.stringify({
+      count: formatted.length,
+      projects: formatted,
+      message: `Found ${formatted.length} projects.`,
+    });
+  } catch (error: any) {
+    return JSON.stringify({ error: error.message });
+  }
+}
+
+/**
+ * Lists milestones (fix-fors), optionally filtered by project
+ */
+export async function listMilestones(api: IFogBugzClient, args: any): Promise<string> {
+  try {
+    const params: Record<string, any> = {};
+    if (args?.ixProject) params.ixProject = args.ixProject;
+
+    const result = await api.rawRequest('listFixFors', params);
+    const fixfors = result.fixfors?.fixfor || result.fixfor || result.fixfors || [];
+    const list = Array.isArray(fixfors) ? fixfors : [fixfors];
+
+    const formatted = list.map((f: any) => ({
+      id: Number(f.ixFixFor),
+      name: f.sFixFor || '',
+      projectId: Number(f.ixProject || 0),
+      date: f.dt || '',
+    }));
+
+    return JSON.stringify({
+      count: formatted.length,
+      milestones: formatted,
+      message: `Found ${formatted.length} milestones.`,
+    });
+  } catch (error: any) {
+    return JSON.stringify({ error: error.message });
+  }
+}
+
+/**
+ * Lists all case statuses, optionally filtered by category
+ */
+export async function listStatuses(api: IFogBugzClient, args: any): Promise<string> {
+  try {
+    const params: Record<string, any> = {};
+    if (args?.ixCategory) params.ixCategory = args.ixCategory;
+
+    const result = await api.rawRequest('listStatus', params);
+    const statuses = result.statuses?.status || result.status || result.statuses || [];
+    const list = Array.isArray(statuses) ? statuses : [statuses];
+
+    const formatted = list.map((s: any) => ({
+      id: Number(s.ixStatus),
+      name: s.sStatus || '',
+      resolved: s.fResolved === '1' || s.fResolved === true,
+    }));
+
+    return JSON.stringify({
+      count: formatted.length,
+      statuses: formatted,
+      message: `Found ${formatted.length} statuses.`,
+    });
+  } catch (error: any) {
+    return JSON.stringify({ error: error.message });
+  }
+}
+
+/**
  * Views detailed project information
  */
 export async function viewProject(api: IFogBugzClient, args: any): Promise<string> {

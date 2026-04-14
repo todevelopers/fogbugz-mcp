@@ -385,6 +385,55 @@ export const listCategoriesTool: Tool = {
   },
 };
 
+// Tool: List all projects
+export const listProjectsTool: Tool = {
+  name: 'list_projects',
+  title: 'List Projects',
+  annotations: { readOnlyHint: true },
+  description: 'Lists all active (non-deleted) projects in FogBugz with their IDs and names. Example: retrieve all projects to find the correct project ID before creating a case.',
+  inputSchema: {
+    type: 'object',
+    properties: {},
+    required: [],
+  },
+};
+
+// Tool: List all milestones (fix-fors)
+export const listMilestonesTool: Tool = {
+  name: 'list_milestones',
+  title: 'List Milestones',
+  annotations: { readOnlyHint: true },
+  description: 'Lists milestones (fix-for versions) in FogBugz. Optionally filter by project ID. Example: list all milestones for project 5 to find the right target release.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      ixProject: {
+        type: 'number',
+        description: 'Optional project ID to filter milestones.',
+      },
+    },
+    required: [],
+  },
+};
+
+// Tool: List all case statuses
+export const listStatusesTool: Tool = {
+  name: 'list_statuses',
+  title: 'List Statuses',
+  annotations: { readOnlyHint: true },
+  description: 'Lists all case statuses defined in FogBugz. Optionally filter by category ID. Returns status names and whether each status counts as resolved. Example: list statuses for category 1 (Bug) to see available workflow states.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      ixCategory: {
+        type: 'number',
+        description: 'Optional category ID to filter statuses.',
+      },
+    },
+    required: [],
+  },
+};
+
 // Tool: View project details
 export const viewProjectTool: Tool = {
   name: 'view_project',
@@ -435,6 +484,9 @@ export const fogbugzTools = [
   getCaseTool,
   listPeopleTool,
   listCategoriesTool,
+  listProjectsTool,
+  listMilestonesTool,
+  listStatusesTool,
   viewProjectTool,
   viewAreaTool,
   createProjectTool,
