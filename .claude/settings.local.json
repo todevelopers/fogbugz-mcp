@@ -5,7 +5,12 @@
       "Bash(python -c \"from PIL import Image; print\\(''ok''\\)\")",
       "Bash(python -c \":*)",
       "Bash(npm test:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(npm run *)",
+      "Bash(git -C C:\\\\GitHubRepos\\\\fogbugz-mcp status)",
+      "Bash(git -C C:\\\\GitHubRepos\\\\fogbugz-mcp diff)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }
