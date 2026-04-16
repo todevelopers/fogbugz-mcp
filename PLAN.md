@@ -243,8 +243,8 @@ Road map split by phase. Each task is independently actionable.
 ### Phase 9 — Code Review Fixes (`fogbugz-mcp_code_review.md`)
 
 - [x] **9.1** 🔴 Fix API key exposure: send all XML requests as POST (token in body, not URL) — `src/api/xml-client.ts`
-- [ ] **9.2** 🟡 Add input validation for required parameters in all command handlers — `src/commands/index.ts`
-- [ ] **9.3** 🟡 Add blocklist/allowlist to `api_request` tool to prevent arbitrary destructive command execution — `src/commands/index.ts`
+- [x] **9.2** 🟡 Add input validation for required parameters in all command handlers — `src/commands/index.ts`
+- [x] **9.3** 🟡 Add blocklist/allowlist to `api_request` tool to prevent arbitrary destructive command execution — `src/commands/index.ts`
 - [ ] **9.4** 🟡 Replace hardcoded version string in `src/index.ts` with dynamic import from `package.json`
 - [ ] **9.5** 🟡 Replace hand-rolled `Tool` interface in `src/commands/tools.ts` with real SDK import
 - [ ] **9.6** 🟢 Remove all `optional: true` annotations from JSON Schema properties in `src/commands/tools.ts`
