@@ -62,6 +62,19 @@ Good: `'Gets detailed information about a specific FogBugz case, including its f
 - Every parameter must have a non-empty `description`.
 - Include allowed values or format where relevant (e.g. `'Priority level (number 1-7) or name'`).
 
+## Command handler input validation
+
+Every handler added to `src/commands/index.ts` must:
+
+1. Destructure `args` with a fallback: `const { ... } = args || {};`
+2. Guard every required parameter before use and return a descriptive error JSON immediately:
+
+```typescript
+if (!caseId) return JSON.stringify({ error: 'caseId is required' });
+```
+
+Never let a missing parameter propagate to the API client — it produces cryptic errors or silent no-ops.
+
 ## Tools manifest sync
 
 Any time a tool is **added, renamed, or removed** in `src/commands/tools.ts`, the `"tools"` array in `manifest.json` must be updated to match — same name, same description. These two files must always be in sync.

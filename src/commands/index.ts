@@ -17,7 +17,9 @@ export async function createCase(api: IFogBugzClient, args: any): Promise<string
     milestone,
     priority,
     assignee,
-  } = args;
+  } = args || {};
+
+  if (!title) return JSON.stringify({ error: 'title is required' });
 
   const params: CreateCaseParams = {
     sTitle: title,
@@ -64,7 +66,9 @@ export async function updateCase(api: IFogBugzClient, args: any): Promise<string
     area,
     milestone,
     priority,
-  } = args;
+  } = args || {};
+
+  if (!caseId) return JSON.stringify({ error: 'caseId is required' });
 
   const params: EditCaseParams = {
     ixBug: caseId,
@@ -103,7 +107,10 @@ export async function updateCase(api: IFogBugzClient, args: any): Promise<string
  * Assigns a FogBugz case to a user
  */
 export async function assignCase(api: IFogBugzClient, args: any): Promise<string> {
-  const { caseId, assignee } = args;
+  const { caseId, assignee } = args || {};
+
+  if (!caseId) return JSON.stringify({ error: 'caseId is required' });
+  if (!assignee) return JSON.stringify({ error: 'assignee is required' });
 
   try {
     const updatedCase = await api.assignCase(caseId, assignee);
@@ -124,7 +131,7 @@ export async function assignCase(api: IFogBugzClient, args: any): Promise<string
  * Lists FogBugz cases assigned to a user
  */
 export async function listUserCases(api: IFogBugzClient, args: any): Promise<string> {
-  const { assignee, status, limit } = args;
+  const { assignee, status, limit } = args || {};
 
   try {
     let query = '';
@@ -184,7 +191,9 @@ export async function listUserCases(api: IFogBugzClient, args: any): Promise<str
  * Searches for FogBugz cases
  */
 export async function searchCases(api: IFogBugzClient, args: any): Promise<string> {
-  const { query, limit } = args;
+  const { query, limit } = args || {};
+
+  if (!query) return JSON.stringify({ error: 'query is required' });
 
   try {
     const cases = await api.searchCases({
@@ -231,7 +240,9 @@ export async function searchCases(api: IFogBugzClient, args: any): Promise<strin
  * Gets a direct link to a FogBugz case
  */
 export async function getCaseLink(api: IFogBugzClient, args: any): Promise<string> {
-  const { caseId } = args;
+  const { caseId } = args || {};
+
+  if (!caseId) return JSON.stringify({ error: 'caseId is required' });
 
   try {
     const caseLink = api.getCaseLink(caseId);
@@ -251,7 +262,9 @@ export async function getCaseLink(api: IFogBugzClient, args: any): Promise<strin
  * Gets detailed information about a specific case
  */
 export async function getCase(api: IFogBugzClient, args: any): Promise<string> {
-  const { caseId, cols } = args;
+  const { caseId, cols } = args || {};
+
+  if (!caseId) return JSON.stringify({ error: 'caseId is required' });
 
   try {
     const bugCase = await api.getCase(caseId, cols);
@@ -287,7 +300,9 @@ export async function getCase(api: IFogBugzClient, args: any): Promise<string> {
  * Resolves a FogBugz case
  */
 export async function resolveCase(api: IFogBugzClient, args: any): Promise<string> {
-  const { caseId, comment, ixStatus } = args;
+  const { caseId, comment, ixStatus } = args || {};
+
+  if (!caseId) return JSON.stringify({ error: 'caseId is required' });
 
   try {
     const params: Record<string, any> = { ixBug: caseId };
@@ -314,7 +329,9 @@ export async function resolveCase(api: IFogBugzClient, args: any): Promise<strin
  * Reopens a FogBugz case
  */
 export async function reopenCase(api: IFogBugzClient, args: any): Promise<string> {
-  const { caseId, comment } = args;
+  const { caseId, comment } = args || {};
+
+  if (!caseId) return JSON.stringify({ error: 'caseId is required' });
 
   try {
     const params: Record<string, any> = { ixBug: caseId };
@@ -338,7 +355,9 @@ export async function reopenCase(api: IFogBugzClient, args: any): Promise<string
  * Closes a FogBugz case
  */
 export async function closeCase(api: IFogBugzClient, args: any): Promise<string> {
-  const { caseId, comment } = args;
+  const { caseId, comment } = args || {};
+
+  if (!caseId) return JSON.stringify({ error: 'caseId is required' });
 
   try {
     const params: Record<string, any> = { ixBug: caseId };
@@ -487,7 +506,9 @@ export async function listStatuses(api: IFogBugzClient, args: any): Promise<stri
  * Views detailed project information
  */
 export async function viewProject(api: IFogBugzClient, args: any): Promise<string> {
-  const { ixProject } = args;
+  const { ixProject } = args || {};
+
+  if (!ixProject) return JSON.stringify({ error: 'ixProject is required' });
 
   try {
     const result = await api.rawRequest('viewProject', { ixProject });
@@ -511,7 +532,9 @@ export async function viewProject(api: IFogBugzClient, args: any): Promise<strin
  * Views detailed area information
  */
 export async function viewArea(api: IFogBugzClient, args: any): Promise<string> {
-  const { ixArea } = args;
+  const { ixArea } = args || {};
+
+  if (!ixArea) return JSON.stringify({ error: 'ixArea is required' });
 
   try {
     const result = await api.rawRequest('viewArea', { ixArea });
@@ -534,7 +557,9 @@ export async function viewArea(api: IFogBugzClient, args: any): Promise<string> 
  * Makes a generic FogBugz API request
  */
 export async function apiRequest(api: IFogBugzClient, args: any): Promise<string> {
-  const { cmd, params } = args;
+  const { cmd, params } = args || {};
+
+  if (!cmd) return JSON.stringify({ error: 'cmd is required' });
 
   try {
     const result = await api.rawRequest(cmd, params || {});
@@ -559,7 +584,9 @@ export async function createProject(api: IFogBugzClient, args: any): Promise<str
     primaryContact,
     isInbox,
     allowPublicSubmit,
-  } = args;
+  } = args || {};
+
+  if (!name) return JSON.stringify({ error: 'name is required' });
 
   try {
     const params: CreateProjectParams = {
