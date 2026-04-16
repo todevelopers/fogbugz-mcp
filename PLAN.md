@@ -234,6 +234,29 @@ Road map split by phase. Each task is independently actionable.
 - [x] **7.5** Set up GitHub Actions workflow to produce a release artifact on `v1.0.0` tag
 - [ ] **7.6** Create git tag `v1.0.0` and push
 
+### Phase 8 — Unit Tests (XML + JSON API per documentation)
+
+- [ ] **8.1** Write fixture-based XML parsing tests using real captured API response shapes — validate `normalizeCase` and list-parsing logic in `src/api/xml-client.ts`
+- [ ] **8.2** Write JSON client tests covering all operations per the official FogBugz JSON API spec — verify request serialization (`cmd`, `token`, booleans, arrays) and response parsing (`data` field)
+- [ ] **8.3** Write auto-detection tests covering both probe-succeeds (→ JSON client) and probe-fails (→ XML fallback) paths in `src/api/index.ts`
+
+### Phase 9 — Code Review Fixes (`fogbugz-mcp_code_review.md`)
+
+- [x] **9.1** 🔴 Fix API key exposure: send all XML requests as POST (token in body, not URL) — `src/api/xml-client.ts`
+- [ ] **9.2** 🟡 Add input validation for required parameters in all command handlers — `src/commands/index.ts`
+- [ ] **9.3** 🟡 Add blocklist/allowlist to `api_request` tool to prevent arbitrary destructive command execution — `src/commands/index.ts`
+- [ ] **9.4** 🟡 Replace hardcoded version string in `src/index.ts` with dynamic import from `package.json`
+- [ ] **9.5** 🟡 Replace hand-rolled `Tool` interface in `src/commands/tools.ts` with real SDK import
+- [ ] **9.6** 🟢 Remove all `optional: true` annotations from JSON Schema properties in `src/commands/tools.ts`
+- [ ] **9.7** 🟢 Add `resolveCase`, `reopenCase`, `closeCase` to `IFogBugzClient` and implement in both clients — `src/commands/index.ts`
+- [ ] **9.8** 🟢 Add `listCategories` and `listStatuses` to `IFogBugzClient` and implement in both clients — `src/commands/index.ts`
+- [ ] **9.9** 🟢 Centralise XML response extraction into a typed helper; throw early on missing keys instead of falling back to root object — `src/api/xml-client.ts`
+- [ ] **9.10** 🟢 Remove unused `FileAttachment` interface from `src/api/types.ts`
+- [ ] **9.11** 🟢 Delete `src/typings/mcp.d.ts` hand-rolled stubs and rely on real SDK `.d.ts` files
+- [ ] **9.12** 🟢 Return descriptive error when `primaryContact` is a non-numeric string — `src/commands/index.ts`
+- [ ] **9.13** 💡 Use a no-auth probe (or empty token) for JSON API auto-detection to avoid sending real credentials during startup — `src/api/index.ts`
+- [ ] **9.14** 💡 Add fixture-based or opt-in integration tests for XML/JSON response parsing paths — `tests/`
+
 ---
 
 ## Verification
