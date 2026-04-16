@@ -172,7 +172,7 @@ npm test       # run all Jest tests
 
 | Tool          | Description                                                           |
 | ------------- | --------------------------------------------------------------------- |
-| `api_request` | Make a generic XML API request for queries not covered by other tools |
+| `api_request` | Generic XML API escape-hatch for commands not covered by dedicated tools. WARNING: can execute any API command the configured key permits, including destructive operations (delete, edit users, bulk modify). |
 
 ## Environment Variables
 
