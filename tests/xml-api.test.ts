@@ -44,15 +44,14 @@ describe('FogBugzApi', () => {
   // ─── HTTP routing ─────────────────────────────────────────────────────────
 
   describe('HTTP method routing', () => {
-    it('uses GET for read commands (viewPerson)', async () => {
-      mockAxios.get.mockResolvedValueOnce({ data: xmlPersonResponse() });
+    it('uses POST for read commands (viewPerson)', async () => {
+      mockAxios.post.mockResolvedValueOnce({ data: xmlPersonResponse() });
       await api.getCurrentUser();
-      expect(mockAxios.get).toHaveBeenCalledTimes(1);
-      expect(mockAxios.post).not.toHaveBeenCalled();
-      expect(mockAxios.get).toHaveBeenCalledWith(
-        API_ENDPOINT,
-        expect.objectContaining({ params: expect.objectContaining({ cmd: 'viewPerson', token: 'test-api-key' }) })
-      );
+      expect(mockAxios.post).toHaveBeenCalledTimes(1);
+      expect(mockAxios.get).not.toHaveBeenCalled();
+      const body = mockAxios.post.mock.calls[0][1] as URLSearchParams;
+      expect(body.get('cmd')).toBe('viewPerson');
+      expect(body.get('token')).toBe('test-api-key');
     });
 
     it('uses POST for write command (new)', async () => {
@@ -85,10 +84,11 @@ describe('FogBugzApi', () => {
       expect(mockAxios.post).toHaveBeenCalledTimes(1);
     });
 
-    it('uses GET for search (read command)', async () => {
-      mockAxios.get.mockResolvedValueOnce({ data: xmlCasesResponse([]) });
+    it('uses POST for search (read command)', async () => {
+      mockAxios.post.mockResolvedValueOnce({ data: xmlCasesResponse([]) });
       await api.searchCases({ q: 'test' });
-      expect(mockAxios.get).toHaveBeenCalledTimes(1);
+      expect(mockAxios.post).toHaveBeenCalledTimes(1);
+      expect(mockAxios.get).not.toHaveBeenCalled();
     });
   });
 
@@ -96,24 +96,24 @@ describe('FogBugzApi', () => {
 
   describe('error handling', () => {
     it('throws on XML <error> element', async () => {
-      mockAxios.get.mockResolvedValueOnce({ data: xmlError('Invalid token') });
+      mockAxios.post.mockResolvedValueOnce({ data: xmlError('Invalid token') });
       await expect(api.getCurrentUser()).rejects.toThrow('FogBugz API Error: Invalid token');
     });
 
     it('throws on missing <response> root', async () => {
-      mockAxios.get.mockResolvedValueOnce({ data: '<garbage/>' });
+      mockAxios.post.mockResolvedValueOnce({ data: '<garbage/>' });
       await expect(api.getCurrentUser()).rejects.toThrow('FogBugz API Error: unexpected XML response');
     });
 
     it('wraps HTTP errors', async () => {
-      mockAxios.get.mockRejectedValueOnce({
+      mockAxios.post.mockRejectedValueOnce({
         response: { status: 401, data: 'Unauthorized' },
       });
       await expect(api.getCurrentUser()).rejects.toThrow('FogBugz API Error: 401 - Unauthorized');
     });
 
     it('re-throws non-HTTP errors unchanged', async () => {
-      mockAxios.get.mockRejectedValueOnce(new Error('Network timeout'));
+      mockAxios.post.mockRejectedValueOnce(new Error('Network timeout'));
       await expect(api.getCurrentUser()).rejects.toThrow('Network timeout');
     });
   });
@@ -122,7 +122,7 @@ describe('FogBugzApi', () => {
 
   describe('getCurrentUser()', () => {
     it('returns normalized FogBugzPerson', async () => {
-      mockAxios.get.mockResolvedValueOnce({
+      mockAxios.post.mockResolvedValueOnce({
         data: xmlPersonResponse({ ixPerson: 5, sFullName: 'Alice Smith', sEmail: 'alice@example.com' }),
       });
       const user = await api.getCurrentUser();
@@ -139,7 +139,7 @@ describe('FogBugzApi', () => {
 
   describe('listProjects()', () => {
     it('returns multiple projects', async () => {
-      mockAxios.get.mockResolvedValueOnce({
+      mockAxios.post.mockResolvedValueOnce({
         data: xmlProjectsResponse([
           { ixProject: 1, sProject: 'Alpha' },
           { ixProject: 2, sProject: 'Beta' },
@@ -152,7 +152,7 @@ describe('FogBugzApi', () => {
     });
 
     it('returns single project', async () => {
-      mockAxios.get.mockResolvedValueOnce({
+      mockAxios.post.mockResolvedValueOnce({
         data: xmlProjectsResponse([{ ixProject: 3, sProject: 'Solo' }]),
       });
       const projects = await api.listProjects();
@@ -165,7 +165,7 @@ describe('FogBugzApi', () => {
 
   describe('listAreas()', () => {
     it('returns areas', async () => {
-      mockAxios.get.mockResolvedValueOnce({
+      mockAxios.post.mockResolvedValueOnce({
         data: xmlAreasResponse([
           { ixArea: 10, sArea: 'General', ixProject: 1 },
           { ixArea: 11, sArea: 'UI', ixProject: 1 },
@@ -182,7 +182,7 @@ describe('FogBugzApi', () => {
 
   describe('listMilestones()', () => {
     it('returns milestones', async () => {
-      mockAxios.get.mockResolvedValueOnce({
+      mockAxios.post.mockResolvedValueOnce({
         data: xmlFixForsResponse([
           { ixFixFor: 1, sFixFor: 'v1.0' },
           { ixFixFor: 2, sFixFor: 'Backlog' },
@@ -198,7 +198,7 @@ describe('FogBugzApi', () => {
 
   describe('listPriorities()', () => {
     it('returns priorities', async () => {
-      mockAxios.get.mockResolvedValueOnce({
+      mockAxios.post.mockResolvedValueOnce({
         data: xmlPrioritiesResponse([
           { ixPriority: 1, sPriority: 'Critical' },
           { ixPriority: 3, sPriority: 'Normal' },
@@ -214,7 +214,7 @@ describe('FogBugzApi', () => {
 
   describe('listPeople()', () => {
     it('returns people', async () => {
-      mockAxios.get.mockResolvedValueOnce({
+      mockAxios.post.mockResolvedValueOnce({
         data: xmlPeopleResponse([
           { ixPerson: 1, sFullName: 'Bob', sEmail: 'bob@x.com' },
           { ixPerson: 2, sFullName: 'Carol', sEmail: 'carol@x.com' },
@@ -298,7 +298,7 @@ describe('FogBugzApi', () => {
 
   describe('searchCases()', () => {
     it('returns multiple cases', async () => {
-      mockAxios.get.mockResolvedValueOnce({
+      mockAxios.post.mockResolvedValueOnce({
         data: xmlCasesResponse([
           { ixBug: 1, sTitle: 'A' },
           { ixBug: 2, sTitle: 'B' },
@@ -310,23 +310,23 @@ describe('FogBugzApi', () => {
     });
 
     it('returns empty array when count=0', async () => {
-      mockAxios.get.mockResolvedValueOnce({ data: xmlCasesResponse([], 0) });
+      mockAxios.post.mockResolvedValueOnce({ data: xmlCasesResponse([], 0) });
       const cases = await api.searchCases({ q: 'nothing' });
       expect(cases).toHaveLength(0);
     });
 
     it('joins cols array as comma-separated string', async () => {
-      mockAxios.get.mockResolvedValueOnce({ data: xmlCasesResponse([]) });
+      mockAxios.post.mockResolvedValueOnce({ data: xmlCasesResponse([]) });
       await api.searchCases({ q: 'x', cols: ['sTitle', 'sStatus', 'sPriority'] });
-      const params = (mockAxios.get.mock.calls[0][1] as any).params;
-      expect(params.cols).toBe('sTitle,sStatus,sPriority');
+      const body = mockAxios.post.mock.calls[0][1] as URLSearchParams;
+      expect(body.get('cols')).toBe('sTitle,sStatus,sPriority');
     });
 
     it('forwards max parameter', async () => {
-      mockAxios.get.mockResolvedValueOnce({ data: xmlCasesResponse([]) });
+      mockAxios.post.mockResolvedValueOnce({ data: xmlCasesResponse([]) });
       await api.searchCases({ q: 'x', max: 5 });
-      const params = (mockAxios.get.mock.calls[0][1] as any).params;
-      expect(params.max).toBe('5');
+      const body = mockAxios.post.mock.calls[0][1] as URLSearchParams;
+      expect(body.get('max')).toBe('5');
     });
   });
 
@@ -334,7 +334,7 @@ describe('FogBugzApi', () => {
 
   describe('getCase()', () => {
     it('returns the first matching case', async () => {
-      mockAxios.get.mockResolvedValueOnce({
+      mockAxios.post.mockResolvedValueOnce({
         data: xmlCasesResponse([{ ixBug: 99, sTitle: 'The Case' }]),
       });
       const c = await api.getCase(99);
@@ -343,7 +343,7 @@ describe('FogBugzApi', () => {
     });
 
     it('throws when case not found', async () => {
-      mockAxios.get.mockResolvedValueOnce({ data: xmlCasesResponse([], 0) });
+      mockAxios.post.mockResolvedValueOnce({ data: xmlCasesResponse([], 0) });
       await expect(api.getCase(999)).rejects.toThrow('Case #999 not found');
     });
   });
@@ -423,7 +423,7 @@ describe('FogBugzApi', () => {
 
   describe('listMilestones() edge cases', () => {
     it('returns empty array when no milestones', async () => {
-      mockAxios.get.mockResolvedValueOnce({
+      mockAxios.post.mockResolvedValueOnce({
         data: xmlResponse('<fixfors></fixfors>'),
       });
       const milestones = await api.listMilestones();
@@ -435,7 +435,7 @@ describe('FogBugzApi', () => {
 
   describe('listPeople() edge cases', () => {
     it('returns single person as array', async () => {
-      mockAxios.get.mockResolvedValueOnce({
+      mockAxios.post.mockResolvedValueOnce({
         data: xmlPeopleResponse([{ ixPerson: 7, sFullName: 'Solo', sEmail: 'solo@x.com' }]),
       });
       const people = await api.listPeople();
@@ -449,7 +449,7 @@ describe('FogBugzApi', () => {
   describe('getCurrentUser() edge cases', () => {
     it('returns empty string for missing sEmail', async () => {
       // Use raw XML without <sEmail> to test the missing-field fallback
-      mockAxios.get.mockResolvedValueOnce({
+      mockAxios.post.mockResolvedValueOnce({
         data: xmlResponse(`<person><ixPerson>3</ixPerson><sFullName>No Email</sFullName></person>`),
       });
       const user = await api.getCurrentUser();
@@ -465,12 +465,12 @@ describe('FogBugzApi', () => {
       const timeoutErr = Object.assign(new Error('timeout of 30000ms exceeded'), {
         code: 'ECONNABORTED',
       });
-      mockAxios.get.mockRejectedValueOnce(timeoutErr);
+      mockAxios.post.mockRejectedValueOnce(timeoutErr);
       await expect(api.getCurrentUser()).rejects.toThrow('timeout of 30000ms exceeded');
     });
 
     it('includes HTTP status in error for 401', async () => {
-      mockAxios.get.mockRejectedValueOnce({
+      mockAxios.post.mockRejectedValueOnce({
         response: { status: 401, data: 'Unauthorized' },
       });
       await expect(api.getCurrentUser()).rejects.toThrow('401');
@@ -482,7 +482,7 @@ describe('FogBugzApi', () => {
   describe('normalizeCase() events edge cases', () => {
     it('case with no <events> element has events as undefined', async () => {
       // xmlCase fixture has no events element
-      mockAxios.get.mockResolvedValueOnce({
+      mockAxios.post.mockResolvedValueOnce({
         data: xmlCasesResponse([{ ixBug: 5, sTitle: 'No events' }]),
       });
       const c = await api.getCase(5);
@@ -508,7 +508,7 @@ describe('FogBugzApi', () => {
           </case>
         </cases>
       `);
-      mockAxios.get.mockResolvedValueOnce({ data: xml });
+      mockAxios.post.mockResolvedValueOnce({ data: xml });
       const c = await api.getCase(6);
       expect(c.events).toHaveLength(1);
       expect(c.events![0].sVerb).toBe('Opened');
@@ -541,7 +541,7 @@ describe('FogBugzApi', () => {
           </case>
         </cases>
       `);
-      mockAxios.get.mockResolvedValueOnce({ data: xml });
+      mockAxios.post.mockResolvedValueOnce({ data: xml });
       const c = await api.getCase(7);
       expect(c.events).toHaveLength(2);
       expect(c.events![1].sVerb).toBe('Edited');
@@ -552,7 +552,7 @@ describe('FogBugzApi', () => {
 
   describe('rawRequest()', () => {
     it('returns parsed root for a read command', async () => {
-      mockAxios.get.mockResolvedValueOnce({
+      mockAxios.post.mockResolvedValueOnce({
         data: xmlResponse('<categories><category><ixCategory>1</ixCategory></category></categories>'),
       });
       const result = await api.rawRequest('listCategories');
@@ -568,7 +568,7 @@ describe('FogBugzApi', () => {
     // ── listStatuses (used by list_statuses tool handler) ──────────────────────
 
     it('listStatuses — returns parsed statuses', async () => {
-      mockAxios.get.mockResolvedValueOnce({
+      mockAxios.post.mockResolvedValueOnce({
         data: xmlStatusesResponse([
           { ixStatus: 1, sStatus: 'Active', fResolved: 0 },
           { ixStatus: 2, sStatus: 'Resolved', fResolved: 1 },
@@ -578,35 +578,31 @@ describe('FogBugzApi', () => {
       expect(result.statuses).toBeDefined();
     });
 
-    it('listStatuses — sends cmd=listStatuses in GET params', async () => {
-      mockAxios.get.mockResolvedValueOnce({ data: xmlStatusesResponse([]) });
+    it('listStatuses — sends cmd=listStatuses in POST body', async () => {
+      mockAxios.post.mockResolvedValueOnce({ data: xmlStatusesResponse([]) });
       await api.rawRequest('listStatuses');
-      expect(mockAxios.get).toHaveBeenCalledWith(
-        API_ENDPOINT,
-        expect.objectContaining({ params: expect.objectContaining({ cmd: 'listStatuses' }) })
-      );
+      const body = mockAxios.post.mock.calls[0][1] as URLSearchParams;
+      expect(body.get('cmd')).toBe('listStatuses');
     });
 
     it('listStatuses — sends ixCategory filter when provided', async () => {
-      mockAxios.get.mockResolvedValueOnce({ data: xmlStatusesResponse([]) });
+      mockAxios.post.mockResolvedValueOnce({ data: xmlStatusesResponse([]) });
       await api.rawRequest('listStatuses', { ixCategory: 2 });
-      expect(mockAxios.get).toHaveBeenCalledWith(
-        API_ENDPOINT,
-        expect.objectContaining({ params: expect.objectContaining({ cmd: 'listStatuses', ixCategory: '2' }) })
-      );
+      const body = mockAxios.post.mock.calls[0][1] as URLSearchParams;
+      expect(body.get('cmd')).toBe('listStatuses');
+      expect(body.get('ixCategory')).toBe('2');
     });
 
     // ── listFixFors with ixProject filter (used by list_milestones tool handler) ─
 
     it('listFixFors — sends ixProject filter when provided', async () => {
-      mockAxios.get.mockResolvedValueOnce({
+      mockAxios.post.mockResolvedValueOnce({
         data: xmlResponse('<fixfors></fixfors>'),
       });
       await api.rawRequest('listFixFors', { ixProject: 5 });
-      expect(mockAxios.get).toHaveBeenCalledWith(
-        API_ENDPOINT,
-        expect.objectContaining({ params: expect.objectContaining({ cmd: 'listFixFors', ixProject: '5' }) })
-      );
+      const body = mockAxios.post.mock.calls[0][1] as URLSearchParams;
+      expect(body.get('cmd')).toBe('listFixFors');
+      expect(body.get('ixProject')).toBe('5');
     });
   });
 });

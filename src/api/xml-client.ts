@@ -37,12 +37,6 @@ export class FogBugzXmlClient implements IFogBugzClient {
     });
   }
 
-  // Commands that modify data – sent as POST
-  private static readonly WRITE_COMMANDS = new Set([
-    'new', 'edit', 'assign', 'resolve', 'reopen', 'close',
-    'newProject', 'editProject', 'newArea', 'editArea',
-  ]);
-
   private async request(
     cmd: string,
     params: Record<string, any> = {},
@@ -64,18 +58,11 @@ export class FogBugzXmlClient implements IFogBugzClient {
         }
       }
 
-      const isWrite = FogBugzXmlClient.WRITE_COMMANDS.has(cmd);
-      const response = isWrite
-        ? await axios.post(this.apiEndpoint, new URLSearchParams(flatParams), {
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            responseType: 'text',
-            timeout: 30000,
-          })
-        : await axios.get(this.apiEndpoint, {
-            params: flatParams,
-            responseType: 'text',
-            timeout: 30000,
-          });
+      const response = await axios.post(this.apiEndpoint, new URLSearchParams(flatParams), {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        responseType: 'text',
+        timeout: 30000,
+      });
 
       const parsed = this.xmlParser.parse(response.data);
       const root = parsed.response;
