@@ -157,22 +157,22 @@ npm test       # run all Jest tests
 
 ### Reference Data
 
-| Tool              | Description                                       |
-| ----------------- | ------------------------------------------------- |
-| `list_people`     | List all users with IDs, names, and emails        |
-| `list_categories` | List case categories (Bug, Feature Request, etc.) |
-| `list_projects`   | List all active projects with IDs and names       |
-| `list_milestones` | List milestones/fix-fors, optionally by project   |
+| Tool              | Description                                                    |
+| ----------------- | -------------------------------------------------------------- |
+| `list_people`     | List all users with IDs, names, and emails                     |
+| `list_categories` | List case categories (Bug, Feature Request, etc.)              |
+| `list_projects`   | List all active projects with IDs and names                    |
+| `list_milestones` | List milestones/fix-fors, optionally by project                |
 | `list_statuses`   | List case statuses with resolved flags, optionally by category |
-| `view_project`    | Get detailed project information                  |
-| `view_area`       | Get detailed area information                     |
-| `create_project`  | Create a new project                              |
+| `view_project`    | Get detailed project information                               |
+| `view_area`       | Get detailed area information                                  |
+| `create_project`  | Create a new project                                           |
 
 ### Advanced
 
-| Tool          | Description                                                           |
-| ------------- | --------------------------------------------------------------------- |
-| `api_request` | Generic XML API escape-hatch for commands not covered by dedicated tools. WARNING: can execute any API command the configured key permits, including destructive operations (delete, edit users, bulk modify). |
+| Tool          | Description                                                                                                                                                                                                           |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `api_request` | Generic XML API escape-hatch for commands not covered by dedicated tools.<br/>⚠️ WARNING: can execute any API command the configured key permits, including destructive operations (delete, edit users, bulk modify). |
 
 ## Environment Variables
 
