@@ -34,4 +34,7 @@ server/
 .vscode/
 .cursor/
 *.swp
-*.swo 
+*.swo
+
+# Claude Code local settings
+.claude/settings.local.json
