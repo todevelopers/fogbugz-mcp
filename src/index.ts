@@ -6,6 +6,7 @@ import * as handlers from './commands';
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { ListToolsRequestSchema, CallToolRequestSchema } from '@modelcontextprotocol/sdk/types.js';
+import { version } from '../package.json';
 
 dotenv.config();
 
@@ -21,7 +22,7 @@ async function main() {
   const api: IFogBugzClient = await createFogBugzClient({ baseUrl: fogbugzUrl, apiKey: fogbugzApiKey });
 
   const server = new Server(
-    { name: 'fogbugz-mcp', version: '0.0.14' },
+    { name: 'fogbugz-mcp', version },
     { capabilities: { tools: {} } }
   );
 
