@@ -17,7 +17,12 @@
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('exports', {}\\), indent=2\\)\\)\")",
       "Bash(node -e \"const p=require\\('./node_modules/@modelcontextprotocol/sdk/package.json'\\); console.log\\(JSON.stringify\\(p.exports, null, 2\\)\\)\")",
       "Bash(cat)",
-      "Bash(rm src/_test_import.ts)"
+      "Bash(rm src/_test_import.ts)",
+      "Bash(node -e \"const p = require\\('C:/GitHubRepos/fogbugz-mcp/node_modules/@modelcontextprotocol/sdk/package.json'\\); console.log\\(JSON.stringify\\(p.exports, null, 2\\)\\)\")",
+      "Bash(rm \"C:/GitHubRepos/fogbugz-mcp/src/typings/mcp.d.ts\")",
+      "Bash(rmdir \"C:/GitHubRepos/fogbugz-mcp/src/typings\")",
+      "Skill(VS-MCP-client:build)",
+      "Skill(VS-MCP-client:build:*)"
     ]
   }
 }
