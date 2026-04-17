@@ -128,8 +128,3 @@ export interface FogBugzStatus {
   fResolved: boolean;
   [key: string]: any;
 }
-
-export interface FileAttachment {
-  path: string;
-  fieldName?: string;
-}
