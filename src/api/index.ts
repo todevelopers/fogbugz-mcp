@@ -32,11 +32,31 @@ export async function createFogBugzClient(config: FogBugzConfig): Promise<IFogBu
 
     if (apiVersion >= 9) {
       try {
+        // Probe without a token intentionally. We only need to confirm that
+        // the JSON API endpoint exists and speaks the expected protocol — we
+        // do NOT need a successful authenticated response for that.
+        //
+        // Sending the real API key here would be a security risk: if the URL
+        // is mis-configured or the request is intercepted, credentials are
+        // exposed before the client type is even known. A token-free request
+        // eliminates that risk entirely.
+        //
+        // We use 'logon' as the command because it is the lightest possible
+        // call — it requires no server-side read and has no side-effects,
+        // unlike 'listProjects' which would perform a real read operation on
+        // every startup.
         const probe = await axios.post(
           `${baseUrl}/f/api/0/jsonapi`,
-          { cmd: 'listProjects', token: config.apiKey },
+          { cmd: 'logon' },
           { headers: { 'Content-Type': 'application/json' }, timeout: 5000 },
         );
+
+        // The FogBugz JSON API always wraps its response in an envelope that
+        // contains an 'errors' array — even for unauthenticated or failed
+        // requests (e.g. { "errors": ["Not logged in"] }).  Checking for this
+        // array confirms that we are talking to the JSON API and not some
+        // proxy, redirect page, or XML fallback endpoint that happens to
+        // return HTTP 200.
         if (probe.data && Array.isArray(probe.data.errors)) {
           return new FogBugzJsonClient(config);
         }
