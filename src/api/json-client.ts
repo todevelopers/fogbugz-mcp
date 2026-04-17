@@ -8,6 +8,8 @@ import {
   FogBugzFixFor,
   FogBugzPriority,
   FogBugzPerson,
+  FogBugzCategory,
+  FogBugzStatus,
   CreateCaseParams,
   EditCaseParams,
   SearchParams,
@@ -112,13 +114,39 @@ export class FogBugzJsonClient implements IFogBugzClient {
     }));
   }
 
-  async listMilestones(): Promise<FogBugzFixFor[]> {
-    const data = await this.request('listFixFors');
+  async listMilestones(ixProject?: number): Promise<FogBugzFixFor[]> {
+    const params: Record<string, any> = {};
+    if (ixProject !== undefined) params.ixProject = ixProject;
+    const data = await this.request('listFixFors', params);
     const fixfors: any[] = data.fixfors || [];
     return fixfors.map((f: any) => ({
       ixFixFor: Number(f.ixFixFor),
       sFixFor: f.sFixFor || '',
       ...f,
+    }));
+  }
+
+  async listCategories(): Promise<FogBugzCategory[]> {
+    const data = await this.request('listCategories');
+    const categories: any[] = data.categories || [];
+    return categories.map((c: any) => ({
+      ixCategory: Number(c.ixCategory),
+      sCategory: c.sCategory || '',
+      sPlural: c.sPlural || '',
+      ...c,
+    }));
+  }
+
+  async listStatuses(ixCategory?: number): Promise<FogBugzStatus[]> {
+    const params: Record<string, any> = {};
+    if (ixCategory !== undefined) params.ixCategory = ixCategory;
+    const data = await this.request('listStatuses', params);
+    const statuses: any[] = data.statuses || [];
+    return statuses.map((s: any) => ({
+      ixStatus: Number(s.ixStatus),
+      sStatus: s.sStatus || '',
+      fResolved: s.fResolved === true || s.fResolved === 1,
+      ...s,
     }));
   }
 
@@ -156,6 +184,28 @@ export class FogBugzJsonClient implements IFogBugzClient {
 
   async assignCase(caseId: number, personName: string): Promise<FogBugzCase> {
     const data = await this.request('assign', { ixBug: caseId, sPersonAssignedTo: personName });
+    return this.normalizeCase(data.case);
+  }
+
+  async resolveCase(caseId: number, comment?: string, ixStatus?: number): Promise<FogBugzCase> {
+    const params: Record<string, any> = { ixBug: caseId };
+    if (comment) params.sEvent = comment;
+    if (ixStatus !== undefined) params.ixStatus = ixStatus;
+    const data = await this.request('resolve', params);
+    return this.normalizeCase(data.case);
+  }
+
+  async reopenCase(caseId: number, comment?: string): Promise<FogBugzCase> {
+    const params: Record<string, any> = { ixBug: caseId };
+    if (comment) params.sEvent = comment;
+    const data = await this.request('reopen', params);
+    return this.normalizeCase(data.case);
+  }
+
+  async closeCase(caseId: number, comment?: string): Promise<FogBugzCase> {
+    const params: Record<string, any> = { ixBug: caseId };
+    if (comment) params.sEvent = comment;
+    const data = await this.request('close', params);
     return this.normalizeCase(data.case);
   }
 

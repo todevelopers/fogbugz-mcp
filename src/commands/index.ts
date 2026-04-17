@@ -305,20 +305,12 @@ export async function resolveCase(api: IFogBugzClient, args: any): Promise<strin
   if (!caseId) return JSON.stringify({ error: 'caseId is required' });
 
   try {
-    const params: Record<string, any> = { ixBug: caseId };
-    if (comment) params.sEvent = comment;
-    if (ixStatus) params.ixStatus = ixStatus;
-
-    const result = await api.rawRequest('resolve', params);
-    // XML client returns the root element; JSON client returns data directly.
-    // Both may carry case info at result.case (object or array).
-    const rawCase = result.case?.[0] || result.case || result.cases?.[0] || result;
-    const bugId = Number(rawCase.ixBug || rawCase['@_ixBug'] || caseId);
+    const bugCase = await api.resolveCase(Number(caseId), comment, ixStatus);
 
     return JSON.stringify({
-      caseId: bugId,
-      caseLink: api.getCaseLink(bugId),
-      message: `Resolved case #${bugId}.`,
+      caseId: bugCase.ixBug,
+      caseLink: api.getCaseLink(bugCase.ixBug),
+      message: `Resolved case #${bugCase.ixBug}.`,
     });
   } catch (error: any) {
     return JSON.stringify({ error: error.message });
@@ -334,17 +326,12 @@ export async function reopenCase(api: IFogBugzClient, args: any): Promise<string
   if (!caseId) return JSON.stringify({ error: 'caseId is required' });
 
   try {
-    const params: Record<string, any> = { ixBug: caseId };
-    if (comment) params.sEvent = comment;
-
-    const result = await api.rawRequest('reopen', params);
-    const rawCase = result.case?.[0] || result.case || result.cases?.[0] || result;
-    const bugId = Number(rawCase.ixBug || rawCase['@_ixBug'] || caseId);
+    const bugCase = await api.reopenCase(Number(caseId), comment);
 
     return JSON.stringify({
-      caseId: bugId,
-      caseLink: api.getCaseLink(bugId),
-      message: `Reopened case #${bugId}.`,
+      caseId: bugCase.ixBug,
+      caseLink: api.getCaseLink(bugCase.ixBug),
+      message: `Reopened case #${bugCase.ixBug}.`,
     });
   } catch (error: any) {
     return JSON.stringify({ error: error.message });
@@ -360,17 +347,12 @@ export async function closeCase(api: IFogBugzClient, args: any): Promise<string>
   if (!caseId) return JSON.stringify({ error: 'caseId is required' });
 
   try {
-    const params: Record<string, any> = { ixBug: caseId };
-    if (comment) params.sEvent = comment;
-
-    const result = await api.rawRequest('close', params);
-    const rawCase = result.case?.[0] || result.case || result.cases?.[0] || result;
-    const bugId = Number(rawCase.ixBug || rawCase['@_ixBug'] || caseId);
+    const bugCase = await api.closeCase(Number(caseId), comment);
 
     return JSON.stringify({
-      caseId: bugId,
-      caseLink: api.getCaseLink(bugId),
-      message: `Closed case #${bugId}.`,
+      caseId: bugCase.ixBug,
+      caseLink: api.getCaseLink(bugCase.ixBug),
+      message: `Closed case #${bugCase.ixBug}.`,
     });
   } catch (error: any) {
     return JSON.stringify({ error: error.message });
@@ -404,14 +386,12 @@ export async function listPeople(api: IFogBugzClient, _args: any): Promise<strin
  */
 export async function listCategories(api: IFogBugzClient, _args: any): Promise<string> {
   try {
-    const result = await api.rawRequest('listCategories');
-    const categories = result.categories?.category || result.category || result.categories || [];
-    const list = Array.isArray(categories) ? categories : [categories];
+    const categories = await api.listCategories();
 
-    const formatted = list.map((c: any) => ({
-      id: Number(c.ixCategory),
-      name: c.sCategory || '',
-      pluralName: c.sPlural || '',
+    const formatted = categories.map(c => ({
+      id: c.ixCategory,
+      name: c.sCategory,
+      pluralName: c.sPlural,
     }));
 
     return JSON.stringify({
@@ -450,16 +430,11 @@ export async function listProjects(api: IFogBugzClient, _args: any): Promise<str
  */
 export async function listMilestones(api: IFogBugzClient, args: any): Promise<string> {
   try {
-    const params: Record<string, any> = {};
-    if (args?.ixProject) params.ixProject = args.ixProject;
+    const milestones = await api.listMilestones(args?.ixProject);
 
-    const result = await api.rawRequest('listFixFors', params);
-    const fixfors = result.fixfors?.fixfor || result.fixfor || result.fixfors || [];
-    const list = Array.isArray(fixfors) ? fixfors : [fixfors];
-
-    const formatted = list.map((f: any) => ({
-      id: Number(f.ixFixFor),
-      name: f.sFixFor || '',
+    const formatted = milestones.map(f => ({
+      id: f.ixFixFor,
+      name: f.sFixFor,
       projectId: Number(f.ixProject || 0),
       date: f.dt || '',
     }));
@@ -479,17 +454,12 @@ export async function listMilestones(api: IFogBugzClient, args: any): Promise<st
  */
 export async function listStatuses(api: IFogBugzClient, args: any): Promise<string> {
   try {
-    const params: Record<string, any> = {};
-    if (args?.ixCategory) params.ixCategory = args.ixCategory;
+    const statuses = await api.listStatuses(args?.ixCategory);
 
-    const result = await api.rawRequest('listStatuses', params);
-    const statuses = result.statuses?.status || result.status || result.statuses || [];
-    const list = Array.isArray(statuses) ? statuses : [statuses];
-
-    const formatted = list.map((s: any) => ({
-      id: Number(s.ixStatus),
-      name: s.sStatus || '',
-      resolved: s.fResolved === '1' || s.fResolved === true,
+    const formatted = statuses.map(s => ({
+      id: s.ixStatus,
+      name: s.sStatus,
+      resolved: s.fResolved,
     }));
 
     return JSON.stringify({

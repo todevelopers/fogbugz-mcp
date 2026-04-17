@@ -75,6 +75,30 @@ if (!caseId) return JSON.stringify({ error: 'caseId is required' });
 
 Never let a missing parameter propagate to the API client — it produces cryptic errors or silent no-ops.
 
+## Client interface — never bypass with rawRequest
+
+**`api.rawRequest()` must never be used in command handlers as a substitute for a proper typed method.**
+
+Every FogBugz API operation must have a dedicated method on `IFogBugzClient` (in `src/api/base-client.ts`) and implemented in both `FogBugzXmlClient` and `FogBugzJsonClient`. Command handlers must call only these typed methods.
+
+`rawRequest` exists solely as an escape hatch for genuinely one-off or exploratory calls — it must not be the default path for any operation that has a known, stable API command.
+
+**When adding a new operation:**
+1. Add the method signature to `IFogBugzClient` in `src/api/base-client.ts`.
+2. Implement it in `src/api/xml-client.ts` using the private `request()` method.
+3. Implement it in `src/api/json-client.ts` using the private `request()` method.
+4. Call the typed method from the handler in `src/commands/index.ts`.
+
+Bad:
+```typescript
+const result = await api.rawRequest('resolve', { ixBug: caseId });
+```
+
+Good:
+```typescript
+const bugCase = await api.resolveCase(caseId, comment);
+```
+
 ## Tools manifest sync
 
 Any time a tool is **added, renamed, or removed** in `src/commands/tools.ts`, the `"tools"` array in `manifest.json` must be updated to match — same name, same description. These two files must always be in sync.

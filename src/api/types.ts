@@ -115,7 +115,21 @@ export interface CreateProjectParams {
   fInbox?: boolean;
 }
 
+export interface FogBugzCategory {
+  ixCategory: number;
+  sCategory: string;
+  sPlural: string;
+  [key: string]: any;
+}
+
+export interface FogBugzStatus {
+  ixStatus: number;
+  sStatus: string;
+  fResolved: boolean;
+  [key: string]: any;
+}
+
 export interface FileAttachment {
   path: string;
   fieldName?: string;
-} 
+}
