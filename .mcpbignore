@@ -26,8 +26,7 @@
 # Local Claude Code settings
 /.claude/
 
-# Root-level npm metadata only
-/package.json
+# Root-level npm lock file only (package.json is needed by server/index.js at runtime)
 /package-lock.json
 
 # Root node_modules (deps are bundled in server/node_modules)
