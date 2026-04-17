@@ -1,6 +1,6 @@
 {
   "name": "fogbugz-mcp",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "description": "FogBugz MCP Server for interacting with FogBugz via LLMs",
   "main": "dist/index.js",
   "bin": {
@@ -34,7 +34,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.8.0",
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "axios": "^1.6.7",
     "dotenv": "^16.4.5",
     "fast-xml-parser": "^5.3.4",
