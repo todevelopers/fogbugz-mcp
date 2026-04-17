@@ -232,14 +232,15 @@ Road map split by phase. Each task is independently actionable.
 - [ ] **7.3** `npm test` — all tests pass
 - [ ] **7.4** `npx @anthropic-ai/mcpb pack` — produces `fogbugz-mcp.mcpb`
 - [x] **7.5** Set up GitHub Actions workflow to produce a release artifact on `v1.0.0` tag
-- [ ] **7.6** Create git tag `v1.0.0` and push
+- [ ] **7.6** Review mcp server on security issues, code smells and clean design
+- [ ] **7.7** Review mcp server for trace logging useful information during production running 
+- [ ] **7.8** Create git tag `v1.0.0` and push
 
 ### Phase 8 — Unit Tests (XML + JSON API per documentation)
 
 - [ ] **8.1** Write fixture-based XML parsing tests using real captured API response shapes — validate `normalizeCase` and list-parsing logic in `src/api/xml-client.ts`
 - [ ] **8.2** Write JSON client tests covering all operations per the official FogBugz JSON API spec — verify request serialization (`cmd`, `token`, booleans, arrays) and response parsing (`data` field)
 - [ ] **8.3** Write auto-detection tests covering both probe-succeeds (→ JSON client) and probe-fails (→ XML fallback) paths in `src/api/index.ts`
-
 
 ## Verification
 
