@@ -20,32 +20,26 @@ export const createCaseTool: Tool = {
       description: {
         type: 'string',
         description: 'Detailed description of the issue. Plain text only – HTML and Markdown are not supported by the FogBugz 8.x API.',
-        optional: true,
       },
       project: {
         type: 'string',
         description: 'Project name where the case should be created',
-        optional: true,
       },
       area: {
         type: 'string',
         description: 'Area name within the project',
-        optional: true,
       },
       milestone: {
         type: 'string',
         description: 'Milestone (FixFor) name',
-        optional: true,
       },
       priority: {
         type: ['number', 'string'],
         description: 'Priority level (number 1-7) or name',
-        optional: true,
       },
       assignee: {
         type: 'string',
         description: 'Person to assign the case to',
-        optional: true,
       },
     },
     required: ['title'],
@@ -68,32 +62,26 @@ export const updateCaseTool: Tool = {
       title: {
         type: 'string',
         description: 'New title for the case',
-        optional: true,
       },
       description: {
         type: 'string',
         description: 'Additional comment to add to the case. Plain text only – HTML and Markdown are not supported by the FogBugz 8.x API.',
-        optional: true,
       },
       project: {
         type: 'string',
         description: 'Project to move the case to',
-        optional: true,
       },
       area: {
         type: 'string',
         description: 'Area within the project',
-        optional: true,
       },
       milestone: {
         type: 'string',
         description: 'Milestone (FixFor) name',
-        optional: true,
       },
       priority: {
         type: ['number', 'string'],
         description: 'Priority level (number 1-7) or name',
-        optional: true,
       },
     },
     required: ['caseId'],
@@ -134,17 +122,14 @@ export const listUserCasesTool: Tool = {
       assignee: {
         type: 'string',
         description: 'Name or email of the person whose cases to list (defaults to current user if empty)',
-        optional: true,
       },
       status: {
         type: 'string',
         description: 'Filter by status (e.g., "active", "closed")',
-        optional: true,
       },
       limit: {
         type: 'number',
         description: 'Maximum number of cases to return',
-        optional: true,
       },
     },
     required: [],
@@ -167,7 +152,6 @@ export const searchCasesTool: Tool = {
       limit: {
         type: 'number',
         description: 'Maximum number of cases to return',
-        optional: true,
       },
     },
     required: ['query'],
@@ -208,17 +192,14 @@ export const createProjectTool: Tool = {
       primaryContact: {
         type: ['string', 'number'],
         description: 'User ID or name of the primary contact for the project',
-        optional: true,
       },
       isInbox: {
         type: 'boolean',
         description: 'Whether this is an inbox project (default: false)',
-        optional: true,
       },
       allowPublicSubmit: {
         type: 'boolean',
         description: 'Whether to allow public submissions to this project',
-        optional: true,
       }
     },
     required: ['name'],
@@ -241,7 +222,6 @@ export const getCaseTool: Tool = {
       cols: {
         type: 'string',
         description: 'Comma-separated list of columns to return (default: sTitle,sStatus,sPriority,sProject,sArea,sFixFor,sPersonAssignedTo,events)',
-        optional: true,
       },
     },
     required: ['caseId'],
@@ -264,7 +244,6 @@ export const apiRequestTool: Tool = {
       params: {
         type: 'object',
         description: 'Additional parameters as key-value pairs (e.g., {"q": "project:Website", "cols": "sTitle,sStatus", "max": "10"})',
-        optional: true,
       },
     },
     required: ['cmd'],
@@ -287,12 +266,10 @@ export const resolveCaseTool: Tool = {
       comment: {
         type: 'string',
         description: 'Comment to add when resolving. Plain text only.',
-        optional: true,
       },
       ixStatus: {
         type: 'number',
         description: 'Status ID to resolve with (use api_request with cmd=listStatuses to find valid IDs)',
-        optional: true,
       },
     },
     required: ['caseId'],
@@ -315,7 +292,6 @@ export const reopenCaseTool: Tool = {
       comment: {
         type: 'string',
         description: 'Comment to add when reopening. Plain text only.',
-        optional: true,
       },
     },
     required: ['caseId'],
@@ -338,7 +314,6 @@ export const closeCaseTool: Tool = {
       comment: {
         type: 'string',
         description: 'Comment to add when closing. Plain text only.',
-        optional: true,
       },
     },
     required: ['caseId'],
