@@ -12,7 +12,3 @@ declare module '@modelcontextprotocol/sdk/server/stdio.js' {
   }
 }
 
-declare module '@modelcontextprotocol/sdk/types.js' {
-  export const ListToolsRequestSchema: any;
-  export const CallToolRequestSchema: any;
-}

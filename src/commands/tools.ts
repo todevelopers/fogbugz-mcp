@@ -2,21 +2,7 @@
  * MCP Tool definitions for FogBugz operations
  */
 
-// Define the Tool interface since we're having trouble importing it
-interface Tool {
-  name: string;
-  title?: string;
-  description: string;
-  inputSchema: {
-    type: string;
-    properties: Record<string, any>;
-    required: string[];
-  };
-  annotations?: {
-    readOnlyHint?: boolean;
-    destructiveHint?: boolean;
-  };
-}
+import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 
 // Tool: Create a new FogBugz case
 export const createCaseTool: Tool = {
