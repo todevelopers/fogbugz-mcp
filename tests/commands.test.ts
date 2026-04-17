@@ -13,9 +13,14 @@ function makeMockApi(overrides: Partial<Record<keyof FogBugzApi, jest.Mock>> = {
     listMilestones: jest.fn(),
     listPriorities: jest.fn(),
     listPeople: jest.fn(),
+    listCategories: jest.fn(),
+    listStatuses: jest.fn(),
     createCase: jest.fn(),
     updateCase: jest.fn(),
     assignCase: jest.fn(),
+    resolveCase: jest.fn(),
+    reopenCase: jest.fn(),
+    closeCase: jest.fn(),
     searchCases: jest.fn(),
     getCase: jest.fn(),
     rawRequest: jest.fn(),
@@ -259,34 +264,26 @@ describe('getCase handler', () => {
 
 describe('resolveCase handler', () => {
   it('returns caseId and message on success', async () => {
-    const api = makeMockApi({ rawRequest: jest.fn().mockResolvedValue({ case: [{ ixBug: 42 }] }) });
+    const api = makeMockApi({ resolveCase: jest.fn().mockResolvedValue({ ixBug: 42 }) });
     const result = JSON.parse(await commands.resolveCase(api, { caseId: 42 }));
     expect(result.caseId).toBe(42);
     expect(result.message).toContain('42');
   });
 
-  it('falls back to input caseId when XML has no ixBug', async () => {
-    const api = makeMockApi({ rawRequest: jest.fn().mockResolvedValue({}) });
-    const result = JSON.parse(await commands.resolveCase(api, { caseId: 55 }));
-    expect(result.caseId).toBe(55);
-  });
-
-  it('forwards comment as sEvent', async () => {
-    const api = makeMockApi({ rawRequest: jest.fn().mockResolvedValue({ case: [{ ixBug: 1 }] }) });
+  it('forwards comment to typed resolveCase method', async () => {
+    const api = makeMockApi({ resolveCase: jest.fn().mockResolvedValue({ ixBug: 1 }) });
     await commands.resolveCase(api, { caseId: 1, comment: 'Fixed in v2' });
-    const params = (api.rawRequest as jest.Mock).mock.calls[0][1];
-    expect(params.sEvent).toBe('Fixed in v2');
+    expect(api.resolveCase as jest.Mock).toHaveBeenCalledWith(1, 'Fixed in v2', undefined);
   });
 
-  it('does not send sEvent when comment absent', async () => {
-    const api = makeMockApi({ rawRequest: jest.fn().mockResolvedValue({ case: [{ ixBug: 1 }] }) });
+  it('calls resolveCase without comment when absent', async () => {
+    const api = makeMockApi({ resolveCase: jest.fn().mockResolvedValue({ ixBug: 1 }) });
     await commands.resolveCase(api, { caseId: 1 });
-    const params = (api.rawRequest as jest.Mock).mock.calls[0][1];
-    expect(params.sEvent).toBeUndefined();
+    expect(api.resolveCase as jest.Mock).toHaveBeenCalledWith(1, undefined, undefined);
   });
 
   it('returns error JSON on failure', async () => {
-    const api = makeMockApi({ rawRequest: jest.fn().mockRejectedValue(new Error('cannot resolve')) });
+    const api = makeMockApi({ resolveCase: jest.fn().mockRejectedValue(new Error('cannot resolve')) });
     const result = JSON.parse(await commands.resolveCase(api, { caseId: 1 }));
     expect(result.error).toBe('cannot resolve');
   });
@@ -296,14 +293,14 @@ describe('resolveCase handler', () => {
 
 describe('reopenCase handler', () => {
   it('returns caseId and message', async () => {
-    const api = makeMockApi({ rawRequest: jest.fn().mockResolvedValue({ case: [{ ixBug: 10 }] }) });
+    const api = makeMockApi({ reopenCase: jest.fn().mockResolvedValue({ ixBug: 10 }) });
     const result = JSON.parse(await commands.reopenCase(api, { caseId: 10 }));
     expect(result.caseId).toBe(10);
     expect(result.message).toContain('10');
   });
 
   it('returns error JSON on failure', async () => {
-    const api = makeMockApi({ rawRequest: jest.fn().mockRejectedValue(new Error('fail')) });
+    const api = makeMockApi({ reopenCase: jest.fn().mockRejectedValue(new Error('fail')) });
     const result = JSON.parse(await commands.reopenCase(api, { caseId: 1 }));
     expect(result.error).toBe('fail');
   });
@@ -313,14 +310,14 @@ describe('reopenCase handler', () => {
 
 describe('closeCase handler', () => {
   it('returns caseId and message', async () => {
-    const api = makeMockApi({ rawRequest: jest.fn().mockResolvedValue({ case: [{ ixBug: 20 }] }) });
+    const api = makeMockApi({ closeCase: jest.fn().mockResolvedValue({ ixBug: 20 }) });
     const result = JSON.parse(await commands.closeCase(api, { caseId: 20 }));
     expect(result.caseId).toBe(20);
     expect(result.message).toContain('20');
   });
 
   it('returns error JSON on failure', async () => {
-    const api = makeMockApi({ rawRequest: jest.fn().mockRejectedValue(new Error('fail')) });
+    const api = makeMockApi({ closeCase: jest.fn().mockRejectedValue(new Error('fail')) });
     const result = JSON.parse(await commands.closeCase(api, { caseId: 1 }));
     expect(result.error).toBe('fail');
   });
@@ -354,14 +351,10 @@ describe('listPeople handler', () => {
 describe('listCategories handler', () => {
   it('returns formatted categories', async () => {
     const api = makeMockApi({
-      rawRequest: jest.fn().mockResolvedValue({
-        categories: {
-          category: [
-            { ixCategory: 1, sCategory: 'Bug', sPlural: 'Bugs' },
-            { ixCategory: 2, sCategory: 'Feature', sPlural: 'Features' },
-          ],
-        },
-      }),
+      listCategories: jest.fn().mockResolvedValue([
+        { ixCategory: 1, sCategory: 'Bug', sPlural: 'Bugs' },
+        { ixCategory: 2, sCategory: 'Feature', sPlural: 'Features' },
+      ]),
     });
     const result = JSON.parse(await commands.listCategories(api, {}));
     expect(result.count).toBe(2);
@@ -370,7 +363,7 @@ describe('listCategories handler', () => {
   });
 
   it('returns error JSON on failure', async () => {
-    const api = makeMockApi({ rawRequest: jest.fn().mockRejectedValue(new Error('fail')) });
+    const api = makeMockApi({ listCategories: jest.fn().mockRejectedValue(new Error('fail')) });
     const result = JSON.parse(await commands.listCategories(api, {}));
     expect(result.error).toBe('fail');
   });
@@ -412,16 +405,12 @@ describe('listProjects handler', () => {
 // ─── listMilestones ───────────────────────────────────────────────────────────
 
 describe('listMilestones handler', () => {
-  it('returns formatted milestones from nested fixfors.fixfor structure', async () => {
+  it('returns formatted milestones', async () => {
     const api = makeMockApi({
-      rawRequest: jest.fn().mockResolvedValue({
-        fixfors: {
-          fixfor: [
-            { ixFixFor: 10, sFixFor: 'v1.0', ixProject: 1, dt: '2024-06-01' },
-            { ixFixFor: 11, sFixFor: 'v2.0', ixProject: 1, dt: '2024-12-01' },
-          ],
-        },
-      }),
+      listMilestones: jest.fn().mockResolvedValue([
+        { ixFixFor: 10, sFixFor: 'v1.0', ixProject: 1, dt: '2024-06-01' },
+        { ixFixFor: 11, sFixFor: 'v2.0', ixProject: 1, dt: '2024-12-01' },
+      ]),
     });
     const result = JSON.parse(await commands.listMilestones(api, {}));
     expect(result.count).toBe(2);
@@ -432,46 +421,20 @@ describe('listMilestones handler', () => {
     expect(result.milestones[1].name).toBe('v2.0');
   });
 
-  it('handles flat fixfor structure (no wrapper)', async () => {
-    const api = makeMockApi({
-      rawRequest: jest.fn().mockResolvedValue({
-        fixfor: [{ ixFixFor: 5, sFixFor: 'Milestone A', ixProject: 2, dt: '' }],
-      }),
-    });
-    const result = JSON.parse(await commands.listMilestones(api, {}));
-    expect(result.count).toBe(1);
-    expect(result.milestones[0].name).toBe('Milestone A');
-  });
-
-  it('wraps a single object into an array', async () => {
-    const api = makeMockApi({
-      rawRequest: jest.fn().mockResolvedValue({
-        fixfors: { fixfor: { ixFixFor: 7, sFixFor: 'Solo', ixProject: 3, dt: '' } },
-      }),
-    });
-    const result = JSON.parse(await commands.listMilestones(api, {}));
-    expect(result.count).toBe(1);
-    expect(result.milestones[0].name).toBe('Solo');
-  });
-
-  it('calls rawRequest with listFixFors and no ixProject when no filter given', async () => {
-    const api = makeMockApi({ rawRequest: jest.fn().mockResolvedValue({ fixfors: { fixfor: [] } }) });
+  it('calls listMilestones without ixProject when no filter given', async () => {
+    const api = makeMockApi({ listMilestones: jest.fn().mockResolvedValue([]) });
     await commands.listMilestones(api, {});
-    const [cmd, params] = (api.rawRequest as jest.Mock).mock.calls[0];
-    expect(cmd).toBe('listFixFors');
-    expect(params).not.toHaveProperty('ixProject');
+    expect(api.listMilestones as jest.Mock).toHaveBeenCalledWith(undefined);
   });
 
-  it('passes ixProject filter to rawRequest when provided', async () => {
-    const api = makeMockApi({ rawRequest: jest.fn().mockResolvedValue({ fixfors: { fixfor: [] } }) });
+  it('passes ixProject filter when provided', async () => {
+    const api = makeMockApi({ listMilestones: jest.fn().mockResolvedValue([]) });
     await commands.listMilestones(api, { ixProject: 5 });
-    const [cmd, params] = (api.rawRequest as jest.Mock).mock.calls[0];
-    expect(cmd).toBe('listFixFors');
-    expect(params.ixProject).toBe(5);
+    expect(api.listMilestones as jest.Mock).toHaveBeenCalledWith(5);
   });
 
   it('returns error JSON on failure', async () => {
-    const api = makeMockApi({ rawRequest: jest.fn().mockRejectedValue(new Error('fail')) });
+    const api = makeMockApi({ listMilestones: jest.fn().mockRejectedValue(new Error('fail')) });
     const result = JSON.parse(await commands.listMilestones(api, {}));
     expect(result.error).toBe('fail');
   });
@@ -480,16 +443,12 @@ describe('listMilestones handler', () => {
 // ─── listStatuses ─────────────────────────────────────────────────────────────
 
 describe('listStatuses handler', () => {
-  it('returns formatted statuses from nested statuses.status structure', async () => {
+  it('returns formatted statuses', async () => {
     const api = makeMockApi({
-      rawRequest: jest.fn().mockResolvedValue({
-        statuses: {
-          status: [
-            { ixStatus: 1, sStatus: 'Active', fResolved: '0' },
-            { ixStatus: 2, sStatus: 'Resolved', fResolved: '1' },
-          ],
-        },
-      }),
+      listStatuses: jest.fn().mockResolvedValue([
+        { ixStatus: 1, sStatus: 'Active', fResolved: false },
+        { ixStatus: 2, sStatus: 'Resolved', fResolved: true },
+      ]),
     });
     const result = JSON.parse(await commands.listStatuses(api, {}));
     expect(result.count).toBe(2);
@@ -500,56 +459,20 @@ describe('listStatuses handler', () => {
     expect(result.statuses[1].resolved).toBe(true);
   });
 
-  it('handles flat status structure (no wrapper)', async () => {
-    const api = makeMockApi({
-      rawRequest: jest.fn().mockResolvedValue({
-        status: [{ ixStatus: 3, sStatus: 'Closed', fResolved: '1' }],
-      }),
-    });
-    const result = JSON.parse(await commands.listStatuses(api, {}));
-    expect(result.count).toBe(1);
-    expect(result.statuses[0].resolved).toBe(true);
-  });
-
-  it('treats boolean true fResolved as resolved', async () => {
-    const api = makeMockApi({
-      rawRequest: jest.fn().mockResolvedValue({
-        statuses: { status: [{ ixStatus: 4, sStatus: 'Done', fResolved: true }] },
-      }),
-    });
-    const result = JSON.parse(await commands.listStatuses(api, {}));
-    expect(result.statuses[0].resolved).toBe(true);
-  });
-
-  it('wraps a single status object into an array', async () => {
-    const api = makeMockApi({
-      rawRequest: jest.fn().mockResolvedValue({
-        statuses: { status: { ixStatus: 9, sStatus: 'Solo', fResolved: '0' } },
-      }),
-    });
-    const result = JSON.parse(await commands.listStatuses(api, {}));
-    expect(result.count).toBe(1);
-    expect(result.statuses[0].name).toBe('Solo');
-  });
-
-  it('calls rawRequest with listStatuses and no ixCategory when no filter given', async () => {
-    const api = makeMockApi({ rawRequest: jest.fn().mockResolvedValue({ statuses: { status: [] } }) });
+  it('calls listStatuses without ixCategory when no filter given', async () => {
+    const api = makeMockApi({ listStatuses: jest.fn().mockResolvedValue([]) });
     await commands.listStatuses(api, {});
-    const [cmd, params] = (api.rawRequest as jest.Mock).mock.calls[0];
-    expect(cmd).toBe('listStatuses');
-    expect(params).not.toHaveProperty('ixCategory');
+    expect(api.listStatuses as jest.Mock).toHaveBeenCalledWith(undefined);
   });
 
-  it('passes ixCategory filter to rawRequest when provided', async () => {
-    const api = makeMockApi({ rawRequest: jest.fn().mockResolvedValue({ statuses: { status: [] } }) });
+  it('passes ixCategory filter when provided', async () => {
+    const api = makeMockApi({ listStatuses: jest.fn().mockResolvedValue([]) });
     await commands.listStatuses(api, { ixCategory: 2 });
-    const [cmd, params] = (api.rawRequest as jest.Mock).mock.calls[0];
-    expect(cmd).toBe('listStatuses');
-    expect(params.ixCategory).toBe(2);
+    expect(api.listStatuses as jest.Mock).toHaveBeenCalledWith(2);
   });
 
   it('returns error JSON on failure', async () => {
-    const api = makeMockApi({ rawRequest: jest.fn().mockRejectedValue(new Error('fail')) });
+    const api = makeMockApi({ listStatuses: jest.fn().mockRejectedValue(new Error('fail')) });
     const result = JSON.parse(await commands.listStatuses(api, {}));
     expect(result.error).toBe('fail');
   });

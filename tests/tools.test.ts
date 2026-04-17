@@ -76,8 +76,8 @@ describe('fogbugzTools schema validation', () => {
   it('every required field exists in properties', () => {
     for (const tool of fogbugzTools) {
       const { required, properties } = tool.inputSchema;
-      for (const field of required) {
-        expect(Object.keys(properties)).toContain(field);
+      for (const field of (required as string[])) {
+        expect(Object.keys(properties!)).toContain(field);
       }
     }
   });
@@ -91,7 +91,7 @@ describe('fogbugzTools schema validation', () => {
   it('read-only tools have readOnlyHint: true', () => {
     for (const tool of fogbugzTools) {
       if (READ_ONLY_TOOL_NAMES.has(tool.name)) {
-        expect(tool.annotations?.readOnlyHint).toBe(true);
+        expect((tool.annotations as any)?.readOnlyHint).toBe(true);
       }
     }
   });
@@ -99,14 +99,14 @@ describe('fogbugzTools schema validation', () => {
   it('write tools have readOnlyHint: false', () => {
     for (const tool of fogbugzTools) {
       if (WRITE_TOOL_NAMES.has(tool.name)) {
-        expect(tool.annotations?.readOnlyHint).toBe(false);
+        expect((tool.annotations as any)?.readOnlyHint).toBe(false);
       }
     }
   });
 
   it('every tool has a non-empty description', () => {
     for (const tool of fogbugzTools) {
-      expect(tool.description.length).toBeGreaterThan(0);
+      expect(tool.description!.length).toBeGreaterThan(0);
     }
   });
 

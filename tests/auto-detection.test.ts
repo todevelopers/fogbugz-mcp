@@ -96,7 +96,7 @@ describe('createFogBugzClient() auto-detection', () => {
 
     expect(mockAxios.post).toHaveBeenCalledWith(
       'https://test.fogbugz.com/f/api/0/jsonapi',
-      expect.objectContaining({ cmd: 'listProjects', token: 'test-key' }),
+      expect.objectContaining({ cmd: 'logon' }),
       expect.any(Object),
     );
   });
