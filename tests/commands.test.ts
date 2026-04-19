@@ -164,6 +164,22 @@ describe('listUserCases handler', () => {
     expect(params.q).toContain('status:resolved');
   });
 
+  it('strips double quotes from assignee to prevent query injection', async () => {
+    const api = makeMockApi({ searchCases: jest.fn().mockResolvedValue(cases) });
+    await commands.listUserCases(api, { assignee: 'foo" OR project:Secret x:"' });
+    const params = (api.searchCases as jest.Mock).mock.calls[0][0];
+    expect(params.q).not.toContain('"" OR');
+    expect(params.q).toContain('assignedto:"foo OR project:Secret x:"');
+  });
+
+  it('strips whitespace from status to prevent query injection', async () => {
+    const api = makeMockApi({ searchCases: jest.fn().mockResolvedValue(cases) });
+    await commands.listUserCases(api, { status: 'active OR project:Secret' });
+    const params = (api.searchCases as jest.Mock).mock.calls[0][0];
+    expect(params.q).toContain('status:activeORproject:Secret');
+    expect(params.q).not.toMatch(/\s+project:/);
+  });
+
   it('defaults to status:active', async () => {
     const api = makeMockApi({ searchCases: jest.fn().mockResolvedValue(cases) });
     await commands.listUserCases(api, {});

@@ -137,13 +137,15 @@ export async function listUserCases(api: IFogBugzClient, args: any): Promise<str
     let query = '';
 
     if (assignee) {
-      query = `assignedto:"${assignee}"`;
+      const safeAssignee = assignee.replace(/"/g, '');
+      query = `assignedto:"${safeAssignee}"`;
     } else {
       query = 'assignedto:me';
     }
 
     if (status) {
-      query += ` status:${status}`;
+      const safeStatus = status.replace(/\s+/g, '');
+      query += ` status:${safeStatus}`;
     } else {
       query += ' status:active';
     }
