@@ -23,7 +23,6 @@ export interface FogBugzCase {
   sPersonAssignedTo?: string;
   ixPersonAssignedTo?: number;
   events?: FogBugzEvent[];
-  [key: string]: any;
 }
 
 export interface FogBugzEvent {
@@ -33,32 +32,35 @@ export interface FogBugzEvent {
   dt: string;
   sPerson: string;
   ixPerson: number;
-  [key: string]: any;
 }
 
 export interface FogBugzProject {
   ixProject: number;
   sProject: string;
-  [key: string]: any;
+  ixPersonOwner?: number;
+  sEmail?: string;
+  fInbox?: number | boolean;
+  fDeleted?: number | boolean;
 }
 
 export interface FogBugzArea {
   ixArea: number;
   sArea: string;
   ixProject: number;
-  [key: string]: any;
+  ixPersonOwner?: number;
+  fDeleted?: number | boolean;
 }
 
 export interface FogBugzFixFor {
   ixFixFor: number;
   sFixFor: string;
-  [key: string]: any;
+  ixProject?: number;
+  dt?: string;
 }
 
 export interface FogBugzPriority {
   ixPriority: number;
   sPriority: string;
-  [key: string]: any;
 }
 
 export interface FogBugzPerson {
@@ -66,7 +68,6 @@ export interface FogBugzPerson {
   sPerson?: string;
   sFullName?: string;
   sEmail: string;
-  [key: string]: any;
 }
 
 export interface CreateCaseParams {
@@ -82,7 +83,6 @@ export interface CreateCaseParams {
   ixPriority?: number;
   sPersonAssignedTo?: string;
   ixPersonAssignedTo?: number;
-  [key: string]: any;
 }
 
 export interface EditCaseParams {
@@ -99,7 +99,6 @@ export interface EditCaseParams {
   ixPriority?: number;
   sPersonAssignedTo?: string;
   ixPersonAssignedTo?: number;
-  [key: string]: any;
 }
 
 export interface SearchParams {
@@ -119,12 +118,10 @@ export interface FogBugzCategory {
   ixCategory: number;
   sCategory: string;
   sPlural: string;
-  [key: string]: any;
 }
 
 export interface FogBugzStatus {
   ixStatus: number;
   sStatus: string;
   fResolved: boolean;
-  [key: string]: any;
 }

@@ -32,28 +32,31 @@ async function main() {
 
   server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const { name, arguments: args } = request.params;
+    // args arrives from the MCP framework as Record<string,unknown>|undefined;
+    // each handler validates required fields at runtime.
+    const typedArgs = args as any;
     let content: string;
 
     switch (name) {
-      case 'create_case':     content = await handlers.createCase(api, args); break;
-      case 'update_case':     content = await handlers.updateCase(api, args); break;
-      case 'assign_case':     content = await handlers.assignCase(api, args); break;
-      case 'list_my_cases':   content = await handlers.listUserCases(api, args); break;
-      case 'search_cases':    content = await handlers.searchCases(api, args); break;
-      case 'get_case_link':   content = await handlers.getCaseLink(api, args); break;
-      case 'get_case':        content = await handlers.getCase(api, args); break;
-      case 'resolve_case':    content = await handlers.resolveCase(api, args); break;
-      case 'reopen_case':     content = await handlers.reopenCase(api, args); break;
-      case 'close_case':      content = await handlers.closeCase(api, args); break;
-      case 'list_people':     content = await handlers.listPeople(api, args); break;
-      case 'list_categories': content = await handlers.listCategories(api, args); break;
-      case 'list_projects':   content = await handlers.listProjects(api, args); break;
-      case 'list_milestones': content = await handlers.listMilestones(api, args); break;
-      case 'list_statuses':   content = await handlers.listStatuses(api, args); break;
-      case 'view_project':    content = await handlers.viewProject(api, args); break;
-      case 'view_area':       content = await handlers.viewArea(api, args); break;
-      case 'create_project':  content = await handlers.createProject(api, args); break;
-      case 'api_request':     content = await handlers.apiRequest(api, args); break;
+      case 'create_case':     content = await handlers.createCase(api, typedArgs); break;
+      case 'update_case':     content = await handlers.updateCase(api, typedArgs); break;
+      case 'assign_case':     content = await handlers.assignCase(api, typedArgs); break;
+      case 'list_my_cases':   content = await handlers.listUserCases(api, typedArgs); break;
+      case 'search_cases':    content = await handlers.searchCases(api, typedArgs); break;
+      case 'get_case_link':   content = await handlers.getCaseLink(api, typedArgs); break;
+      case 'get_case':        content = await handlers.getCase(api, typedArgs); break;
+      case 'resolve_case':    content = await handlers.resolveCase(api, typedArgs); break;
+      case 'reopen_case':     content = await handlers.reopenCase(api, typedArgs); break;
+      case 'close_case':      content = await handlers.closeCase(api, typedArgs); break;
+      case 'list_people':     content = await handlers.listPeople(api, typedArgs); break;
+      case 'list_categories': content = await handlers.listCategories(api, typedArgs); break;
+      case 'list_projects':   content = await handlers.listProjects(api, typedArgs); break;
+      case 'list_milestones': content = await handlers.listMilestones(api, typedArgs); break;
+      case 'list_statuses':   content = await handlers.listStatuses(api, typedArgs); break;
+      case 'view_project':    content = await handlers.viewProject(api, typedArgs); break;
+      case 'view_area':       content = await handlers.viewArea(api, typedArgs); break;
+      case 'create_project':  content = await handlers.createProject(api, typedArgs); break;
+      case 'api_request':     content = await handlers.apiRequest(api, typedArgs); break;
       default:
         return { content: [{ type: 'text' as const, text: JSON.stringify({ error: `Unknown tool: ${name}` }) }], isError: true };
     }

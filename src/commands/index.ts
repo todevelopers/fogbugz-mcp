@@ -366,7 +366,7 @@ export async function closeCase(api: IFogBugzClient, args: CloseCaseArgs | undef
   }
 }
 
-export async function listPeople(api: IFogBugzClient, _args: Record<string, unknown>): Promise<string> {
+export async function listPeople(api: IFogBugzClient, _args: Record<string, unknown> | undefined): Promise<string> {
   try {
     const people = await api.listPeople();
     const formatted = people.map(p => ({
@@ -384,7 +384,7 @@ export async function listPeople(api: IFogBugzClient, _args: Record<string, unkn
   }
 }
 
-export async function listCategories(api: IFogBugzClient, _args: Record<string, unknown>): Promise<string> {
+export async function listCategories(api: IFogBugzClient, _args: Record<string, unknown> | undefined): Promise<string> {
   try {
     const categories = await api.listCategories();
     const formatted = categories.map(c => ({
@@ -402,7 +402,7 @@ export async function listCategories(api: IFogBugzClient, _args: Record<string, 
   }
 }
 
-export async function listProjects(api: IFogBugzClient, _args: Record<string, unknown>): Promise<string> {
+export async function listProjects(api: IFogBugzClient, _args: Record<string, unknown> | undefined): Promise<string> {
   try {
     const projects = await api.listProjects();
     const formatted = projects.map(p => ({
