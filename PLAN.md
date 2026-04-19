@@ -232,8 +232,8 @@ Road map split by phase. Each task is independently actionable.
 - [ ] **7.3** `npm test` — all tests pass
 - [ ] **7.4** `npx @anthropic-ai/mcpb pack` — produces `fogbugz-mcp.mcpb`
 - [x] **7.5** Set up GitHub Actions workflow to produce a release artifact on `v1.0.0` tag
-- [ ] **7.6** Review mcp server on security issues, code smells and clean design
-- [ ] **7.7** Review mcp server for trace logging useful information during production running 
+- [x] **7.6** Review mcp server on security issues, code smells and clean design
+- [x] **7.7** Review mcp server for trace logging useful information during production running 
 - [ ] **7.8** Create git tag `v1.0.0` and push
 
 ### Phase 8 — Unit Tests (XML + JSON API per documentation)
