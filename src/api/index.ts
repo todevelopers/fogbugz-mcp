@@ -5,6 +5,7 @@ import { IFogBugzClient } from './base-client';
 import { FogBugzXmlClient } from './xml-client';
 import { FogBugzJsonClient } from './json-client';
 import { normalizeBaseUrl } from './utils';
+import { logger } from '../logger';
 
 /**
  * Detect the FogBugz API version and return the appropriate client.
@@ -19,6 +20,8 @@ import { normalizeBaseUrl } from './utils';
 export async function createFogBugzClient(config: FogBugzConfig): Promise<IFogBugzClient> {
   const baseUrl = normalizeBaseUrl(config.baseUrl);
 
+  logger.info('Detecting FogBugz API version', { url: baseUrl });
+
   try {
     const versionResponse = await axios.get(`${baseUrl}/api.xml`, {
       timeout: 5000,
@@ -28,6 +31,8 @@ export async function createFogBugzClient(config: FogBugzConfig): Promise<IFogBu
     const parser = new XMLParser({ parseTagValue: true });
     const parsed = parser.parse(versionResponse.data);
     const apiVersion = Number(parsed?.response?.version ?? 0);
+
+    logger.info('FogBugz API version detected', { version: apiVersion });
 
     if (apiVersion >= 9) {
       try {
@@ -57,16 +62,20 @@ export async function createFogBugzClient(config: FogBugzConfig): Promise<IFogBu
         // proxy, redirect page, or XML fallback endpoint that happens to
         // return HTTP 200.
         if (probe.data && Array.isArray(probe.data.errors)) {
+          logger.info('Using FogBugzJsonClient');
           return new FogBugzJsonClient(config);
         }
       } catch {
         // JSON API unreachable despite version >= 9 — fall back to XML
+        logger.warn('JSON API probe failed, falling back to XML client');
       }
     }
   } catch {
     // api.xml unreachable — fall back to XML
+    logger.warn('Could not reach /api.xml, using XML client as fallback');
   }
 
+  logger.info('Using FogBugzXmlClient');
   return new FogBugzXmlClient(config);
 }
 

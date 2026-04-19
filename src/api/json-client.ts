@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { IFogBugzClient } from './base-client';
 import { normalizeCaseFields, normalizeEvent, normalizeBaseUrl } from './utils';
+import { logger } from '../logger';
 import {
   FogBugzConfig,
   FogBugzCase,
@@ -29,6 +30,8 @@ export class FogBugzJsonClient implements IFogBugzClient {
   }
 
   private async request(cmd: string, params: Record<string, any> = {}): Promise<any> {
+    const start = Date.now();
+    logger.debug('JSON API request', { cmd, params });
     try {
       const body = { cmd, token: this.apiKey, ...params };
       const response = await axios.post(this.apiEndpoint, body, {
@@ -39,8 +42,10 @@ export class FogBugzJsonClient implements IFogBugzClient {
       if (json.errors && json.errors.length > 0) {
         throw new Error(`FogBugz API Error: ${json.errors[0].message}`);
       }
+      logger.debug('JSON API response', { cmd, durationMs: Date.now() - start, status: response.status });
       return json.data;
     } catch (error: any) {
+      logger.error('JSON API error', { cmd, durationMs: Date.now() - start, error: error.message });
       if (error.response) {
         throw new Error(`FogBugz API Error: ${error.response.status} - ${error.response.data}`);
       }

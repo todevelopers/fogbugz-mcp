@@ -2,6 +2,7 @@ import axios from 'axios';
 import { XMLParser } from 'fast-xml-parser';
 import { IFogBugzClient } from './base-client';
 import { normalizeCaseFields, normalizeEvent, normalizeBaseUrl } from './utils';
+import { logger } from '../logger';
 import {
   FogBugzConfig,
   FogBugzCase,
@@ -42,6 +43,8 @@ export class FogBugzXmlClient implements IFogBugzClient {
     cmd: string,
     params: Record<string, any> = {},
   ): Promise<any> {
+    const start = Date.now();
+    logger.debug('XML API request', { cmd, params });
     try {
       const flatParams: Record<string, string> = {
         cmd,
@@ -79,8 +82,10 @@ export class FogBugzXmlClient implements IFogBugzClient {
         throw new Error(`FogBugz API Error: ${errorMsg}`);
       }
 
+      logger.debug('XML API response', { cmd, durationMs: Date.now() - start, status: response.status });
       return root;
     } catch (error: any) {
+      logger.error('XML API error', { cmd, durationMs: Date.now() - start, error: error.message });
       if (error.response) {
         throw new Error(`FogBugz API Error: ${error.response.status} - ${error.response.data}`);
       }

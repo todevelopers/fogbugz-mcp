@@ -7,6 +7,7 @@ import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { ListToolsRequestSchema, CallToolRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import { version } from '../package.json';
+import { logger } from './logger';
 
 dotenv.config();
 
@@ -15,10 +16,11 @@ async function main() {
   const fogbugzApiKey = process.env.FOGBUGZ_API_KEY || '';
 
   if (!fogbugzUrl || !fogbugzApiKey) {
-    console.error('[ERROR] FOGBUGZ_URL and FOGBUGZ_API_KEY environment variables are required');
+    logger.error('FOGBUGZ_URL and FOGBUGZ_API_KEY environment variables are required');
     process.exit(1);
   }
 
+  logger.info('Starting fogbugz-mcp', { version });
   const api: IFogBugzClient = await createFogBugzClient({ baseUrl: fogbugzUrl, apiKey: fogbugzApiKey });
 
   const server = new Server(
@@ -36,6 +38,10 @@ async function main() {
     // each handler validates required fields at runtime.
     const typedArgs = args as any;
     let content: string;
+    const start = Date.now();
+
+    logger.info('Tool called', { tool: name });
+    logger.debug('Tool args', { tool: name, args: typedArgs });
 
     switch (name) {
       case 'create_case':     content = await handlers.createCase(api, typedArgs); break;
@@ -58,7 +64,16 @@ async function main() {
       case 'create_project':  content = await handlers.createProject(api, typedArgs); break;
       case 'api_request':     content = await handlers.apiRequest(api, typedArgs); break;
       default:
+        logger.warn('Unknown tool called', { tool: name });
         return { content: [{ type: 'text' as const, text: JSON.stringify({ error: `Unknown tool: ${name}` }) }], isError: true };
+    }
+
+    const durationMs = Date.now() - start;
+    const isError = content.includes('"error"');
+    if (isError) {
+      logger.warn('Tool returned error', { tool: name, durationMs });
+    } else {
+      logger.info('Tool completed', { tool: name, durationMs });
     }
 
     return { content: [{ type: 'text' as const, text: content }] };
@@ -69,6 +84,6 @@ async function main() {
 }
 
 main().catch(error => {
-  console.error('[ERROR] Fatal error:', error);
+  logger.error('Fatal error', { error: error?.message ?? String(error) });
   process.exit(1);
 });
