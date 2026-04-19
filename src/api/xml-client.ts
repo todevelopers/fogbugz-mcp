@@ -139,9 +139,9 @@ export class FogBugzXmlClient implements IFogBugzClient {
     const projects = root.projects?.project || root.project || [];
     const list = Array.isArray(projects) ? projects : [projects];
     return list.map((p: any) => ({
+      ...p,
       ixProject: Number(p.ixProject),
       sProject: p.sProject || '',
-      ...p,
     }));
   }
 
@@ -150,10 +150,10 @@ export class FogBugzXmlClient implements IFogBugzClient {
     const areas = root.areas?.area || root.area || [];
     const list = Array.isArray(areas) ? areas : [areas];
     return list.map((a: any) => ({
+      ...a,
       ixArea: Number(a.ixArea),
       sArea: a.sArea || '',
       ixProject: Number(a.ixProject || 0),
-      ...a,
     }));
   }
 
@@ -164,9 +164,9 @@ export class FogBugzXmlClient implements IFogBugzClient {
     const fixfors = root.fixfors?.fixfor || root.fixfor || [];
     const list = Array.isArray(fixfors) ? fixfors : [fixfors];
     return list.map((f: any) => ({
+      ...f,
       ixFixFor: Number(f.ixFixFor),
       sFixFor: f.sFixFor || '',
-      ...f,
     }));
   }
 
@@ -175,10 +175,10 @@ export class FogBugzXmlClient implements IFogBugzClient {
     const categories = root.categories?.category || root.category || [];
     const list = Array.isArray(categories) ? categories : [categories];
     return list.map((c: any) => ({
+      ...c,
       ixCategory: Number(c.ixCategory),
       sCategory: c.sCategory || '',
       sPlural: c.sPlural || '',
-      ...c,
     }));
   }
 
@@ -189,10 +189,10 @@ export class FogBugzXmlClient implements IFogBugzClient {
     const statuses = root.statuses?.status || root.status || [];
     const list = Array.isArray(statuses) ? statuses : [statuses];
     return list.map((s: any) => ({
+      ...s,
       ixStatus: Number(s.ixStatus),
       sStatus: s.sStatus || '',
       fResolved: s.fResolved === '1' || s.fResolved === true,
-      ...s,
     }));
   }
 
@@ -201,9 +201,9 @@ export class FogBugzXmlClient implements IFogBugzClient {
     const priorities = root.priorities?.priority || root.priority || [];
     const list = Array.isArray(priorities) ? priorities : [priorities];
     return list.map((p: any) => ({
+      ...p,
       ixPriority: Number(p.ixPriority),
       sPriority: p.sPriority || '',
-      ...p,
     }));
   }
 
@@ -212,11 +212,11 @@ export class FogBugzXmlClient implements IFogBugzClient {
     const people = root.people?.person || root.person || [];
     const list = Array.isArray(people) ? people : [people];
     return list.map((p: any) => ({
+      ...p,
       ixPerson: Number(p.ixPerson),
       sFullName: p.sFullName || '',
       sEmail: p.sEmail || '',
       sPerson: p.sFullName || '',
-      ...p,
     }));
   }
 
@@ -322,9 +322,9 @@ export class FogBugzXmlClient implements IFogBugzClient {
     const root = await this.request('newProject', apiParams);
     const project = root.project?.[0] || root.project || root;
     return {
+      ...project,
       ixProject: Number(project.ixProject),
       sProject: project.sProject || '',
-      ...project,
     };
   }
 }

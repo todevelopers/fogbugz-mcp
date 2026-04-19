@@ -97,9 +97,9 @@ export class FogBugzJsonClient implements IFogBugzClient {
     const data = await this.request('listProjects');
     const projects: any[] = data.projects || [];
     return projects.map((p: any) => ({
+      ...p,
       ixProject: Number(p.ixProject),
       sProject: p.sProject || '',
-      ...p,
     }));
   }
 
@@ -107,10 +107,10 @@ export class FogBugzJsonClient implements IFogBugzClient {
     const data = await this.request('listAreas');
     const areas: any[] = data.areas || [];
     return areas.map((a: any) => ({
+      ...a,
       ixArea: Number(a.ixArea),
       sArea: a.sArea || '',
       ixProject: Number(a.ixProject || 0),
-      ...a,
     }));
   }
 
@@ -120,9 +120,9 @@ export class FogBugzJsonClient implements IFogBugzClient {
     const data = await this.request('listFixFors', params);
     const fixfors: any[] = data.fixfors || [];
     return fixfors.map((f: any) => ({
+      ...f,
       ixFixFor: Number(f.ixFixFor),
       sFixFor: f.sFixFor || '',
-      ...f,
     }));
   }
 
@@ -130,10 +130,10 @@ export class FogBugzJsonClient implements IFogBugzClient {
     const data = await this.request('listCategories');
     const categories: any[] = data.categories || [];
     return categories.map((c: any) => ({
+      ...c,
       ixCategory: Number(c.ixCategory),
       sCategory: c.sCategory || '',
       sPlural: c.sPlural || '',
-      ...c,
     }));
   }
 
@@ -143,10 +143,10 @@ export class FogBugzJsonClient implements IFogBugzClient {
     const data = await this.request('listStatuses', params);
     const statuses: any[] = data.statuses || [];
     return statuses.map((s: any) => ({
+      ...s,
       ixStatus: Number(s.ixStatus),
       sStatus: s.sStatus || '',
       fResolved: s.fResolved === true || s.fResolved === 1,
-      ...s,
     }));
   }
 
@@ -154,9 +154,9 @@ export class FogBugzJsonClient implements IFogBugzClient {
     const data = await this.request('listPriorities');
     const priorities: any[] = data.priorities || [];
     return priorities.map((p: any) => ({
+      ...p,
       ixPriority: Number(p.ixPriority),
       sPriority: p.sPriority || '',
-      ...p,
     }));
   }
 
@@ -164,11 +164,11 @@ export class FogBugzJsonClient implements IFogBugzClient {
     const data = await this.request('listPeople');
     const people: any[] = data.people || [];
     return people.map((p: any) => ({
+      ...p,
       ixPerson: Number(p.ixPerson),
       sFullName: p.sFullName || '',
       sEmail: p.sEmail || '',
       sPerson: p.sFullName || '',
-      ...p,
     }));
   }
 
@@ -261,9 +261,9 @@ export class FogBugzJsonClient implements IFogBugzClient {
     const data = await this.request('newProject', apiParams);
     const project = data.project;
     return {
+      ...project,
       ixProject: Number(project.ixProject),
       sProject: project.sProject || '',
-      ...project,
     };
   }
 }
