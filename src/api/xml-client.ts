@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { XMLParser } from 'fast-xml-parser';
 import { IFogBugzClient } from './base-client';
-import { normalizeCaseFields, normalizeEvent } from './utils';
+import { normalizeCaseFields, normalizeEvent, normalizeBaseUrl } from './utils';
 import {
   FogBugzConfig,
   FogBugzCase,
@@ -25,9 +25,7 @@ export class FogBugzXmlClient implements IFogBugzClient {
   private xmlParser: XMLParser;
 
   constructor(config: FogBugzConfig) {
-    this.baseUrl = config.baseUrl.endsWith('/')
-      ? config.baseUrl.slice(0, -1)
-      : config.baseUrl;
+    this.baseUrl = normalizeBaseUrl(config.baseUrl);
     this.apiKey = config.apiKey;
     this.apiEndpoint = `${this.baseUrl}/api.asp`;
     this.xmlParser = new XMLParser({

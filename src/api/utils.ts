@@ -1,5 +1,9 @@
 import { FogBugzCase, FogBugzEvent } from './types';
 
+export function normalizeBaseUrl(url: string): string {
+  return url.endsWith('/') ? url.slice(0, -1) : url;
+}
+
 const CASE_FIELDS = [
   'sStatus', 'ixStatus', 'sPriority', 'ixPriority',
   'sProject', 'ixProject', 'sArea', 'ixArea',

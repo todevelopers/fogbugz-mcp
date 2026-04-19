@@ -4,6 +4,7 @@ import { FogBugzConfig } from './types';
 import { IFogBugzClient } from './base-client';
 import { FogBugzXmlClient } from './xml-client';
 import { FogBugzJsonClient } from './json-client';
+import { normalizeBaseUrl } from './utils';
 
 /**
  * Detect the FogBugz API version and return the appropriate client.
@@ -16,9 +17,7 @@ import { FogBugzJsonClient } from './json-client';
  * 3. If version < 9 or /api.xml is unreachable → FogBugzXmlClient.
  */
 export async function createFogBugzClient(config: FogBugzConfig): Promise<IFogBugzClient> {
-  const baseUrl = config.baseUrl.endsWith('/')
-    ? config.baseUrl.slice(0, -1)
-    : config.baseUrl;
+  const baseUrl = normalizeBaseUrl(config.baseUrl);
 
   try {
     const versionResponse = await axios.get(`${baseUrl}/api.xml`, {

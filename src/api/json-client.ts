@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { IFogBugzClient } from './base-client';
-import { normalizeCaseFields, normalizeEvent } from './utils';
+import { normalizeCaseFields, normalizeEvent, normalizeBaseUrl } from './utils';
 import {
   FogBugzConfig,
   FogBugzCase,
@@ -23,9 +23,7 @@ export class FogBugzJsonClient implements IFogBugzClient {
   private apiEndpoint: string;
 
   constructor(config: FogBugzConfig) {
-    this.baseUrl = config.baseUrl.endsWith('/')
-      ? config.baseUrl.slice(0, -1)
-      : config.baseUrl;
+    this.baseUrl = normalizeBaseUrl(config.baseUrl);
     this.apiKey = config.apiKey;
     this.apiEndpoint = `${this.baseUrl}/f/api/0/jsonapi`;
   }
