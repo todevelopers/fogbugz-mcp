@@ -33,7 +33,7 @@ export class FogBugzXmlClient implements IFogBugzClient {
       attributeNamePrefix: '@_',
       parseTagValue: true,
       isArray: (name) => {
-        return ['case', 'project', 'area', 'fixfor', 'priority', 'person', 'event'].includes(name);
+        return ['case', 'project', 'area', 'fixfor', 'priority', 'person', 'event', 'status', 'category'].includes(name);
       },
     });
   }

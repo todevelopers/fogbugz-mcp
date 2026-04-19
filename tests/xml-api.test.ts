@@ -13,6 +13,7 @@ import {
   xmlFixForsResponse,
   xmlPrioritiesResponse,
   xmlStatusesResponse,
+  xmlCategoriesResponse,
 } from './fixtures';
 
 jest.mock('axios');
@@ -603,6 +604,37 @@ describe('FogBugzApi', () => {
       const body = mockAxios.post.mock.calls[0][1] as URLSearchParams;
       expect(body.get('cmd')).toBe('listFixFors');
       expect(body.get('ixProject')).toBe('5');
+    });
+  });
+
+  // ─── listStatuses single-item ─────────────────────────────────────────────
+
+  describe('listStatuses() single-item response', () => {
+    it('returns a 1-element array when only one status exists', async () => {
+      mockAxios.post.mockResolvedValueOnce({
+        data: xmlStatusesResponse([{ ixStatus: 1, sStatus: 'Active', fResolved: 0 }]),
+      });
+      const statuses = await api.listStatuses();
+      expect(Array.isArray(statuses)).toBe(true);
+      expect(statuses).toHaveLength(1);
+      expect(statuses[0].ixStatus).toBe(1);
+      expect(statuses[0].sStatus).toBe('Active');
+      expect(statuses[0].fResolved).toBe(false);
+    });
+  });
+
+  // ─── listCategories single-item ───────────────────────────────────────────
+
+  describe('listCategories() single-item response', () => {
+    it('returns a 1-element array when only one category exists', async () => {
+      mockAxios.post.mockResolvedValueOnce({
+        data: xmlCategoriesResponse([{ ixCategory: 2, sCategory: 'Feature', sPlural: 'Features' }]),
+      });
+      const categories = await api.listCategories();
+      expect(Array.isArray(categories)).toBe(true);
+      expect(categories).toHaveLength(1);
+      expect(categories[0].ixCategory).toBe(2);
+      expect(categories[0].sCategory).toBe('Feature');
     });
   });
 });
