@@ -483,12 +483,11 @@ export async function viewProject(api: IFogBugzClient, args: any): Promise<strin
   if (!ixProject) return JSON.stringify({ error: 'ixProject is required' });
 
   try {
-    const result = await api.rawRequest('viewProject', { ixProject });
-    const project = result.project?.[0] || result.project || result;
+    const project = await api.viewProject(ixProject);
 
     return JSON.stringify({
-      projectId: Number(project.ixProject),
-      name: project.sProject || '',
+      projectId: project.ixProject,
+      name: project.sProject,
       owner: project.ixPersonOwner,
       email: project.sEmail || '',
       inbox: project.fInbox,
@@ -509,13 +508,12 @@ export async function viewArea(api: IFogBugzClient, args: any): Promise<string> 
   if (!ixArea) return JSON.stringify({ error: 'ixArea is required' });
 
   try {
-    const result = await api.rawRequest('viewArea', { ixArea });
-    const area = result.area?.[0] || result.area || result;
+    const area = await api.viewArea(ixArea);
 
     return JSON.stringify({
-      areaId: Number(area.ixArea),
-      name: area.sArea || '',
-      projectId: Number(area.ixProject || 0),
+      areaId: area.ixArea,
+      name: area.sArea,
+      projectId: area.ixProject,
       owner: area.ixPersonOwner,
       deleted: area.fDeleted,
       message: `Area #${area.ixArea}: "${area.sArea}"`,

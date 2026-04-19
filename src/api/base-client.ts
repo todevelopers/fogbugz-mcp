@@ -33,4 +33,6 @@ export interface IFogBugzClient {
   rawRequest(cmd: string, params?: Record<string, any>): Promise<any>;
   getCaseLink(caseId: number): string;
   createProject(params: CreateProjectParams): Promise<FogBugzProject>;
+  viewProject(ixProject: number): Promise<FogBugzProject>;
+  viewArea(ixArea: number): Promise<FogBugzArea>;
 }

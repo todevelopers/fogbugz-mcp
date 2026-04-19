@@ -327,4 +327,25 @@ export class FogBugzXmlClient implements IFogBugzClient {
       sProject: project.sProject || '',
     };
   }
+
+  async viewProject(ixProject: number): Promise<FogBugzProject> {
+    const root = await this.request('viewProject', { ixProject });
+    const project = root.project?.[0] || root.project || root;
+    return {
+      ...project,
+      ixProject: Number(project.ixProject),
+      sProject: project.sProject || '',
+    };
+  }
+
+  async viewArea(ixArea: number): Promise<FogBugzArea> {
+    const root = await this.request('viewArea', { ixArea });
+    const area = root.area?.[0] || root.area || root;
+    return {
+      ...area,
+      ixArea: Number(area.ixArea),
+      sArea: area.sArea || '',
+      ixProject: Number(area.ixProject || 0),
+    };
+  }
 }

@@ -26,6 +26,8 @@ function makeMockApi(overrides: Partial<Record<keyof FogBugzApi, jest.Mock>> = {
     rawRequest: jest.fn(),
     getCaseLink: jest.fn((id: number) => `https://test.fogbugz.com/default.asp?${id}`),
     createProject: jest.fn(),
+    viewProject: jest.fn(),
+    viewArea: jest.fn(),
     ...overrides,
   } as unknown as jest.Mocked<FogBugzApi>;
 }
@@ -499,8 +501,8 @@ describe('listStatuses handler', () => {
 describe('viewProject handler', () => {
   it('returns project details', async () => {
     const api = makeMockApi({
-      rawRequest: jest.fn().mockResolvedValue({
-        project: [{ ixProject: 3, sProject: 'Alpha', ixPersonOwner: 1, sEmail: 'a@x.com', fInbox: 0, fDeleted: 0 }],
+      viewProject: jest.fn().mockResolvedValue({
+        ixProject: 3, sProject: 'Alpha', ixPersonOwner: 1, sEmail: 'a@x.com', fInbox: 0, fDeleted: 0,
       }),
     });
     const result = JSON.parse(await commands.viewProject(api, { ixProject: 3 }));
@@ -508,8 +510,16 @@ describe('viewProject handler', () => {
     expect(result.name).toBe('Alpha');
   });
 
+  it('calls viewProject with the correct ixProject', async () => {
+    const api = makeMockApi({
+      viewProject: jest.fn().mockResolvedValue({ ixProject: 3, sProject: 'Alpha' }),
+    });
+    await commands.viewProject(api, { ixProject: 3 });
+    expect(api.viewProject as jest.Mock).toHaveBeenCalledWith(3);
+  });
+
   it('returns error JSON on failure', async () => {
-    const api = makeMockApi({ rawRequest: jest.fn().mockRejectedValue(new Error('not found')) });
+    const api = makeMockApi({ viewProject: jest.fn().mockRejectedValue(new Error('not found')) });
     const result = JSON.parse(await commands.viewProject(api, { ixProject: 999 }));
     expect(result.error).toBe('not found');
   });
@@ -520,8 +530,8 @@ describe('viewProject handler', () => {
 describe('viewArea handler', () => {
   it('returns area details', async () => {
     const api = makeMockApi({
-      rawRequest: jest.fn().mockResolvedValue({
-        area: [{ ixArea: 5, sArea: 'UI', ixProject: 1, ixPersonOwner: 2, fDeleted: 0 }],
+      viewArea: jest.fn().mockResolvedValue({
+        ixArea: 5, sArea: 'UI', ixProject: 1, ixPersonOwner: 2, fDeleted: 0,
       }),
     });
     const result = JSON.parse(await commands.viewArea(api, { ixArea: 5 }));
@@ -530,8 +540,16 @@ describe('viewArea handler', () => {
     expect(result.projectId).toBe(1);
   });
 
+  it('calls viewArea with the correct ixArea', async () => {
+    const api = makeMockApi({
+      viewArea: jest.fn().mockResolvedValue({ ixArea: 5, sArea: 'UI', ixProject: 1 }),
+    });
+    await commands.viewArea(api, { ixArea: 5 });
+    expect(api.viewArea as jest.Mock).toHaveBeenCalledWith(5);
+  });
+
   it('returns error JSON on failure', async () => {
-    const api = makeMockApi({ rawRequest: jest.fn().mockRejectedValue(new Error('bad')) });
+    const api = makeMockApi({ viewArea: jest.fn().mockRejectedValue(new Error('bad')) });
     const result = JSON.parse(await commands.viewArea(api, { ixArea: 1 }));
     expect(result.error).toBe('bad');
   });

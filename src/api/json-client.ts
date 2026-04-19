@@ -266,4 +266,25 @@ export class FogBugzJsonClient implements IFogBugzClient {
       sProject: project.sProject || '',
     };
   }
+
+  async viewProject(ixProject: number): Promise<FogBugzProject> {
+    const data = await this.request('viewProject', { ixProject });
+    const project = data.project;
+    return {
+      ...project,
+      ixProject: Number(project.ixProject),
+      sProject: project.sProject || '',
+    };
+  }
+
+  async viewArea(ixArea: number): Promise<FogBugzArea> {
+    const data = await this.request('viewArea', { ixArea });
+    const area = data.area;
+    return {
+      ...area,
+      ixArea: Number(area.ixArea),
+      sArea: area.sArea || '',
+      ixProject: Number(area.ixProject || 0),
+    };
+  }
 }
