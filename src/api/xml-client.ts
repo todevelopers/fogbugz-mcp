@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { XMLParser } from 'fast-xml-parser';
 import { IFogBugzClient } from './base-client';
+import { normalizeCaseFields, normalizeEvent } from './utils';
 import {
   FogBugzConfig,
   FogBugzCase,
@@ -95,29 +96,11 @@ export class FogBugzXmlClient implements IFogBugzClient {
       sTitle: raw.sTitle || '',
     };
 
-    const fields = [
-      'sStatus', 'ixStatus', 'sPriority', 'ixPriority',
-      'sProject', 'ixProject', 'sArea', 'ixArea',
-      'sFixFor', 'ixFixFor', 'sPersonAssignedTo', 'ixPersonAssignedTo',
-    ];
-    for (const field of fields) {
-      if (raw[field] !== undefined) {
-        bugCase[field] = raw[field];
-      }
-    }
+    normalizeCaseFields(raw, bugCase);
 
-    if (raw.events && raw.events.event) {
-      const events = Array.isArray(raw.events.event)
-        ? raw.events.event
-        : [raw.events.event];
-      bugCase.events = events.map((e: any) => ({
-        ixBugEvent: Number(e.ixBugEvent),
-        sVerb: e.sVerb || '',
-        sText: e.s || e.sText || '',
-        dt: e.dt || '',
-        sPerson: e.sPerson || '',
-        ixPerson: Number(e.ixPerson || 0),
-      }));
+    if (raw.events?.event) {
+      const events = Array.isArray(raw.events.event) ? raw.events.event : [raw.events.event];
+      bugCase.events = events.map(normalizeEvent);
     }
 
     return bugCase;

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { IFogBugzClient } from './base-client';
+import { normalizeCaseFields, normalizeEvent } from './utils';
 import {
   FogBugzConfig,
   FogBugzCase,
@@ -55,27 +56,11 @@ export class FogBugzJsonClient implements IFogBugzClient {
       sTitle: raw.sTitle || '',
     };
 
-    const fields = [
-      'sStatus', 'ixStatus', 'sPriority', 'ixPriority',
-      'sProject', 'ixProject', 'sArea', 'ixArea',
-      'sFixFor', 'ixFixFor', 'sPersonAssignedTo', 'ixPersonAssignedTo',
-    ];
-    for (const field of fields) {
-      if (raw[field] !== undefined) {
-        bugCase[field] = raw[field];
-      }
-    }
+    normalizeCaseFields(raw, bugCase);
 
-    // JSON API returns events as a direct array at case.events (not case.events.event)
-    if (raw.events && Array.isArray(raw.events) && raw.events.length > 0) {
-      bugCase.events = raw.events.map((e: any) => ({
-        ixBugEvent: Number(e.ixBugEvent),
-        sVerb: e.sVerb || '',
-        sText: e.s || e.sText || '',
-        dt: e.dt || '',
-        sPerson: e.sPerson || '',
-        ixPerson: Number(e.ixPerson || 0),
-      }));
+    // JSON API returns events as a flat array at case.events (XML nests them under case.events.event)
+    if (Array.isArray(raw.events) && raw.events.length > 0) {
+      bugCase.events = raw.events.map(normalizeEvent);
     }
 
     return bugCase;
