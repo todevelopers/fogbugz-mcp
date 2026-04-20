@@ -66,7 +66,17 @@ See the official guide: [Get an API Token using FogBugz API commands](https://su
 
 Download the latest `.mcpb` package from the [Releases](https://github.com/todevelopers/fogbugz-mcp/releases) page and open it — Claude Desktop will install and configure the server automatically, prompting you for your FogBugz URL and API key.
 
-### Manual install
+### Via npx (no install needed)
+
+```bash
+# Latest stable release
+npx @todevs/fogbugz-mcp
+
+# Latest dev build (pre-release)
+npx @todevs/fogbugz-mcp@dev
+```
+
+### Manual install from source
 
 ```bash
 git clone https://github.com/todevelopers/fogbugz-mcp.git
@@ -78,6 +88,42 @@ npm run build
 ## MCP Client Configuration
 
 Add to your MCP client config (e.g. Claude Desktop `claude_desktop_config.json`):
+
+**Via npx (recommended):**
+
+```json
+{
+  "mcpServers": {
+    "fogbugz": {
+      "command": "npx",
+      "args": ["-y", "@todevs/fogbugz-mcp"],
+      "env": {
+        "FOGBUGZ_URL": "https://your-fogbugz-server.com",
+        "FOGBUGZ_API_KEY": "your-api-token"
+      }
+    }
+  }
+}
+```
+
+**Via npx (dev build):**
+
+```json
+{
+  "mcpServers": {
+    "fogbugz-dev": {
+      "command": "npx",
+      "args": ["-y", "@todevs/fogbugz-mcp@dev"],
+      "env": {
+        "FOGBUGZ_URL": "https://your-fogbugz-server.com",
+        "FOGBUGZ_API_KEY": "your-api-token"
+      }
+    }
+  }
+}
+```
+
+**Via local build:**
 
 ```json
 {
