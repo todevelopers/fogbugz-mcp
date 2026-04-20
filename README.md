@@ -258,9 +258,11 @@ npm test       # run all Jest tests
 - FogBugz on-premise and on-demand (tested with FogBugz 8.8.53 via XML API)
 - Node.js 20+
 
-## Privacy
+## Privacy Policy
 
 This server does not collect, store, or transmit any data to ToDevelopers or any third party. All communication is directly between your AI client and your own FogBugz instance using the URL and credentials you provide. No usage data, case content, or credentials are sent anywhere other than your configured FogBugz server.
+
+For complete privacy information, see the [FogBugz Privacy Policy](https://trial.fogbugz.com/privacy-policy).
 
 ## Acknowledgements
 

@@ -3,14 +3,14 @@
   "manifest_version": "0.4",
   "name": "fogbugz-mcp",
   "display_name": "FogBugz",
-  "version": "0.9.8",
+  "version": "1.0.0",
   "description": "Interact with FogBugz issue tracking via LLMs — create, search, update, assign, resolve, and close cases.",
   "author": {
     "name": "ToDevelopers s.r.o.",
     "url": "https://github.com/todevelopers"
   },
   "homepage": "https://trial.fogbugz.com/",
-  "documentation": "https://api.manuscript.com/",
+  "documentation": "https://github.com/todevelopers/fogbugz-mcp#readme",
   "support": "https://github.com/todevelopers/fogbugz-mcp/issues",
   "repository": { "type": "git", "url": "https://github.com/todevelopers/fogbugz-mcp" },
   "keywords": ["fogbugz", "issue-tracking", "project-management"],
@@ -62,6 +62,7 @@
       "sensitive": true
     }
   },
+  "privacy_policies": ["https://trial.fogbugz.com/privacy-policy"],
   "icon": "icon.png",
   "compatibility": {
     "claude_desktop": ">=1.0.0",
