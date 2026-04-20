@@ -233,7 +233,7 @@ export const apiRequestTool: Tool = {
   name: 'api_request',
   title: 'Raw API Request',
   annotations: { readOnlyHint: false, destructiveHint: true },
-  description: 'Generic XML API escape-hatch for FogBugz commands not covered by dedicated tools. WARNING: Can execute any API command the configured key permits, including destructive operations (delete, edit users, bulk modify). Prefer specific tools when available; use this only when no dedicated tool fits the need. Examples: cmd=listProjects; cmd=listCategories; cmd=search with params {"q": "project:Website", "cols": "sTitle,sStatus", "max": "10"}.',
+  description: 'Generic XML API escape-hatch for FogBugz commands not covered by dedicated tools — see the FogBugz API reference at https://api.manuscript.com/. WARNING: Can execute any API command the configured key permits, including destructive operations (delete, edit users, bulk modify). Prefer specific tools when available; use this only when no dedicated tool fits the need. Examples: cmd=listProjects; cmd=listCategories; cmd=search with params {"q": "project:Website", "cols": "sTitle,sStatus", "max": "10"}.',
   inputSchema: {
     type: 'object',
     properties: {
